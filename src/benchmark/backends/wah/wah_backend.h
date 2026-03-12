@@ -1,0 +1,25 @@
+#pragma once
+
+#include "../../bitmap_backend.h"
+#include "fastbit/bitvector.h"
+
+// make wah's bitmap handle, which contains a FastBit bitvector
+struct WahHandle : public BitmapHandle {
+    ibis::bitvector btv; 
+};
+
+// acheves WAH compression by using FastBit's bitvector, which is a WAH-like compressed bitmap
+class WahBackend : public IBitmapBackend {
+public:
+    std::unique_ptr<BitmapHandle> Create() override;
+    
+    void Append(BitmapHandle& btv, bool bit) override;
+    uint64_t Cardinality(const BitmapHandle& btv) override;
+    std::vector<uint32_t> Decode(const BitmapHandle& btv) override;
+    std::unique_ptr<BitmapHandle> bitOr(const BitmapHandle& a, const BitmapHandle& b, uint32_t range = 2) override;
+    std::unique_ptr<BitmapHandle> bitAnd(const BitmapHandle& a, const BitmapHandle& b) override;
+    std::unique_ptr<BitmapHandle> bitXor(const BitmapHandle& a, const BitmapHandle& b) override;
+
+    void Serialize(const BitmapHandle& btv, const std::string& path) override;
+    std::unique_ptr<BitmapHandle> Load(const std::string& path) override;
+};
