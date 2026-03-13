@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <combit/bitmap_vector.hpp>
+#include <bitmap_vector.hpp>
 
 namespace combit {
 

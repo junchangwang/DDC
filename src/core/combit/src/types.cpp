@@ -1,5 +1,5 @@
 #include <sstream>
-#include <combit/types.hpp>
+#include <types.hpp>
 
 namespace combit {
 

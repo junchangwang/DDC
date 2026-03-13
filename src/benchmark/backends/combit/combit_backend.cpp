@@ -1,5 +1,5 @@
 #include "combit_backend.h"
-#include <combit/bitmap_vector.hpp>
+#include <bitmap_vector.hpp>
 #include <fstream>
 #include <algorithm>
 

@@ -1,7 +1,7 @@
-#include <combit/types.hpp>
-#include <combit/combit_encoder.hpp>
-#include <combit/combit_decoder.hpp>
-#include <combit/bitmap_vector.hpp>
+#include <types.hpp>
+#include <combit_encoder.hpp>
+#include <combit_decoder.hpp>
+#include <bitmap_vector.hpp>
 #include "bitmap_index.hpp"
 
 #include <iostream>

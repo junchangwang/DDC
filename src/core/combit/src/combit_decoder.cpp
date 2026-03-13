@@ -1,5 +1,5 @@
 #include <cassert>
-#include <combit/combit_decoder.hpp>
+#include <combit_decoder.hpp>
 
 namespace combit {
 
