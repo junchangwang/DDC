@@ -1,7 +1,8 @@
 #pragma once
 
+
 #include "../../bitmap_backend.h"
-#include "../../../croaring/roaring.hh"
+#include "croaring/roaring.hh"
 
 struct CroaringHandle : public BitmapHandle {
     roaring::Roaring bitmap;

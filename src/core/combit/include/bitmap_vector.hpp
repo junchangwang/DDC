@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <cstdint>
-#include <combit/types.hpp>
-#include <combit/combit_encoder.hpp>
-#include <combit/combit_decoder.hpp>
+#include <types.hpp>
+#include <combit_encoder.hpp>
+#include <combit_decoder.hpp>
 
 namespace combit {
 

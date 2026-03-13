@@ -2,7 +2,7 @@
 #define COMBIT_ENCODER_HPP
 
 #include <vector>
-#include <combit/types.hpp>
+#include <types.hpp>
 
 namespace combit {
 
