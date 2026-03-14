@@ -50,3 +50,79 @@ target_include_directories(benchmark_app PRIVATE
 
 # Bring back combit library link
 target_link_libraries(benchmark_app PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# Testing (Google Test)
+# ==========================================
+enable_testing()
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        v1.14.0
+)
+FetchContent_MakeAvailable(googletest)
+
+# Core library tests
+add_executable(combit_tests
+    tests/test_bitmap_vector.cpp
+    tests/test_combit_decoder.cpp
+    tests/test_combit_encoder.cpp
+    tests/test_bitmap_index.cpp
+    tests/test_compression.cpp
+)
+target_include_directories(combit_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_link_libraries(combit_tests PRIVATE combit GTest::gtest_main)
+
+# Backend tests (serialization, logical ops)
+add_executable(combit_backend_tests
+    tests/test_backend_ops.cpp
+    src/benchmark/backends/combit/combit_backend.cpp
+)
+target_include_directories(combit_backend_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+)
+target_link_libraries(combit_backend_tests PRIVATE combit GTest::gtest_main)
+
+include(GoogleTest)
+gtest_discover_tests(combit_tests)
+gtest_discover_tests(combit_backend_tests)
+
+# Unified 3-backend correctness tests (WAH + CRoaring + ComBit)
+set(ALL_BACKEND_SOURCES
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/croaring/croaring_backend.cpp
+    src/benchmark/backends/combit/combit_backend.cpp
+    src/core/croaring/roaring.c
+)
+
+add_executable(all_backend_tests
+    tests/test_all_backends.cpp
+    ${ALL_BACKEND_SOURCES}
+    ${FASTBIT_SOURCES}
+)
+target_include_directories(all_backend_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_link_libraries(all_backend_tests PRIVATE combit Threads::Threads atomic Boost::program_options GTest::gtest_main)
+gtest_discover_tests(all_backend_tests)
+
+# Raw .bm file integration tests (reads gen_test_bitmaps.sh output)
+add_executable(bm_file_tests
+    tests/test_bm_files.cpp
+    ${ALL_BACKEND_SOURCES}
+    ${FASTBIT_SOURCES}
+)
+target_include_directories(bm_file_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_link_libraries(bm_file_tests PRIVATE combit Threads::Threads atomic Boost::program_options GTest::gtest_main)
+gtest_discover_tests(bm_file_tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
