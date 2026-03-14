@@ -1,0 +1,13 @@
+num_rows=1000
+cardinality=5
+all_zeros_popcount=0
+all_ones_popcount=1000
+single_bit_500_popcount=1
+alternating_popcount=500
+sparse_1pct_popcount=11
+dense_90pct_popcount=917
+column_1_popcount=193
+column_2_popcount=230
+column_3_popcount=201
+column_4_popcount=188
+column_5_popcount=188

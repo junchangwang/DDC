@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <combit/bitmap_vector.hpp>
+#include <bitmap_vector.hpp>
 
 using namespace combit;
 
