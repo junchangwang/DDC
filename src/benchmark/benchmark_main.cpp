@@ -12,6 +12,7 @@
 #include "bitmap_backend.h"
 #include "backends/wah/wah_backend.h"
 #include "backends/croaring/croaring_backend.h"
+#include "backends/ewah/ewah_backend.h"
 
 namespace fs = std::filesystem;
 
@@ -265,7 +266,7 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
 static void print_usage(const char* prog) {
     std::cout << "Usage: " << prog << " [OPTIONS]\n\n"
               << "Options:\n"
-              << "  --backend <wah|croaring|combit|all>  Backend to benchmark (default: all)\n"
+              << "  --backend <wah|croaring|combit|ewah|all>  Backend to benchmark (default: all)\n"
               << "  --size <N>                           Number of random bits (default: 10000000)\n"
               << "  --bm-dir <path>                      Directory with .bm files (enables file mode)\n"
               << "  --num-rows <N>                       Number of rows in .bm files (default: from metadata.txt)\n"
@@ -305,6 +306,7 @@ int main(int argc, char** argv) {
     WahBackend wah;
     CroaringBackend croaring;
     CombitBackend combit;
+    EwahBackend ewah;
 
     // Build list of (backend_ptr, name) to run
     struct BackendEntry { IBitmapBackend* ptr; std::string name; std::string key; };
@@ -312,6 +314,7 @@ int main(int argc, char** argv) {
         {&wah,      "WAH (FastBit)", "wah"},
         {&croaring, "CRoaring",      "croaring"},
         {&combit,   "ComBIT (New)",   "combit"},
+        {&ewah,     "EWAH",          "ewah"},
     };
 
     if (!bm_dir.empty()) {
