@@ -13,6 +13,7 @@
 #include "benchmark/backends/wah/wah_backend.h"
 #include "benchmark/backends/croaring/croaring_backend.h"
 #include "benchmark/backends/combit/combit_backend.h"
+#include "benchmark/backends/ewah/ewah_backend.h"
 
 #include <filesystem>
 #include <fstream>
@@ -30,6 +31,7 @@ static std::unique_ptr<IBitmapBackend> make_backend(const std::string& name) {
     if (name == "WAH")      return std::make_unique<WahBackend>();
     if (name == "CRoaring")  return std::make_unique<CroaringBackend>();
     if (name == "ComBit")    return std::make_unique<CombitBackend>();
+    if (name == "EWAH")     return std::make_unique<EwahBackend>();
     return nullptr;
 }
 
@@ -69,7 +71,7 @@ protected:
 INSTANTIATE_TEST_SUITE_P(
     AllBackends,
     BackendParamTest,
-    ::testing::Values("WAH", "CRoaring", "ComBit"),
+    ::testing::Values("WAH", "CRoaring", "ComBit", "EWAH"),
     [](const ::testing::TestParamInfo<std::string>& info) { return info.param; }
 );
 
