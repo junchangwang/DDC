@@ -92,7 +92,7 @@ else
 	echo "Dataset already exists: $dataset_file"
 fi
 
-# Step 2: Generate bitmap files (hierarchical management)
+# Step 2: Generate bitmap files and merge into .bmz files
 echo "Step 2: Generating bitmap files with hierarchical management..."
 echo "Output directory: $output_dir"
 echo "Files per subdirectory: $files_per_dir"
@@ -103,87 +103,44 @@ echo "Total bitmap files to generate: $c"
 num_dirs=$(( (c + files_per_dir - 1) / files_per_dir ))
 echo "Number of subdirectories: $num_dirs"
 
-# Create subdirectories
-for ((i=0; i<num_dirs; i++)); do
-	subdir="${output_dir}/part_${i}"
-	mkdir -p "$subdir"
-	echo "Created subdirectory: $subdir"
-done
-
-# Generate bitmap files
+# Generate bitmaps and merge into .bmz files (one per group)
 echo "Generating bitmap files..."
 
-# use compiled C++ program
-#name: nicolas
-if [ -f "../build/nicolas" ]; then
-	# Use compiled program
-	for ((i=0; i<num_dirs; i++)); do
-		subdir="${output_dir}/part_${i}"
-		start_val=$(( i * files_per_dir + 1 ))
-		end_val=$(( (i + 1) * files_per_dir ))
-		if [ $end_val -gt $c ]; then
-			end_val=$c
-		fi
-		../build/nicolas \
-			--cardinality $c \
-			--index-path "$subdir" \
-			--number-of-rows $n \
-			--data-path "$dataset_file" \
-			--files-per-dir $files_per_dir \
-			--start-val $start_val \
-			--end-val $end_val
-	done
-	
-	if [ $? -eq 0 ]; then
-		echo "Bitmap generation completed successfully"
-	else
-		echo "Error: Bitmap generation failed"
-		exit 1
-	fi
-else
-	# If no compiled program, use Python to generate simple bitmaps
-	echo "Warning: C++ program not found, using Python for bitmap generation"
-	python3 -c "
+python3 -c "
 import numpy as np
-import struct
 import os
 
 n = $n
 c = $c
 output_dir = '$output_dir'
 files_per_dir = $files_per_dir
+num_dirs = $num_dirs
 
 # Read dataset
 with open('$dataset_file', 'rb') as f:
     data = np.fromfile(f, dtype=np.int32)
 
-# Generate bitmap for each value
-for val in range(c):
-    # Calculate subdirectory and filename
-    dir_idx = val // files_per_dir
-    subdir = f'{output_dir}/part_{dir_idx}'
-    os.makedirs(subdir, exist_ok=True)
-    
-    # Create bitmap (set positions with value val+1 to 1)
-    bitmap = np.packbits(data == val + 1, bitorder='little')
-    
-    # Save bitmap
-    bitmap_file = f'{subdir}/{val + 1}.bm'
-    with open(bitmap_file, 'wb') as f:
-        f.write(bitmap.tobytes())
-    
-    if (val + 1) % 1000 == 0:
-        print(f'Generated {val + 1}/{c} bitmaps')
+for i in range(num_dirs):
+    start_val = i * files_per_dir + 1
+    end_val = min((i + 1) * files_per_dir, c)
+    bmz_file = f'{output_dir}/{i}.bmz'
 
-print(f'All {c} bitmaps generated successfully')
+    with open(bmz_file, 'wb') as fout:
+        for val in range(start_val, end_val + 1):
+            # Create bitmap (set positions with value val to 1)
+            bitmap = np.packbits(data == val, bitorder='little')
+            fout.write(bitmap.tobytes())
+
+    print(f'Generated bitmaps {start_val}-{end_val} into part_{i}.bmz')
+
+print(f'All {c} bitmaps merged into {num_dirs} .bmz files successfully')
 "
-	
-	if [ $? -eq 0 ]; then
-		echo "Bitmap generation completed successfully"
-	else
-		echo "Error: Bitmap generation failed"
-		exit 1
-	fi
+
+if [ $? -eq 0 ]; then
+	echo "Bitmap generation completed successfully"
+else
+	echo "Error: Bitmap generation failed"
+	exit 1
 fi
 
 # Step 3: Generate directory index file (for fast lookup)
@@ -192,52 +149,24 @@ index_file="${output_dir}/index.txt"
 {
 	echo "# Bitmap Index File"
 	echo "# Generated: $(date)"
-	echo "# Total rows: $n"
-	echo "# Cardinality: $c"
-	echo "# Files per directory: $files_per_dir"
-	echo "# Number of directories: $num_dirs"
 	echo ""
-	echo "# Directory mapping:"
+	echo "rows = $n"
+	echo "cardinality = $c"
+	echo "files_per_dir = $files_per_dir"
+	echo "num_dirs = $num_dirs"
+	echo ""
+	echo "# BMZ file mapping:"
 	for ((i=0; i<num_dirs; i++)); do
 		start_val=$(( i * files_per_dir + 1 ))
 		end_val=$(( (i + 1) * files_per_dir ))
 		if [ $end_val -ge $c ]; then
 			end_val=$c
 		fi
-		echo "part_${i}: values ${start_val}-${end_val}"
+		echo "${i}.bmz: bitmaps ${start_val}-${end_val}"
 	done
 } > "$index_file"
 
 echo "Index file created: $index_file"
-
-# Step 4: Generate statistics information
-echo "Step 4: Generating statistics..."
-stats_file="${output_dir}/stats.txt"
-{
-	echo "Bitmap Generation Statistics"
-	echo "========================"
-	echo "Generated: $(date)"
-	echo "Total rows: $n"
-	echo "Cardinality: $c"
-	echo "Output directory: $output_dir"
-	echo "Files per directory: $files_per_dir"
-	echo "Number of directories: $num_dirs"
-	echo "Total bitmap files: $c"
-	echo ""
-	echo "Storage information:"
-	du -sh "$output_dir"
-	echo ""
-	echo "File count per directory:"
-	for ((i=0; i<num_dirs; i++)); do
-		subdir="${output_dir}/part_${i}"
-		if [ -d "$subdir" ]; then
-			count=$(find "$subdir" -name "*.bm" | wc -l)
-			echo "  part_${i}: $count files"
-		fi
-	done
-} > "$stats_file"
-
-echo "Statistics file created: $stats_file"
 
 # complete
 echo ""
@@ -247,6 +176,5 @@ echo "========================================"
 echo "Output directory: $output_dir"
 echo "Dataset file: $dataset_file"
 echo "Index file: $index_file"
-echo "Statistics file: $stats_file"
 echo ""
 echo "To use the bitmaps, refer to the index file for directory mapping."
