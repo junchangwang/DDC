@@ -37,6 +37,7 @@ set(BENCHMARK_SOURCES
     src/benchmark/backends/croaring/croaring_backend.cpp
     src/benchmark/backends/combit/combit_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
+    src/benchmark/backends/Concise/concise_backend.cpp
     src/core/croaring/roaring.c
 )
 
@@ -99,6 +100,7 @@ set(ALL_BACKEND_SOURCES
     src/benchmark/backends/croaring/croaring_backend.cpp
     src/benchmark/backends/combit/combit_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
+    src/benchmark/backends/Concise/concise_backend.cpp
     src/core/croaring/roaring.c
 )
 
