@@ -19,6 +19,7 @@
 #include "benchmark/backends/croaring/croaring_backend.h"
 #include "benchmark/backends/combit/combit_backend.h"
 #include "benchmark/backends/ewah/ewah_backend.h"
+#include "benchmark/backends/Concise/concise_backend.h"
 
 #include <filesystem>
 #include <fstream>
@@ -79,6 +80,7 @@ static std::unique_ptr<IBitmapBackend> make_backend(const std::string& name) {
     if (name == "CRoaring")  return std::make_unique<CroaringBackend>();
     if (name == "ComBit")    return std::make_unique<CombitBackend>();
     if (name == "EWAH")     return std::make_unique<EwahBackend>();
+    if (name == "Concise")  return std::make_unique<ConciseBackend>();
     return nullptr;
 }
 
@@ -149,7 +151,7 @@ protected:
 
 INSTANTIATE_TEST_SUITE_P(
     AllBackends, BmFileTest,
-    ::testing::Values("WAH", "CRoaring", "ComBit", "EWAH"),
+    ::testing::Values("WAH", "CRoaring", "ComBit", "EWAH", "Concise"),
     [](const ::testing::TestParamInfo<std::string>& info) { return info.param; }
 );
 
@@ -331,7 +333,7 @@ TEST_F(CrossBackendBmTest, CardinalityConsistentAcrossBackends) {
         auto bits = read_raw_bm(bm_dir + "/" + file, num_rows);
         uint64_t prev_card = 0;
         std::string prev_name;
-        for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH"}) {
+        for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH", "Concise"}) {
             auto be = make_backend(name);
             auto bm = bits_to_bitmap(*be, bits);
             auto card = be->Cardinality(*bm);
@@ -353,7 +355,7 @@ TEST_F(CrossBackendBmTest, LogicalOpResultsConsistent) {
     uint64_t prev_or = 0, prev_and = 0;
     std::string prev_name;
 
-    for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH"}) {
+    for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH", "Concise"}) {
         auto be = make_backend(name);
         auto a = bits_to_bitmap(*be, sparse_bits);
         auto b = bits_to_bitmap(*be, dense_bits);
@@ -379,7 +381,7 @@ TEST_F(CrossBackendBmTest, LogicalOpResultsConsistent) {
 TEST_F(CrossBackendBmTest, DecodeConsistentAcrossBackends) {
     // Decode of single_bit_500 should return {500} for all backends
     auto bits = read_raw_bm(bm_dir + "/single_bit_500.bm", num_rows);
-    for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH"}) {
+    for (auto& name : {"WAH", "CRoaring", "ComBit", "EWAH", "Concise"}) {
         auto be = make_backend(name);
         auto bm = bits_to_bitmap(*be, bits);
         auto decoded = be->Decode(*bm);

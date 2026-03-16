@@ -14,6 +14,7 @@
 #include "benchmark/backends/croaring/croaring_backend.h"
 #include "benchmark/backends/combit/combit_backend.h"
 #include "benchmark/backends/ewah/ewah_backend.h"
+#include "benchmark/backends/Concise/concise_backend.h"
 
 #include <filesystem>
 #include <fstream>
@@ -32,6 +33,7 @@ static std::unique_ptr<IBitmapBackend> make_backend(const std::string& name) {
     if (name == "CRoaring")  return std::make_unique<CroaringBackend>();
     if (name == "ComBit")    return std::make_unique<CombitBackend>();
     if (name == "EWAH")     return std::make_unique<EwahBackend>();
+    if (name == "Concise")  return std::make_unique<ConciseBackend>();
     return nullptr;
 }
 
@@ -71,7 +73,7 @@ protected:
 INSTANTIATE_TEST_SUITE_P(
     AllBackends,
     BackendParamTest,
-    ::testing::Values("WAH", "CRoaring", "ComBit", "EWAH"),
+    ::testing::Values("WAH", "CRoaring", "ComBit", "EWAH", "Concise"),
     [](const ::testing::TestParamInfo<std::string>& info) { return info.param; }
 );
 
