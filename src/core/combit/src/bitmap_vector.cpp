@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <bitmap_vector.hpp>
+#include <simd_util.hpp>
 
 namespace combit {
 
@@ -32,12 +33,8 @@ uint64_t BitmapVector::size() const {
 }
 
 uint64_t BitmapVector::popcount() const {
-    uint64_t count = 0;
-    for (Word w : words_) {
-        // Use GCC/Clang built-in; falls back to manual for portability
-        count += __builtin_popcount(static_cast<unsigned>(w));
-    }
-    return count;
+    if (words_.empty()) return 0;
+    return simd::words_popcount(words_.data(), words_.size());
 }
 
 ComBitEncoding BitmapVector::encode() const {
@@ -46,6 +43,94 @@ ComBitEncoding BitmapVector::encode() const {
 
 void BitmapVector::load(const ComBitEncoding& enc) {
     words_ = ComBitDecoder::decode_words(enc);
+}
+
+// -----------------------------------------------------------------
+//  Word-level bitwise operations (SIMD-accelerated)
+// -----------------------------------------------------------------
+
+BitmapVector BitmapVector::word_or(const BitmapVector& a, const BitmapVector& b) {
+    BitmapVector result;
+    size_t na = a.words_.size();
+    size_t nb = b.words_.size();
+    size_t max_n = std::max(na, nb);
+    size_t min_n = std::min(na, nb);
+    result.words_.resize(max_n, LITERAL_ALL_ZERO);
+
+    if (min_n > 0) {
+        simd::words_or(a.words_.data(), b.words_.data(),
+                       result.words_.data(), min_n);
+    }
+    // Copy the tail from the longer vector
+    if (na > nb) {
+        std::copy(a.words_.begin() + min_n, a.words_.end(),
+                  result.words_.begin() + min_n);
+    } else if (nb > na) {
+        std::copy(b.words_.begin() + min_n, b.words_.end(),
+                  result.words_.begin() + min_n);
+    }
+    return result;
+}
+
+BitmapVector BitmapVector::word_and(const BitmapVector& a, const BitmapVector& b) {
+    BitmapVector result;
+    size_t min_n = std::min(a.words_.size(), b.words_.size());
+    if (min_n == 0) return result;
+    result.words_.resize(min_n);
+    simd::words_and(a.words_.data(), b.words_.data(),
+                    result.words_.data(), min_n);
+    return result;
+}
+
+BitmapVector BitmapVector::word_xor(const BitmapVector& a, const BitmapVector& b) {
+    BitmapVector result;
+    size_t na = a.words_.size();
+    size_t nb = b.words_.size();
+    size_t max_n = std::max(na, nb);
+    size_t min_n = std::min(na, nb);
+    result.words_.resize(max_n, LITERAL_ALL_ZERO);
+
+    if (min_n > 0) {
+        simd::words_xor(a.words_.data(), b.words_.data(),
+                        result.words_.data(), min_n);
+    }
+    // XOR with 0 = identity, copy the longer tail
+    if (na > nb) {
+        std::copy(a.words_.begin() + min_n, a.words_.end(),
+                  result.words_.begin() + min_n);
+    } else if (nb > na) {
+        std::copy(b.words_.begin() + min_n, b.words_.end(),
+                  result.words_.begin() + min_n);
+    }
+    return result;
+}
+
+BitmapVector BitmapVector::word_andnot(const BitmapVector& a, const BitmapVector& b) {
+    BitmapVector result;
+    size_t na = a.words_.size();
+    size_t nb = b.words_.size();
+    if (na == 0) return result;
+
+    result.words_.resize(na, LITERAL_ALL_ZERO);
+    size_t min_n = std::min(na, nb);
+    if (min_n > 0) {
+        simd::words_andnot(a.words_.data(), b.words_.data(),
+                           result.words_.data(), min_n);
+    }
+    // a & ~0 = a  for tail positions where b has no words
+    if (na > nb) {
+        std::copy(a.words_.begin() + min_n, a.words_.end(),
+                  result.words_.begin() + min_n);
+    }
+    return result;
+}
+
+std::vector<uint32_t> BitmapVector::decode_positions() const {
+    std::vector<uint32_t> out;
+    if (!words_.empty()) {
+        simd::words_decode_positions(words_.data(), words_.size(), 0, out);
+    }
+    return out;
 }
 
 } // namespace combit
