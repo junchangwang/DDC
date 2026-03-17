@@ -1,43 +1,34 @@
 #!/bin/bash
 
 # Script: gen_bitmap.sh
-# Description: Script for bitmap generation with efficient file management
+# Description: Generate bitmap files from an existing dataset
 #
 # Options:
 #   -n : Total number of rows (default: 100000000)
 #   -c : Cardinality (default: 100)
-#   -d : Output directory (default: ./bitmaps)
-#   -s : Files per subdirectory (default: 1000)
+#   -d : Output base directory (default: .)
+#   -g : Group size - bitmaps per file (default: 1, generates .bm files)
+#        When g=1: generates individual .bm files
+#        When g>1: generates merged .bmz files
 #
 # Example usage:
-#   ./gen_bitmap.sh -n 10000000 -c 100
-#   ./gen_bitmap.sh -n 100000000 -c 10000 -d ./my_bitmaps -s 500
+#   ./gen_bitmap.sh -n 1000000 -c 100
+#   ./gen_bitmap.sh -n 100000000 -c 10000 -g 500
 
 # Default parameters
 n=100000000
 c=100
-output_dir="./bitmaps"
-files_per_dir=1000
+base_dir="."
+g=1
 
-#Command parameter parsing
-while getopts "n:c:d:s:" opt; do
+# Command parameter parsing
+while getopts "n:c:d:g:" opt; do
 	case $opt in
-		n)
-			n=$OPTARG
-			;;
-		c)
-			c=$OPTARG
-			;;
-		d)
-			output_dir=$OPTARG
-			;;
-		s)
-			files_per_dir=$OPTARG
-			;;
-		\?)
-			echo "Invalid option: -$OPTARG" >&2
-			exit 1
-			;;
+		n) n=$OPTARG ;;
+		c) c=$OPTARG ;;
+		d) base_dir=$OPTARG ;;
+		g) g=$OPTARG ;;
+		\?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
 	esac
 done
 
@@ -52,99 +43,111 @@ if [ "$c" -le 0 ]; then
 	exit 1
 fi
 
-if [ "$files_per_dir" -le 0 ]; then
-	echo "Error: Files per directory must be positive"
+if [ "$g" -le 0 ]; then
+	echo "Error: Group size must be positive"
 	exit 1
 fi
 
-# Output root directory
-mkdir -p "$output_dir"
+# Derived paths
+dataset_file="${base_dir}/dataset_${n}_${c}"
+output_dir="${base_dir}/bitmap_n${n}_c${c}_g${g}"
 
-# Generate dataset filename
-dataset_file="dataset_${n}_${c}"
-
-# Step 1: Generate dataset (if not exists)
-echo "Step 1: Generating dataset with $n rows and $c cardinality..."
+# Check dataset exists
 if [ ! -f "$dataset_file" ]; then
-	python3 -c "
-import numpy as np
-import struct
-
-n = $n
-c = $c
-
-# Generate random data (uniform distribution)
-data = np.random.randint(1, c + 1, size=n, dtype=np.int32)
-
-# Save as binary file
-with open('$dataset_file', 'wb') as f:
-    f.write(data.tobytes())
-
-print(f'Dataset generated: {n} rows, {c} cardinality')
-"
-	if [ $? -eq 0 ]; then
-		echo "Dataset generated successfully: $dataset_file"
-	else
-		echo "Error: Failed to generate dataset"
-		exit 1
-	fi
-else
-	echo "Dataset already exists: $dataset_file"
+	echo "Error: Dataset file not found: $dataset_file"
+	echo "Please run gen_dataset.sh first."
+	exit 1
 fi
 
-# Step 2: Generate bitmap files and merge into .bmz files
-echo "Step 2: Generating bitmap files with hierarchical management..."
-echo "Output directory: $output_dir"
-echo "Files per subdirectory: $files_per_dir"
-echo "Total bitmap files to generate: $c"
+# Check if bitmap directory already exists
+if [ -d "$output_dir" ]; then
+	echo "Bitmap directory already exists: $output_dir"
+	echo "Skipping generation."
+	exit 0
+fi
 
-# Calculate number of subdirectories needed
-#Divisibility by up
-num_dirs=$(( (c + files_per_dir - 1) / files_per_dir ))
-echo "Number of subdirectories: $num_dirs"
+# Derived parameters
+packed_bytes=$(( (n + 7) / 8 ))
+padded_bits=$(( packed_bytes * 8 ))
+num_files=$(( (c + g - 1) / g ))
 
-# Generate bitmaps and merge into .bmz files (one per group)
-echo "Generating bitmap files..."
+# Create output directory
+mkdir -p "$output_dir"
 
-python3 -c "
+# Step 1: Generate bitmap files
+echo "Step 1: Generating bitmap files..."
+echo "Dataset:   $dataset_file"
+echo "Output:    $output_dir"
+echo "Group size: $g"
+echo "Total bitmaps: $c"
+echo "Number of files: $num_files"
+echo "Packed bytes per bitmap: $packed_bytes"
+echo "Padded bits per bitmap: $padded_bits"
+
+if [ "$g" -eq 1 ]; then
+	# Generate individual .bm files
+	echo "Mode: individual .bm files"
+	python3 -c "
 import numpy as np
-import os
 
 n = $n
 c = $c
 output_dir = '$output_dir'
-files_per_dir = $files_per_dir
-num_dirs = $num_dirs
+dataset_file = '$dataset_file'
 
-# Read dataset
-with open('$dataset_file', 'rb') as f:
+with open(dataset_file, 'rb') as f:
     data = np.fromfile(f, dtype=np.int32)
 
-for i in range(num_dirs):
-    start_val = i * files_per_dir + 1
-    end_val = min((i + 1) * files_per_dir, c)
+for val in range(1, c + 1):
+    bitmap = np.packbits(data == val, bitorder='little')
+    bm_file = f'{output_dir}/{val}.bm'
+    with open(bm_file, 'wb') as f:
+        f.write(bitmap.tobytes())
+
+    if val % 1000 == 0 or val == c:
+        print(f'Generated {val}/{c} .bm files')
+
+print(f'All {c} .bm files generated successfully')
+"
+else
+	# Generate merged .bmz files
+	echo "Mode: merged .bmz files"
+	python3 -c "
+import numpy as np
+
+n = $n
+c = $c
+g = $g
+output_dir = '$output_dir'
+dataset_file = '$dataset_file'
+num_files = $num_files
+
+with open(dataset_file, 'rb') as f:
+    data = np.fromfile(f, dtype=np.int32)
+
+for i in range(num_files):
+    start_val = i * g + 1
+    end_val = min((i + 1) * g, c)
     bmz_file = f'{output_dir}/{i}.bmz'
 
     with open(bmz_file, 'wb') as fout:
         for val in range(start_val, end_val + 1):
-            # Create bitmap (set positions with value val to 1)
             bitmap = np.packbits(data == val, bitorder='little')
             fout.write(bitmap.tobytes())
 
-    print(f'Generated bitmaps {start_val}-{end_val} into part_{i}.bmz')
+    print(f'Generated bitmaps {start_val}-{end_val} into {i}.bmz')
 
-print(f'All {c} bitmaps merged into {num_dirs} .bmz files successfully')
+print(f'All {c} bitmaps merged into {num_files} .bmz files successfully')
 "
+fi
 
-if [ $? -eq 0 ]; then
-	echo "Bitmap generation completed successfully"
-else
+if [ $? -ne 0 ]; then
 	echo "Error: Bitmap generation failed"
 	exit 1
 fi
 
-# Step 3: Generate directory index file (for fast lookup)
-echo "Step 3: Generating directory index..."
+# Step 2: Generate index.txt
+echo "Step 2: Generating index..."
 index_file="${output_dir}/index.txt"
 {
 	echo "# Bitmap Index File"
@@ -152,23 +155,39 @@ index_file="${output_dir}/index.txt"
 	echo ""
 	echo "rows = $n"
 	echo "cardinality = $c"
-	echo "files_per_dir = $files_per_dir"
-	echo "num_dirs = $num_dirs"
+	echo "group = $g"
+	echo "num_files = $num_files"
+	echo "packed_bytes_per_bitmap = $packed_bytes"
+	echo "padded_bits_per_bitmap = $padded_bits"
 	echo ""
-	echo "# BMZ file mapping:"
-	for ((i=0; i<num_dirs; i++)); do
-		start_val=$(( i * files_per_dir + 1 ))
-		end_val=$(( (i + 1) * files_per_dir ))
-		if [ $end_val -ge $c ]; then
-			end_val=$c
-		fi
-		echo "${i}.bmz: bitmaps ${start_val}-${end_val}"
-	done
+	if [ "$g" -eq 1 ]; then
+		echo "# BM file mapping (each file contains 1 bitmap):"
+		for ((i=1; i<=c; i++)); do
+			echo "${i}.bm: value=${i} offset_start=0 offset_end=$(( packed_bytes - 1 ))"
+		done
+	else
+		echo "# BMZ file mapping:"
+		for ((i=0; i<num_files; i++)); do
+			start_val=$(( i * g + 1 ))
+			end_val=$(( (i + 1) * g ))
+			if [ $end_val -gt $c ]; then
+				end_val=$c
+			fi
+			echo ""
+			echo "${i}.bmz: values ${start_val}-${end_val}"
+			for ((v=start_val; v<=end_val; v++)); do
+				local_idx=$(( v - start_val ))
+				byte_start=$(( local_idx * packed_bytes ))
+				byte_end=$(( byte_start + packed_bytes - 1 ))
+				echo "  value=${v} offset_start=${byte_start} offset_end=${byte_end}"
+			done
+		done
+	fi
 } > "$index_file"
 
 echo "Index file created: $index_file"
 
-# complete
+# Complete
 echo ""
 echo "========================================"
 echo "Bitmap generation completed successfully!"
