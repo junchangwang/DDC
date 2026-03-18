@@ -163,7 +163,7 @@ index_file="${output_dir}/index.txt"
 	if [ "$g" -eq 1 ]; then
 		echo "# BM file mapping (each file contains 1 bitmap):"
 		for ((i=1; i<=c; i++)); do
-			echo "${i}.bm: value=${i} offset_start=0 offset_end=$(( packed_bytes - 1 ))"
+			echo "${i}.bm: value=${i} bit_start=0 bit_end=$(( n - 1 )) padded_bit_end=$(( padded_bits - 1 ))"
 		done
 	else
 		echo "# BMZ file mapping:"
@@ -177,9 +177,10 @@ index_file="${output_dir}/index.txt"
 			echo "${i}.bmz: values ${start_val}-${end_val}"
 			for ((v=start_val; v<=end_val; v++)); do
 				local_idx=$(( v - start_val ))
-				byte_start=$(( local_idx * packed_bytes ))
-				byte_end=$(( byte_start + packed_bytes - 1 ))
-				echo "  value=${v} offset_start=${byte_start} offset_end=${byte_end}"
+				bit_start=$(( local_idx * padded_bits ))
+				bit_end=$(( bit_start + n - 1 ))
+				padded_bit_end=$(( bit_start + padded_bits - 1 ))
+				echo "  value=${v} bit_start=${bit_start} bit_end=${bit_end} padded_bit_end=${padded_bit_end}"
 			done
 		done
 	fi
