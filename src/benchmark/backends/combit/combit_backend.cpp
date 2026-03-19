@@ -1,5 +1,5 @@
 #include "combit_backend.h"
-#include <combit/bitmap_vector.hpp>
+#include <bitmap_vector.hpp>
 #include <fstream>
 #include <algorithm>
 
@@ -33,44 +33,33 @@ void CombitBackend::Append(BitmapHandle& handle, bool bit) {
 
 uint64_t CombitBackend::Cardinality(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
-    // Directly delegates to the native popcount method
+    // SIMD-accelerated popcount
     return h.btv.popcount(); 
 }
 
 std::vector<uint32_t> CombitBackend::Decode(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
-    std::vector<uint32_t> result;
-    // Iterate and extract all indices where the bit is 1
-    for (uint64_t i = 0; i < h.current_bits; ++i) {
-        if (h.btv.get_bit(i)) {
-            result.push_back(i);
-        }
+    // Fast word-level decode (uses __builtin_clz per word instead of per-bit check)
+    std::vector<uint32_t> result = h.btv.decode_positions();
+    // Filter to only positions within current_bits
+    while (!result.empty() && result.back() >= h.current_bits) {
+        result.pop_back();
     }
     return result;
 }
 
 // ==============================================================
-// Logical Operations (Temporary Simulation):
-// Note: Since native OR/AND/XOR operations are not provided yet, 
-// we simulate them via bit-by-bit traversal to pass the benchmark.
-// Replace these with native bitwise operators when implemented.
+// Logical Operations (SIMD-accelerated word-level):
+// Uses AVX-512 / AVX2 / scalar dispatch via BitmapVector::word_*
 // ==============================================================
 
 std::unique_ptr<BitmapHandle> CombitBackend::bitOr(const BitmapHandle& a, const BitmapHandle& b, uint32_t range) {
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<CombitHandle>();
-    
-    uint64_t max_bits = std::max(ha.current_bits, hb.current_bits);
-    for (uint64_t i = 0; i < max_bits; ++i) {
-        bool bit_a = (i < ha.current_bits) ? ha.btv.get_bit(i) : false;
-        bool bit_b = (i < hb.current_bits) ? hb.btv.get_bit(i) : false;
-        
-        if (bit_a || bit_b) {
-            res->btv.set_bit(i);
-        }
-    }
-    res->current_bits = max_bits;
+
+    res->btv = combit::BitmapVector::word_or(ha.btv, hb.btv);
+    res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
 }
 
@@ -78,14 +67,9 @@ std::unique_ptr<BitmapHandle> CombitBackend::bitAnd(const BitmapHandle& a, const
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<CombitHandle>();
-    
-    uint64_t min_bits = std::min(ha.current_bits, hb.current_bits);
-    for (uint64_t i = 0; i < min_bits; ++i) {
-        if (ha.btv.get_bit(i) && hb.btv.get_bit(i)) {
-            res->btv.set_bit(i);
-        }
-    }
-    res->current_bits = min_bits;
+
+    res->btv = combit::BitmapVector::word_and(ha.btv, hb.btv);
+    res->current_bits = std::min(ha.current_bits, hb.current_bits);
     return res;
 }
 
@@ -93,17 +77,9 @@ std::unique_ptr<BitmapHandle> CombitBackend::bitXor(const BitmapHandle& a, const
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<CombitHandle>();
-    
-    uint64_t max_bits = std::max(ha.current_bits, hb.current_bits);
-    for (uint64_t i = 0; i < max_bits; ++i) {
-        bool bit_a = (i < ha.current_bits) ? ha.btv.get_bit(i) : false;
-        bool bit_b = (i < hb.current_bits) ? hb.btv.get_bit(i) : false;
-        
-        if (bit_a != bit_b) {
-            res->btv.set_bit(i);
-        }
-    }
-    res->current_bits = max_bits;
+
+    res->btv = combit::BitmapVector::word_xor(ha.btv, hb.btv);
+    res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
 }
 

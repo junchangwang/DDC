@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <cstdint>
-#include <combit/types.hpp>
-#include <combit/combit_encoder.hpp>
-#include <combit/combit_decoder.hpp>
+#include <types.hpp>
+#include <combit_encoder.hpp>
+#include <combit_decoder.hpp>
 
 namespace combit {
 
@@ -16,6 +16,9 @@ namespace combit {
  * Bits can be appended (set) at arbitrary positions; the vector grows as
  * needed.  The compressed representation is maintained lazily — it is
  * recomputed when requested.
+ *
+ * Word-level bitwise operations (OR, AND, XOR, ANDNOT) are accelerated
+ * with AVX-512 / AVX2 intrinsics when available at runtime.
  */
 class BitmapVector {
 public:
@@ -32,7 +35,7 @@ public:
     /// position that has been set, rounded up to word boundary).
     uint64_t size() const;
 
-    /// Return the number of set bits.
+    /// Return the number of set bits (SIMD-accelerated).
     uint64_t popcount() const;
 
     /// Compress the current uncompressed state and return the encoding.
@@ -44,6 +47,28 @@ public:
 
     /// Access the raw uncompressed words (read-only).
     const std::vector<Word>& raw_words() const { return words_; }
+
+    /// Access the raw uncompressed words (mutable).
+    std::vector<Word>& raw_words_mut() { return words_; }
+
+    // -----------------------------------------------------------------
+    //  Word-level bitwise operations (SIMD-accelerated)
+    // -----------------------------------------------------------------
+
+    /// dst = this | other
+    static BitmapVector word_or(const BitmapVector& a, const BitmapVector& b);
+
+    /// dst = this & other
+    static BitmapVector word_and(const BitmapVector& a, const BitmapVector& b);
+
+    /// dst = this ^ other
+    static BitmapVector word_xor(const BitmapVector& a, const BitmapVector& b);
+
+    /// dst = this & ~other
+    static BitmapVector word_andnot(const BitmapVector& a, const BitmapVector& b);
+
+    /// Extract all set-bit positions into a sorted vector.
+    std::vector<uint32_t> decode_positions() const;
 
 private:
     /// Ensure the internal word vector is large enough to hold position `pos`.

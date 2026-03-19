@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-enum class BackendKind { WAH, CROARING, COMBIT };
+enum class BackendKind { WAH, CROARING, COMBIT, CONCISE };
 
 struct BitmapHandle { virtual ~BitmapHandle() = default; };
 

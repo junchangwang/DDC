@@ -1,18 +1,17 @@
 #pragma once
 
-
 #include "../../bitmap_backend.h"
-#include "croaring/roaring.hh"
+#include "Concise/concise.h"
 
-struct CroaringHandle : public BitmapHandle {
-    roaring::Roaring bitmap;
-    uint32_t current_size = 0; // record the logical size of the bitmap, which is how many bits have been appended (including 0s and 1s)
+struct ConciseHandle : public BitmapHandle {
+    ConciseSet<false> btv;
+    uint64_t current_bits = 0;
 };
 
-class CroaringBackend : public IBitmapBackend {
+class ConciseBackend : public IBitmapBackend {
 public:
     std::unique_ptr<BitmapHandle> Create() override;
-    
+
     void Append(BitmapHandle& btv, bool bit) override;
     uint64_t Cardinality(const BitmapHandle& btv) override;
     std::vector<uint32_t> Decode(const BitmapHandle& btv) override;

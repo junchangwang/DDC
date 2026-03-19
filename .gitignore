@@ -1,2 +1,8 @@
 build/
 .cache/
+build/
+
+# Generated bitmap data
+bitmaps_*/
+dataset_*
+*.bmz
