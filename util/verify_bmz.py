@@ -8,7 +8,7 @@ Usage:
     python3 verify_bmz.py -b <bitmap_dir> [-d <dataset_file>] [-s <sample_size>]
 
 Options:
-    -b  Path to bitmap directory, e.g. ./bitmap_n10000_c10000_g100
+    -b  Path to bitmap directory, e.g. ./bitmap_n10000_c10000_z100
     -d  Path to original dataset file (auto-detected from index.txt if not specified)
     -s  Number of bitmaps to sample (default: 10, use 0 to check all)
 """
@@ -59,13 +59,13 @@ def read_bitmap_from_bmz(bmz_path, val, start_val, packed_bytes, num_rows):
 
 def verify_value(val, dataset, num_rows, bitmap_dir, params):
     """Verify bitmap for a single value against the dataset."""
-    g = params['group']
+    z = params['zip_length']
     packed_bytes = params['packed_bytes_per_bitmap']
 
     # Ground truth
     expected = (dataset == val).astype(np.uint8)
 
-    if g == 1:
+    if z == 1:
         # .bm mode: individual file
         bm_path = os.path.join(bitmap_dir, f'{val}.bm')
         if not os.path.isfile(bm_path):
@@ -74,9 +74,9 @@ def verify_value(val, dataset, num_rows, bitmap_dir, params):
         actual = read_bm_file(bm_path, num_rows)
     else:
         # .bmz mode: merged file
-        bmz_idx = (val - 1) // g
+        bmz_idx = (val - 1) // z
         bmz_path = os.path.join(bitmap_dir, f'{bmz_idx}.bmz')
-        start_val = bmz_idx * g + 1
+        start_val = bmz_idx * z + 1
         if not os.path.isfile(bmz_path):
             print(f"  [SKIP] value={val}: {bmz_idx}.bmz not found")
             return None
@@ -115,7 +115,7 @@ def main():
     params = read_index(index_path)
     num_rows = params['rows']
     cardinality = params['cardinality']
-    g = params['group']
+    z = params['zip_length']
 
     # Auto-detect dataset file
     dataset_path = args.dataset
@@ -128,8 +128,8 @@ def main():
 
     print(f"Dataset:    {dataset_path}")
     print(f"Bitmaps:    {bitmap_dir}")
-    print(f"Mode:       {'individual .bm' if g == 1 else f'merged .bmz (group={g})'}")
-    print(f"rows={num_rows}, cardinality={cardinality}, group={g}")
+    print(f"Mode:       {'individual .bm' if z == 1 else f'merged .bmz (zip_length={z})'}")
+    print(f"rows={num_rows}, cardinality={cardinality}, zip_length={z}")
     print(f"packed_bytes_per_bitmap={params['packed_bytes_per_bitmap']}")
 
     # Load dataset

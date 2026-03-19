@@ -7,27 +7,27 @@
 #   -n : Total number of rows (default: 100000000)
 #   -c : Cardinality (default: 100)
 #   -d : Output base directory (default: .)
-#   -g : Group size - bitmaps per file (default: 1, generates .bm files)
-#        When g=1: generates individual .bm files
-#        When g>1: generates merged .bmz files
+#   -z : Zip length - bitmaps per file (default: 1, generates .bm files)
+#        When z=1: generates individual .bm files
+#        When z>1: generates merged .bmz files
 #
 # Example usage:
 #   ./gen_bitmap.sh -n 1000000 -c 100
-#   ./gen_bitmap.sh -n 100000000 -c 10000 -g 500
+#   ./gen_bitmap.sh -n 100000000 -c 10000 -z 500
 
 # Default parameters
 n=100000000
 c=100
 base_dir="."
-g=1
+z=1
 
 # Command parameter parsing
-while getopts "n:c:d:g:" opt; do
+while getopts "n:c:d:z:" opt; do
 	case $opt in
 		n) n=$OPTARG ;;
 		c) c=$OPTARG ;;
 		d) base_dir=$OPTARG ;;
-		g) g=$OPTARG ;;
+		z) z=$OPTARG ;;
 		\?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
 	esac
 done
@@ -43,14 +43,14 @@ if [ "$c" -le 0 ]; then
 	exit 1
 fi
 
-if [ "$g" -le 0 ]; then
-	echo "Error: Group size must be positive"
+if [ "$z" -le 0 ]; then
+	echo "Error: Zip length must be positive"
 	exit 1
 fi
 
 # Derived paths
 dataset_file="${base_dir}/dataset_${n}_${c}"
-output_dir="${base_dir}/bitmap_n${n}_c${c}_g${g}"
+output_dir="${base_dir}/bitmap_n${n}_c${c}_z${z}"
 
 # Check dataset exists
 if [ ! -f "$dataset_file" ]; then
@@ -69,7 +69,7 @@ fi
 # Derived parameters
 packed_bytes=$(( (n + 7) / 8 ))
 padded_bits=$(( packed_bytes * 8 ))
-num_files=$(( (c + g - 1) / g ))
+num_files=$(( (c + z - 1) / z ))
 
 # Create output directory
 mkdir -p "$output_dir"
@@ -78,13 +78,13 @@ mkdir -p "$output_dir"
 echo "Step 1: Generating bitmap files..."
 echo "Dataset:   $dataset_file"
 echo "Output:    $output_dir"
-echo "Group size: $g"
+echo "Zip length: $z"
 echo "Total bitmaps: $c"
 echo "Number of files: $num_files"
 echo "Packed bytes per bitmap: $packed_bytes"
 echo "Padded bits per bitmap: $padded_bits"
 
-if [ "$g" -eq 1 ]; then
+if [ "$z" -eq 1 ]; then
 	# Generate individual .bm files
 	echo "Mode: individual .bm files"
 	python3 -c "
@@ -117,7 +117,7 @@ import numpy as np
 
 n = $n
 c = $c
-g = $g
+z = $z
 output_dir = '$output_dir'
 dataset_file = '$dataset_file'
 num_files = $num_files
@@ -126,8 +126,8 @@ with open(dataset_file, 'rb') as f:
     data = np.fromfile(f, dtype=np.int32)
 
 for i in range(num_files):
-    start_val = i * g + 1
-    end_val = min((i + 1) * g, c)
+    start_val = i * z + 1
+    end_val = min((i + 1) * z, c)
     bmz_file = f'{output_dir}/{i}.bmz'
 
     with open(bmz_file, 'wb') as fout:
@@ -155,21 +155,21 @@ index_file="${output_dir}/index.txt"
 	echo ""
 	echo "rows = $n"
 	echo "cardinality = $c"
-	echo "group = $g"
+	echo "zip_length = $z"
 	echo "num_files = $num_files"
 	echo "packed_bytes_per_bitmap = $packed_bytes"
 	echo "padded_bits_per_bitmap = $padded_bits"
 	echo ""
-	if [ "$g" -eq 1 ]; then
+	if [ "$z" -eq 1 ]; then
 		echo "# BM file mapping (each file contains 1 bitmap):"
 		for ((i=1; i<=c; i++)); do
-			echo "${i}.bm: value=${i} bit_start=0 bit_end=$(( n - 1 )) padded_bit_end=$(( padded_bits - 1 ))"
+			echo "${i}.bm: value=${i} bit_start=0 bit_end=$(( n - 1 )) BIT_end=$(( padded_bits - 1 )) BYTE_end=$(( packed_bytes - 1 ))"
 		done
 	else
 		echo "# BMZ file mapping:"
 		for ((i=0; i<num_files; i++)); do
-			start_val=$(( i * g + 1 ))
-			end_val=$(( (i + 1) * g ))
+			start_val=$(( i * z + 1 ))
+			end_val=$(( (i + 1) * z ))
 			if [ $end_val -gt $c ]; then
 				end_val=$c
 			fi
@@ -179,8 +179,9 @@ index_file="${output_dir}/index.txt"
 				local_idx=$(( v - start_val ))
 				bit_start=$(( local_idx * padded_bits ))
 				bit_end=$(( bit_start + n - 1 ))
-				padded_bit_end=$(( bit_start + padded_bits - 1 ))
-				echo "  value=${v} bit_start=${bit_start} bit_end=${bit_end} padded_bit_end=${padded_bit_end}"
+				BIT_end=$(( bit_start + padded_bits - 1 ))
+				BYTE_end=$(( local_idx * packed_bytes + packed_bytes - 1 ))
+				echo "  value=${v} bit_start=${bit_start} bit_end=${bit_end} BIT_end=${BIT_end} BYTE_end=${BYTE_end}"
 			done
 		done
 	fi
