@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script: gen_dataset.sh
-# Description: Generate a random integer dataset and record in done.txt
+# Description: Generate a random integer dataset and record in index.txt
 #
 # Options:
 #   -n : Total number of rows (default: 100000000)
@@ -40,11 +40,11 @@ fi
 
 # Derived paths
 dataset_file="${base_dir}/dataset_${n}_${c}"
-done_file="${base_dir}/done.txt"
+index_file="${base_dir}/index.txt"
 
-# Check done.txt: skip if dataset already exists
-if [ -f "$done_file" ]; then
-	if grep -q "n=${n} c=${c}" "$done_file"; then
+# Check index.txt: skip if dataset already exists
+if [ -f "$index_file" ]; then
+	if grep -q "n=${n} c=${c}" "$index_file"; then
 		echo "Dataset already exists for n=${n}, c=${c}"
 		echo "Dataset file: $dataset_file"
 		echo "Skipping generation."
@@ -76,9 +76,9 @@ else
 	exit 1
 fi
 
-# Update done.txt
-echo "n=${n} c=${c} dir=${dataset_file}" >> "$done_file"
-echo "done.txt updated: $done_file"
+# Update index.txt
+echo "n=${n} c=${c} dir=${dataset_file}" >> "$index_file"
+echo "index.txt updated: $index_file"
 
 echo ""
 echo "========================================"

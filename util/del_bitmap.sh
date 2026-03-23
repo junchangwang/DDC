@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Script: del_bitmap.sh
-# Description: Delete bitmap directory and/or dataset, sync done.txt
+# Description: Delete bitmap directory and/or dataset, sync index.txt
 #
 # Mode 1 - Delete a single bitmap directory only (requires -z):
 #   ./del_bitmap.sh -n <rows> -c <cardinality> -z <zip_length>
 #
-# Mode 2 - Delete all bitmap directories + dataset, sync done.txt (no -z):
+# Mode 2 - Delete all bitmap directories + dataset, sync index.txt (no -z):
 #   ./del_bitmap.sh -n <rows> -c <cardinality>
 #
 # Options:
@@ -17,7 +17,7 @@
 #
 # Example usage:
 #   ./del_bitmap.sh -n 1000 -c 20 -z 5    # mode 1: delete bitmap_n1000_c20_z5 only
-#   ./del_bitmap.sh -n 1000 -c 20          # mode 2: delete all bitmaps + dataset + done.txt entry
+#   ./del_bitmap.sh -n 1000 -c 20          # mode 2: delete all bitmaps + dataset + index.txt entry
 
 n=""
 c=""
@@ -43,10 +43,10 @@ if [ -z "$n" ] || [ -z "$c" ]; then
 	exit 1
 fi
 
-done_file="${base_dir}/done.txt"
+index_file="${base_dir}/index.txt"
 
 if [ -n "$z" ]; then
-	# ---- Mode 1: Delete a single bitmap directory, no done.txt changes ----
+	# ---- Mode 1: Delete a single bitmap directory, no index.txt changes ----
 	echo "Mode 1: Deleting single bitmap directory"
 	output_dir="${base_dir}/bitmap_n${n}_c${c}_z${z}"
 
@@ -60,7 +60,7 @@ if [ -n "$z" ]; then
 	echo "Deleted: $output_dir"
 
 else
-	# ---- Mode 2: Delete all bitmap directories + dataset, update done.txt ----
+	# ---- Mode 2: Delete all bitmap directories + dataset, update index.txt ----
 	echo "Mode 2: Deleting all bitmap directories and dataset"
 
 	# Delete all bitmap dirs for this n/c
@@ -86,12 +86,12 @@ else
 		echo "Warning: Dataset file not found: $dataset_file"
 	fi
 
-	# Update done.txt
-	if [ -f "$done_file" ]; then
-		sed -i "/n=${n} c=${c} /d" "$done_file"
-		echo "done.txt updated: removed entry n=${n} c=${c}"
+	# Update index.txt
+	if [ -f "$index_file" ]; then
+		sed -i "/n=${n} c=${c} /d" "$index_file"
+		echo "index.txt updated: removed entry n=${n} c=${c}"
 	else
-		echo "Warning: done.txt not found, nothing to update"
+		echo "Warning: index.txt not found, nothing to update"
 	fi
 fi
 

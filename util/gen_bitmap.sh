@@ -146,11 +146,11 @@ if [ $? -ne 0 ]; then
 	exit 1
 fi
 
-# Step 2: Generate index.txt
-echo "Step 2: Generating index..."
-index_file="${output_dir}/index.txt"
+# Step 2: Generate done.txt
+echo "Step 2: Generating done..."
+done_file="${output_dir}/done.txt"
 {
-	echo "# Bitmap Index File"
+	echo "# Bitmap Done File"
 	echo "# Generated: $(date)"
 	echo ""
 	echo "rows = $n"
@@ -185,9 +185,9 @@ index_file="${output_dir}/index.txt"
 			done
 		done
 	fi
-} > "$index_file"
+} > "$done_file"
 
-echo "Index file created: $index_file"
+echo "Done file created: $done_file"
 
 # Complete
 echo ""
@@ -196,6 +196,6 @@ echo "Bitmap generation completed successfully!"
 echo "========================================"
 echo "Output directory: $output_dir"
 echo "Dataset file: $dataset_file"
-echo "Index file: $index_file"
+echo "Done file: $done_file"
 echo ""
-echo "To use the bitmaps, refer to the index file for directory mapping."
+echo "To use the bitmaps, refer to the done file for directory mapping."

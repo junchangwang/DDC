@@ -103,16 +103,16 @@ def main():
     args = parser.parse_args()
 
     bitmap_dir = args.bitmaps
-    index_path = os.path.join(bitmap_dir, 'index.txt')
+    done_path = os.path.join(bitmap_dir, 'done.txt')
 
     if not os.path.isdir(bitmap_dir):
         print(f"Error: Bitmap directory not found: {bitmap_dir}")
         sys.exit(1)
-    if not os.path.isfile(index_path):
-        print(f"Error: index.txt not found in {bitmap_dir}")
+    if not os.path.isfile(done_path):
+        print(f"Error: done.txt not found in {bitmap_dir}")
         sys.exit(1)
 
-    params = read_index(index_path)
+    params = read_index(done_path)
     num_rows = params['rows']
     cardinality = params['cardinality']
     z = params['zip_length']
