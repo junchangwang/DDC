@@ -20,6 +20,35 @@
 namespace fs = std::filesystem;
 
 // ==========================================
+// CSV output helper
+// ==========================================
+static std::ofstream* g_csv = nullptr;
+
+static void csv_write_header() {
+    if (!g_csv) return;
+    *g_csv << "backend,num_rows,cardinality,operation,time_ms,"
+           << "compressed_bytes,compression_ratio,result_cardinality,iteration\n";
+}
+
+static void csv_row(const std::string& backend, size_t rows, size_t card,
+                    const std::string& op, double time_ms,
+                    long compressed_bytes, double ratio,
+                    uint64_t result_card, int iteration) {
+    if (!g_csv) return;
+    *g_csv << backend << "," << rows << "," << card << ","
+           << op << "," << time_ms << ","
+           << compressed_bytes << "," << ratio << ","
+           << result_card << "," << iteration << "\n";
+}
+
+static double compute_median(std::vector<double>& v) {
+    if (v.empty()) return 0;
+    std::sort(v.begin(), v.end());
+    size_t n = v.size();
+    return (n % 2 == 0) ? (v[n/2 - 1] + v[n/2]) / 2.0 : v[n/2];
+}
+
+// ==========================================
 // 1. High-Resolution Timer
 // ==========================================
 class Timer {
@@ -334,25 +363,25 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
 }
 
 // ==========================================
-// 6. BMZ File Benchmark
+// 6. BMZ File Benchmark (with multi-iteration + CSV)
 // ==========================================
 void run_bmz_benchmark(IBitmapBackend* backend, const std::string& backend_name,
                        const std::string& bmz_dir, const BmzIndex& idx,
-                       size_t sample_count)
+                       size_t sample_count, size_t iterations = 1)
 {
     std::cout << "\n=======================================\n";
     std::cout << "Benchmark [" << backend_name << "] — .bmz Files\n";
     std::cout << "Source: " << bmz_dir << "\n";
-    std::cout << "Rows: " << idx.rows << " | Cardinality: " << idx.cardinality << "\n";
-    std::cout << "=======================================\n";
+    std::cout << "Rows: " << idx.rows << " | Cardinality: " << idx.cardinality;
+    if (iterations > 1) std::cout << " | Iterations: " << iterations;
+    std::cout << "\n=======================================\n";
 
     Timer timer;
     size_t num_rows = idx.rows;
 
-    // Determine which bitmaps to load (sample for speed if cardinality is large)
+    // Determine which bitmaps to load
     std::vector<int> vals_to_load;
     if (sample_count > 0 && sample_count < idx.cardinality) {
-        // Evenly spaced sample
         for (size_t i = 0; i < sample_count; ++i) {
             vals_to_load.push_back(static_cast<int>(1 + i * idx.cardinality / sample_count));
         }
@@ -363,92 +392,149 @@ void run_bmz_benchmark(IBitmapBackend* backend, const std::string& backend_name,
     }
     std::cout << "Loading " << vals_to_load.size() << " bitmaps...\n\n";
 
-    // --- Phase 1: Load bitmaps from .bmz ---
-    std::vector<std::unique_ptr<BitmapHandle>> bitmaps;
-    timer.reset();
+    // --- Pre-read raw bits (shared across iterations) ---
+    std::vector<std::vector<bool>> all_raw_bits;
     for (int val : vals_to_load) {
         int bmz_idx = (val - 1) / static_cast<int>(idx.files_per_dir);
         auto it = idx.mapping.find(bmz_idx);
-        if (it == idx.mapping.end()) continue;
+        if (it == idx.mapping.end()) { all_raw_bits.emplace_back(); continue; }
         int start_val = it->second.first;
         std::string bmz_path = bmz_dir + "/" + std::to_string(bmz_idx) + ".bmz";
-
         auto bits = read_bitmap_from_bmz(bmz_path, val, start_val, num_rows);
         if (bits.empty()) {
             std::cerr << "  Warning: failed to read bitmap for value " << val << "\n";
-            continue;
         }
-        bitmaps.push_back(bits_to_bitmap(backend, bits));
-    }
-    double load_time = timer.elapsed_ms();
-    std::cout << "[Load] Read & build " << bitmaps.size()
-              << " bitmaps from .bmz: " << load_time << " ms\n";
-
-    // Print cardinality of each loaded bitmap
-    for (size_t i = 0; i < bitmaps.size(); ++i) {
-        std::cout << "  value " << vals_to_load[i]
-                  << " → cardinality: " << backend->Cardinality(*bitmaps[i]) << "\n";
+        all_raw_bits.push_back(std::move(bits));
     }
 
-    if (bitmaps.size() < 2) {
-        std::cout << "  Not enough bitmaps to run logical ops.\n";
-        return;
-    }
-
-    // --- Phase 2: Serialize & compression ratio ---
-    std::cout << "\n";
-    double total_ser = 0;
+    // Timing accumulators
+    std::vector<double> build_times, ser_times, or_times, and_times, xor_times, multi_or_times;
     long total_compressed = 0;
-    for (size_t i = 0; i < bitmaps.size(); ++i) {
-        std::string out_path = backend_name + "_bmz_ser_" + std::to_string(i) + ".bin";
-        timer.reset();
-        backend->Serialize(*bitmaps[i], out_path);
-        total_ser += timer.elapsed_ms();
-        total_compressed += get_file_size(out_path);
-        std::remove(out_path.c_str());
+    double raw_total = 0;
+    uint64_t or_card = 0, and_card = 0, xor_card = 0, multi_or_card = 0;
+
+    // --- Warm-up run (not measured) ---
+    if (iterations > 1) {
+        std::cout << "[Warm-up] Running 1 warm-up iteration...\n";
+        std::vector<std::unique_ptr<BitmapHandle>> warmup_bm;
+        for (auto& bits : all_raw_bits) {
+            if (!bits.empty()) warmup_bm.push_back(bits_to_bitmap(backend, bits));
+        }
+        if (warmup_bm.size() >= 2) {
+            auto w_or = backend->bitOr(*warmup_bm[0], *warmup_bm[1]);
+            auto w_and = backend->bitAnd(*warmup_bm[0], *warmup_bm[1]);
+            (void)w_or; (void)w_and;
+        }
     }
-    double raw_total = static_cast<double>(bitmaps.size()) * num_rows / 8.0;
-    std::cout << "[Serialize] " << bitmaps.size() << " bitmaps: "
-              << total_ser << " ms | Total compressed: " << total_compressed
-              << " bytes (" << total_compressed / 1024.0 << " KB)"
-              << " | Ratio: " << (raw_total > 0 ? total_compressed / raw_total : 0)
-              << "x\n";
 
-    // --- Phase 3: Pairwise logical ops on first 2 bitmaps ---
-    {
-        auto& a = bitmaps[0];
-        auto& b = bitmaps[1];
-
+    for (size_t iter = 0; iter < iterations; ++iter) {
+        // --- Phase 1: Build bitmaps ---
+        std::vector<std::unique_ptr<BitmapHandle>> bitmaps;
         timer.reset();
-        auto or_res = backend->bitOr(*a, *b);
-        double or_t = timer.elapsed_ms();
+        for (auto& bits : all_raw_bits) {
+            if (!bits.empty()) bitmaps.push_back(bits_to_bitmap(backend, bits));
+        }
+        double build_t = timer.elapsed_ms();
+        build_times.push_back(build_t);
 
-        timer.reset();
-        auto and_res = backend->bitAnd(*a, *b);
-        double and_t = timer.elapsed_ms();
+        if (iter == 0) {
+            std::cout << "[Load] Read & build " << bitmaps.size()
+                      << " bitmaps from .bmz: " << build_t << " ms\n";
+            for (size_t i = 0; i < bitmaps.size() && i < vals_to_load.size(); ++i) {
+                std::cout << "  value " << vals_to_load[i]
+                          << " → cardinality: " << backend->Cardinality(*bitmaps[i]) << "\n";
+            }
+        }
 
-        timer.reset();
-        auto xor_res = backend->bitXor(*a, *b);
-        double xor_t = timer.elapsed_ms();
+        if (bitmaps.size() < 2) {
+            std::cout << "  Not enough bitmaps to run logical ops.\n";
+            return;
+        }
 
+        // --- Phase 2: Serialize & compression ratio ---
+        double iter_ser = 0;
+        long iter_compressed = 0;
+        for (size_t i = 0; i < bitmaps.size(); ++i) {
+            std::string out_path = backend_name + "_bmz_ser_" + std::to_string(i) + ".bin";
+            timer.reset();
+            backend->Serialize(*bitmaps[i], out_path);
+            iter_ser += timer.elapsed_ms();
+            iter_compressed += get_file_size(out_path);
+            std::remove(out_path.c_str());
+        }
+        ser_times.push_back(iter_ser);
+        total_compressed = iter_compressed;
+        raw_total = static_cast<double>(bitmaps.size()) * num_rows / 8.0;
+
+        // --- Phase 3: Pairwise logical ops ---
+        {
+            auto& a = bitmaps[0];
+            auto& b = bitmaps[1];
+
+            timer.reset();
+            auto or_res = backend->bitOr(*a, *b);
+            or_times.push_back(timer.elapsed_ms());
+            or_card = backend->Cardinality(*or_res);
+
+            timer.reset();
+            auto and_res = backend->bitAnd(*a, *b);
+            and_times.push_back(timer.elapsed_ms());
+            and_card = backend->Cardinality(*and_res);
+
+            timer.reset();
+            auto xor_res = backend->bitXor(*a, *b);
+            xor_times.push_back(timer.elapsed_ms());
+            xor_card = backend->Cardinality(*xor_res);
+        }
+
+        // --- Phase 4: Multi-way OR ---
+        if (bitmaps.size() >= 3) {
+            timer.reset();
+            auto acc = backend->bitOr(*bitmaps[0], *bitmaps[1]);
+            for (size_t k = 2; k < bitmaps.size(); ++k) {
+                acc = backend->bitOr(*acc, *bitmaps[k]);
+            }
+            multi_or_times.push_back(timer.elapsed_ms());
+            multi_or_card = backend->Cardinality(*acc);
+        }
+
+        // Write per-iteration CSV rows
+        int it = static_cast<int>(iter + 1);
+        double ratio = (raw_total > 0) ? iter_compressed / raw_total : 0;
+        csv_row(backend_name, num_rows, idx.cardinality, "build", build_t, 0, 0, 0, it);
+        csv_row(backend_name, num_rows, idx.cardinality, "serialize", iter_ser, iter_compressed, ratio, 0, it);
+        csv_row(backend_name, num_rows, idx.cardinality, "OR", or_times.back(), 0, 0, or_card, it);
+        csv_row(backend_name, num_rows, idx.cardinality, "AND", and_times.back(), 0, 0, and_card, it);
+        csv_row(backend_name, num_rows, idx.cardinality, "XOR", xor_times.back(), 0, 0, xor_card, it);
+        if (!multi_or_times.empty())
+            csv_row(backend_name, num_rows, idx.cardinality, "multi-OR", multi_or_times.back(), 0, 0, multi_or_card, it);
+    }
+
+    // --- Print summary (median if multiple iterations) ---
+    double ratio = (raw_total > 0) ? total_compressed / raw_total : 0;
+    if (iterations > 1) {
+        std::cout << "\n[Summary] Median over " << iterations << " iterations:\n";
+        std::cout << "  Build:     " << compute_median(build_times) << " ms\n";
+        std::cout << "  Serialize: " << compute_median(ser_times) << " ms"
+                  << " | Compressed: " << total_compressed << " bytes"
+                  << " | Ratio: " << ratio << "x\n";
+        std::cout << "  bitOr:     " << compute_median(or_times) << " ms (card: " << or_card << ")\n";
+        std::cout << "  bitAnd:    " << compute_median(and_times) << " ms (card: " << and_card << ")\n";
+        std::cout << "  bitXor:    " << compute_median(xor_times) << " ms (card: " << xor_card << ")\n";
+        if (!multi_or_times.empty())
+            std::cout << "  multi-OR:  " << compute_median(multi_or_times) << " ms (card: " << multi_or_card << ")\n";
+    } else {
+        std::cout << "\n[Serialize] Compressed: " << total_compressed
+                  << " bytes (" << total_compressed / 1024.0 << " KB)"
+                  << " | Ratio: " << ratio << "x\n";
         std::cout << "\n[Compute] Pairwise ops on value " << vals_to_load[0]
                   << " & value " << vals_to_load[1] << ":\n";
-        std::cout << "  bitOr:  " << or_t  << " ms (card: " << backend->Cardinality(*or_res) << ")\n";
-        std::cout << "  bitAnd: " << and_t << " ms (card: " << backend->Cardinality(*and_res) << ")\n";
-        std::cout << "  bitXor: " << xor_t << " ms (card: " << backend->Cardinality(*xor_res) << ")\n";
-    }
-
-    // --- Phase 4: Multi-way OR over all loaded bitmaps ---
-    if (bitmaps.size() >= 3) {
-        timer.reset();
-        auto acc = backend->bitOr(*bitmaps[0], *bitmaps[1]);
-        for (size_t k = 2; k < bitmaps.size(); ++k) {
-            acc = backend->bitOr(*acc, *bitmaps[k]);
-        }
-        double multi_t = timer.elapsed_ms();
-        std::cout << "\n[Compute] Multi-way OR of " << bitmaps.size()
-                  << " bitmaps: " << multi_t << " ms (card: "
-                  << backend->Cardinality(*acc) << ")\n";
+        std::cout << "  bitOr:  " << or_times[0]  << " ms (card: " << or_card << ")\n";
+        std::cout << "  bitAnd: " << and_times[0] << " ms (card: " << and_card << ")\n";
+        std::cout << "  bitXor: " << xor_times[0] << " ms (card: " << xor_card << ")\n";
+        if (!multi_or_times.empty())
+            std::cout << "\n[Compute] Multi-way OR of " << all_raw_bits.size()
+                      << " bitmaps: " << multi_or_times[0] << " ms (card: " << multi_or_card << ")\n";
     }
 
     std::cout << "---------------------------------------\n";
@@ -466,13 +552,16 @@ static void print_usage(const char* prog) {
               << "  --num-rows <N>                       Number of rows in .bm files (default: from metadata.txt)\n"
               << "  --bmz-dir <path>                     Directory with .bmz files from gen_bitmap.sh\n"
               << "  --sample <N>                         Number of bitmaps to sample from .bmz (default: 10)\n"
+              << "  --csv <path>                         Write results to CSV file (bmz mode only)\n"
+              << "  --iterations <N>                     Run N iterations, report median (default: 1)\n"
               << "  --help                               Show this help\n\n"
               << "Examples:\n"
               << "  " << prog << "                                    # Random data, all backends\n"
               << "  " << prog << " --backend combit --size 1000000    # Random, ComBit only\n"
               << "  " << prog << " --bm-dir ../test_bitmaps           # .bm files, all backends\n"
               << "  " << prog << " --bmz-dir ./bitmaps                # .bmz files from gen_bitmap.sh\n"
-              << "  " << prog << " --bmz-dir ./bitmaps --backend combit --sample 20\n";
+              << "  " << prog << " --bmz-dir ./bitmaps --backend combit --sample 20\n"
+              << "  " << prog << " --bmz-dir ./bitmaps --csv results.csv --iterations 5\n";
 }
 
 // ==========================================
@@ -485,6 +574,8 @@ int main(int argc, char** argv) {
     std::string bmz_dir;
     size_t num_rows = 0;
     size_t sample_count = 10;
+    std::string csv_path;
+    size_t iterations = 1;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -500,10 +591,28 @@ int main(int argc, char** argv) {
             num_rows = std::stoull(argv[++i]);
         } else if (arg == "--sample" && i + 1 < argc) {
             sample_count = std::stoull(argv[++i]);
+        } else if (arg == "--csv" && i + 1 < argc) {
+            csv_path = argv[++i];
+        } else if (arg == "--iterations" && i + 1 < argc) {
+            iterations = std::stoull(argv[++i]);
+            if (iterations == 0) iterations = 1;
         } else if (arg == "--help" || arg == "-h") {
             print_usage(argv[0]);
             return 0;
         }
+    }
+
+    // Set up CSV output if requested
+    std::ofstream csv_file;
+    if (!csv_path.empty()) {
+        csv_file.open(csv_path);
+        if (!csv_file) {
+            std::cerr << "Error: cannot open CSV file " << csv_path << "\n";
+            return 1;
+        }
+        g_csv = &csv_file;
+        csv_write_header();
+        std::cout << "CSV output: " << csv_path << "\n";
     }
 
     WahBackend wah;
@@ -542,7 +651,7 @@ int main(int argc, char** argv) {
 
         for (auto& be : backends) {
             if (backend_type == be.key || backend_type == "all")
-                run_bmz_benchmark(be.ptr, be.name, bmz_dir, idx, sample_count);
+                run_bmz_benchmark(be.ptr, be.name, bmz_dir, idx, sample_count, iterations);
         }
     } else if (!bm_dir.empty()) {
         // === .bm file mode ===
