@@ -579,7 +579,6 @@ static CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) 
     return info;
 }
 
-/// Map gen_check algorithm name to benchmark backend key
 static std::string algo_to_backend_key(const std::string& algo) {
     if (algo == "wah") return "wah";
     if (algo == "roaring") return "croaring";

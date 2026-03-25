@@ -145,3 +145,20 @@ target_include_directories(gen_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/util
 )
 target_link_libraries(gen_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# verify_bitmap: bitmap correctness verification
+# ==========================================
+add_executable(verify_bitmap
+    util/verify_bitmap.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    ${FASTBIT_SOURCES}
+    src/core/croaring/roaring.c
+)
+target_include_directories(verify_bitmap PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/util
+)
+target_link_libraries(verify_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
