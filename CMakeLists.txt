@@ -132,17 +132,16 @@ target_link_libraries(bm_file_tests PRIVATE combit Threads::Threads atomic Boost
 gtest_discover_tests(bm_file_tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # ==========================================
-# gen_check: dataset + bitmap generator (all algorithms)
+# gen_bitmap: dataset + bitmap generator (all algorithms)
 # ==========================================
-add_executable(gen_check
-    util/gen_check.cpp
-    util/gen_bm.cpp
+add_executable(gen_bitmap
+    util/gen_bitmap.cpp
     ${FASTBIT_SOURCES}
     src/core/croaring/roaring.c
 )
-target_include_directories(gen_check PRIVATE
+target_include_directories(gen_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/combit/include
     ${CMAKE_SOURCE_DIR}/util
 )
-target_link_libraries(gen_check PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(gen_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
