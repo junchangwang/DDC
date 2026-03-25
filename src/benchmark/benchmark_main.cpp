@@ -541,6 +541,203 @@ void run_bmz_benchmark(IBitmapBackend* backend, const std::string& backend_name,
 }
 
 // ==========================================
+// 6b. Pre-compressed .bm Benchmark
+// ==========================================
+
+/// Parse directory name: bm_{rows}_c{card}_{algo}
+struct CompressedDirInfo {
+    size_t rows = 0;
+    size_t cardinality = 0;
+    std::string algo;
+};
+
+static CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
+    CompressedDirInfo info;
+    std::string name = fs::path(dir_path).filename().string();
+    // Expected: bm_{rows}_c{card}_{algo}
+    if (name.substr(0, 3) != "bm_") return info;
+
+    size_t pos = 3;
+    size_t u1 = name.find('_', pos);
+    if (u1 == std::string::npos) return info;
+    std::string rows_str = name.substr(pos, u1 - pos);
+
+    if (!rows_str.empty() && (rows_str.back() == 'm' || rows_str.back() == 'M'))
+        info.rows = std::stoull(rows_str.substr(0, rows_str.size()-1)) * 1000000;
+    else if (!rows_str.empty() && (rows_str.back() == 'k' || rows_str.back() == 'K'))
+        info.rows = std::stoull(rows_str.substr(0, rows_str.size()-1)) * 1000;
+    else
+        info.rows = std::stoull(rows_str);
+
+    pos = u1 + 1;
+    if (pos >= name.size() || name[pos] != 'c') return info;
+    pos++;
+    size_t u2 = name.find('_', pos);
+    if (u2 == std::string::npos) return info;
+    info.cardinality = std::stoull(name.substr(pos, u2 - pos));
+    info.algo = name.substr(u2 + 1);
+    return info;
+}
+
+/// Map gen_check algorithm name to benchmark backend key
+static std::string algo_to_backend_key(const std::string& algo) {
+    if (algo == "wah") return "wah";
+    if (algo == "roaring") return "croaring";
+    if (algo == "ewah") return "ewah";
+    if (algo == "concise") return "concise";
+    if (algo == "combit") return "combit";
+    return "";
+}
+
+void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backend_name,
+                              const std::string& comp_dir, size_t num_rows,
+                              size_t cardinality,
+                              size_t sample_count, size_t iterations = 1)
+{
+    std::cout << "\n=======================================\n";
+    std::cout << "Benchmark [" << backend_name << "] — Compressed .bm Files\n";
+    std::cout << "Source: " << comp_dir << "\n";
+
+    // Collect .bm files, sort numerically
+    std::vector<std::string> bm_files;
+    for (auto& entry : fs::directory_iterator(comp_dir)) {
+        if (entry.path().extension() == ".bm")
+            bm_files.push_back(entry.path().string());
+    }
+    std::sort(bm_files.begin(), bm_files.end(), [](const std::string& a, const std::string& b){
+        return std::stoi(fs::path(a).stem().string()) < std::stoi(fs::path(b).stem().string());
+    });
+
+    if (bm_files.empty()) {
+        std::cerr << "  No .bm files found in " << comp_dir << "\n";
+        return;
+    }
+
+    // Sample if needed
+    std::vector<std::string> selected;
+    if (sample_count > 0 && sample_count < bm_files.size()) {
+        for (size_t i = 0; i < sample_count; ++i)
+            selected.push_back(bm_files[i * bm_files.size() / sample_count]);
+    } else {
+        selected = bm_files;
+    }
+
+    std::cout << "Rows: " << num_rows << " | Cardinality: " << cardinality
+              << " | Loaded: " << selected.size();
+    if (iterations > 1) std::cout << " | Iterations: " << iterations;
+    std::cout << "\n=======================================\n";
+
+    // File sizes (once)
+    long total_compressed = 0;
+    for (auto& path : selected) total_compressed += get_file_size(path);
+    double raw_total = static_cast<double>(selected.size()) * num_rows / 8.0;
+    double ratio = (raw_total > 0) ? total_compressed / raw_total : 0;
+
+    // Timing accumulators
+    std::vector<double> load_times, or_times, and_times, xor_times, multi_or_times;
+    uint64_t or_card = 0, and_card = 0, xor_card = 0, multi_or_card = 0;
+    Timer timer;
+
+    // Warm-up
+    if (iterations > 1 && selected.size() >= 2) {
+        std::cout << "[Warm-up] Running 1 warm-up iteration...\n";
+        auto w1 = backend->Load(selected[0]);
+        auto w2 = backend->Load(selected[1]);
+        if (w1 && w2) { auto wor = backend->bitOr(*w1, *w2); (void)wor; }
+    }
+
+    for (size_t iter = 0; iter < iterations; ++iter) {
+        // Phase 1: Load compressed bitmaps
+        std::vector<std::unique_ptr<BitmapHandle>> bitmaps;
+        timer.reset();
+        for (auto& path : selected) {
+            auto h = backend->Load(path);
+            if (h) bitmaps.push_back(std::move(h));
+        }
+        double load_t = timer.elapsed_ms();
+        load_times.push_back(load_t);
+
+        if (iter == 0) {
+            std::cout << "[Load] Loaded " << bitmaps.size()
+                      << " compressed bitmaps: " << load_t << " ms\n";
+            for (size_t i = 0; i < bitmaps.size() && i < 5; ++i) {
+                std::string name = fs::path(selected[i]).filename().string();
+                std::cout << "  " << name << " → cardinality: "
+                          << backend->Cardinality(*bitmaps[i]) << "\n";
+            }
+            if (bitmaps.size() > 5)
+                std::cout << "  ... (" << bitmaps.size() - 5 << " more)\n";
+            std::cout << "\n[Storage] Total compressed: " << total_compressed
+                      << " bytes (" << total_compressed / 1024.0 << " KB)"
+                      << " | Ratio: " << ratio << "x\n";
+        }
+
+        if (bitmaps.size() < 2) {
+            std::cout << "  Not enough bitmaps for logical ops.\n";
+            return;
+        }
+
+        // Phase 2: Pairwise logical ops
+        {
+            auto& a = bitmaps[0]; auto& b = bitmaps[1];
+            timer.reset();
+            auto or_res = backend->bitOr(*a, *b);
+            or_times.push_back(timer.elapsed_ms());
+            or_card = backend->Cardinality(*or_res);
+
+            timer.reset();
+            auto and_res = backend->bitAnd(*a, *b);
+            and_times.push_back(timer.elapsed_ms());
+            and_card = backend->Cardinality(*and_res);
+
+            timer.reset();
+            auto xor_res = backend->bitXor(*a, *b);
+            xor_times.push_back(timer.elapsed_ms());
+            xor_card = backend->Cardinality(*xor_res);
+        }
+
+        // Phase 3: Multi-way OR (all bitmaps)
+        if (bitmaps.size() >= 3) {
+            timer.reset();
+            auto acc = backend->bitOr(*bitmaps[0], *bitmaps[1]);
+            for (size_t k = 2; k < bitmaps.size(); ++k)
+                acc = backend->bitOr(*acc, *bitmaps[k]);
+            multi_or_times.push_back(timer.elapsed_ms());
+            multi_or_card = backend->Cardinality(*acc);
+        }
+
+        // CSV per-iteration
+        int it = static_cast<int>(iter + 1);
+        csv_row(backend_name, num_rows, cardinality, "load", load_t, total_compressed, ratio, 0, it);
+        csv_row(backend_name, num_rows, cardinality, "OR", or_times.back(), 0, 0, or_card, it);
+        csv_row(backend_name, num_rows, cardinality, "AND", and_times.back(), 0, 0, and_card, it);
+        csv_row(backend_name, num_rows, cardinality, "XOR", xor_times.back(), 0, 0, xor_card, it);
+        if (!multi_or_times.empty())
+            csv_row(backend_name, num_rows, cardinality, "multi-OR", multi_or_times.back(), 0, 0, multi_or_card, it);
+    }
+
+    // Summary
+    if (iterations > 1) {
+        std::cout << "\n[Summary] Median over " << iterations << " iterations:\n";
+        std::cout << "  Load:      " << compute_median(load_times) << " ms\n";
+        std::cout << "  bitOr:     " << compute_median(or_times) << " ms (card: " << or_card << ")\n";
+        std::cout << "  bitAnd:    " << compute_median(and_times) << " ms (card: " << and_card << ")\n";
+        std::cout << "  bitXor:    " << compute_median(xor_times) << " ms (card: " << xor_card << ")\n";
+        if (!multi_or_times.empty())
+            std::cout << "  multi-OR:  " << compute_median(multi_or_times) << " ms (card: " << multi_or_card << ")\n";
+    } else {
+        std::cout << "\n[Compute] Pairwise ops on first 2 bitmaps:\n";
+        std::cout << "  bitOr:  " << or_times[0]  << " ms (card: " << or_card << ")\n";
+        std::cout << "  bitAnd: " << and_times[0] << " ms (card: " << and_card << ")\n";
+        std::cout << "  bitXor: " << xor_times[0] << " ms (card: " << xor_card << ")\n";
+        if (!multi_or_times.empty())
+            std::cout << "\n[Compute] Multi-way OR of " << selected.size()
+                      << " bitmaps: " << multi_or_times[0] << " ms (card: " << multi_or_card << ")\n";
+    }
+    std::cout << "---------------------------------------\n";
+}
+
+// ==========================================
 // 7. Print usage
 // ==========================================
 static void print_usage(const char* prog) {
@@ -548,20 +745,20 @@ static void print_usage(const char* prog) {
               << "Options:\n"
               << "  --backend <wah|croaring|combit|ewah|concise|all>  Backend to benchmark (default: all)\n"
               << "  --size <N>                           Number of random bits (default: 10000000)\n"
-              << "  --bm-dir <path>                      Directory with .bm files (enables file mode)\n"
-              << "  --num-rows <N>                       Number of rows in .bm files (default: from metadata.txt)\n"
+              << "  --bm-dir <path>                      Directory with raw .bm files\n"
+              << "  --compressed-dir <path>              Directory with pre-compressed .bm files (from gen_check)\n"
+              << "  --num-rows <N>                       Number of rows (default: auto-detect from dir name)\n"
               << "  --bmz-dir <path>                     Directory with .bmz files from gen_bitmap.sh\n"
-              << "  --sample <N>                         Number of bitmaps to sample from .bmz (default: 10)\n"
-              << "  --csv <path>                         Write results to CSV file (bmz mode only)\n"
+              << "  --sample <N>                         Number of bitmaps to sample (default: all)\n"
+              << "  --csv <path>                         Write results to CSV file (appends if exists)\n"
               << "  --iterations <N>                     Run N iterations, report median (default: 1)\n"
               << "  --help                               Show this help\n\n"
               << "Examples:\n"
               << "  " << prog << "                                    # Random data, all backends\n"
               << "  " << prog << " --backend combit --size 1000000    # Random, ComBit only\n"
-              << "  " << prog << " --bm-dir ../test_bitmaps           # .bm files, all backends\n"
-              << "  " << prog << " --bmz-dir ./bitmaps                # .bmz files from gen_bitmap.sh\n"
-              << "  " << prog << " --bmz-dir ./bitmaps --backend combit --sample 20\n"
-              << "  " << prog << " --bmz-dir ./bitmaps --csv results.csv --iterations 5\n";
+              << "  " << prog << " --bm-dir ../test_bitmaps           # Raw .bm files, all backends\n"
+              << "  " << prog << " --compressed-dir bm_100m_c100_wah --iterations 5 --csv results.csv\n"
+              << "  " << prog << " --bmz-dir ./bitmaps --backend combit --sample 20\n";
 }
 
 // ==========================================
@@ -572,8 +769,9 @@ int main(int argc, char** argv) {
     size_t test_size = 10000000;
     std::string bm_dir;
     std::string bmz_dir;
+    std::string compressed_dir;
     size_t num_rows = 0;
-    size_t sample_count = 10;
+    size_t sample_count = 0;  // 0 = all
     std::string csv_path;
     size_t iterations = 1;
 
@@ -587,6 +785,8 @@ int main(int argc, char** argv) {
             bm_dir = argv[++i];
         } else if (arg == "--bmz-dir" && i + 1 < argc) {
             bmz_dir = argv[++i];
+        } else if (arg == "--compressed-dir" && i + 1 < argc) {
+            compressed_dir = argv[++i];
         } else if (arg == "--num-rows" && i + 1 < argc) {
             num_rows = std::stoull(argv[++i]);
         } else if (arg == "--sample" && i + 1 < argc) {
@@ -605,14 +805,15 @@ int main(int argc, char** argv) {
     // Set up CSV output if requested
     std::ofstream csv_file;
     if (!csv_path.empty()) {
-        csv_file.open(csv_path);
+        bool csv_exists = fs::exists(csv_path) && fs::file_size(csv_path) > 0;
+        csv_file.open(csv_path, csv_exists ? std::ios::app : std::ios::out);
         if (!csv_file) {
             std::cerr << "Error: cannot open CSV file " << csv_path << "\n";
             return 1;
         }
         g_csv = &csv_file;
-        csv_write_header();
-        std::cout << "CSV output: " << csv_path << "\n";
+        if (!csv_exists) csv_write_header();
+        std::cout << "CSV output: " << csv_path << (csv_exists ? " (appending)\n" : "\n");
     }
 
     WahBackend wah;
@@ -631,7 +832,34 @@ int main(int argc, char** argv) {
         {&concise,  "Concise",       "concise"},
     };
 
-    if (!bmz_dir.empty()) {
+    if (!compressed_dir.empty()) {
+        // === Pre-compressed .bm file mode ===
+        if (!fs::is_directory(compressed_dir)) {
+            std::cerr << "Error: " << compressed_dir << " is not a directory\n";
+            return 1;
+        }
+        auto dir_info = parse_compressed_dir_name(compressed_dir);
+        size_t rows = (num_rows > 0) ? num_rows : dir_info.rows;
+        size_t card = dir_info.cardinality;
+        std::string detected_key = algo_to_backend_key(dir_info.algo);
+
+        if (rows == 0) {
+            std::cerr << "Error: cannot determine num_rows. Use --num-rows or follow naming bm_{rows}_c{card}_{algo}\n";
+            return 1;
+        }
+        // Auto-select backend from directory name if --backend not specified
+        if (backend_type == "all" && !detected_key.empty())
+            backend_type = detected_key;
+
+        std::cout << "=== Compressed .bm Benchmark Mode ===\n";
+        std::cout << "Directory: " << compressed_dir << "\n";
+        std::cout << "Rows: " << rows << " | Cardinality: " << card << "\n";
+
+        for (auto& be : backends) {
+            if (backend_type == be.key || backend_type == "all")
+                run_compressed_benchmark(be.ptr, be.name, compressed_dir, rows, card, sample_count, iterations);
+        }
+    } else if (!bmz_dir.empty()) {
         // === .bmz file mode ===
         if (!fs::is_directory(bmz_dir)) {
             std::cerr << "Error: " << bmz_dir << " is not a directory\n";

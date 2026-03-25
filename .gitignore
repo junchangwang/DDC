@@ -6,3 +6,12 @@ build/
 bitmaps_*/
 dataset_*
 *.bmz
+
+# Compressed bitmap directories
+bm_*/
+
+# Raw bitmaps
+src/core/bitset/bitmaps_*/
+
+# Result CSV
+results_*.csv
