@@ -5,9 +5,9 @@
 // Also generates raw uncompressed bitmaps as a baseline.
 //
 // Usage:
-//   gen_bitmap -n <rows> -c <cardinality> <algorithm> [-d <base_dir>]
+//   gen_bitmap -n <rows> -c <cardinality> <algorithm> [-d <base_dir>] [-z <zip_length>]
 //
-// Supported algorithms: wah, roaring, ewah, concise, combit
+// Supported algorithms: wah, roaring, ewah, concise, combit, bitset
 
 #include "gen_bitmap.h"
 
@@ -94,6 +94,45 @@ bool gen_raw(const std::vector<std::vector<uint32_t>>& buckets,
         }
     }
     std::cout << "[gen_raw] All " << cardinality << " raw bitmaps written to " << output_dir << "\n";
+    return true;
+}
+
+// ==================================================================
+//  gen_bitset: packed bits, z bitmaps per file
+// ==================================================================
+
+bool gen_bitset(const std::vector<std::vector<uint32_t>>& buckets,
+                const std::string& output_dir, uint64_t rows, int cardinality, int z)
+{
+    fs::create_directories(output_dir);
+
+    size_t packed_bytes = (rows + 7) / 8;
+    int num_files = (cardinality + z - 1) / z;
+
+    for (int i = 0; i < num_files; i++) {
+        int start_val = i * z + 1;
+        int end_val   = std::min((i + 1) * z, cardinality);
+
+        std::string out_path = (z == 1)
+            ? output_dir + "/" + std::to_string(start_val) + ".bm"
+            : output_dir + "/" + std::to_string(i) + ".bmz";
+
+        std::ofstream out(out_path, std::ios::binary);
+        for (int v = start_val; v <= end_val; v++) {
+            std::vector<uint8_t> bitmap(packed_bytes, 0);
+            for (uint32_t idx : buckets[v]) {
+                bitmap[idx / 8] |= (1u << (idx % 8));
+            }
+            out.write(reinterpret_cast<const char*>(bitmap.data()), packed_bytes);
+        }
+
+        if (i % 100 == 0 || i == num_files - 1) {
+            std::cout << "[gen_bitset] Written file " << (i + 1) << "/" << num_files
+                      << " (values " << start_val << "-" << end_val << ")\n";
+        }
+    }
+    std::cout << "[gen_bitset] All " << cardinality << " bitmaps written (z=" << z
+              << ") to " << output_dir << "\n";
     return true;
 }
 
@@ -277,8 +316,10 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
 //  Path helpers
 // ==================================================================
 
-/// Format row count: 100000000 → "100m", 1000000 → "1m", 1000 → "1k"
+/// Format row count: 1000000000 → "1b", 100000000 → "100m", 1000 → "1k"
 static std::string format_rows(int n) {
+    if (n >= 1000000000 && n % 1000000000 == 0)
+        return std::to_string(n / 1000000000) + "b";
     if (n >= 1000000 && n % 1000000 == 0)
         return std::to_string(n / 1000000) + "m";
     if (n >= 1000 && n % 1000 == 0)
@@ -344,11 +385,12 @@ static bool call_gen_dataset(const std::string& base_dir, int n, int c) {
 static bool generate_compressed(const std::string& algorithm,
                                 const std::vector<std::vector<uint32_t>>& buckets,
                                 const std::string& output_dir,
-                                uint64_t rows, int cardinality) {
+                                uint64_t rows, int cardinality, int z) {
     std::string algo = algorithm;
     for (auto& ch : algo)
         ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 
+    if (algo == "bitset")  return gen_bitset(buckets, output_dir, rows, cardinality, z);
     if (algo == "wah")     return gen_wah(buckets, output_dir, rows, cardinality);
     if (algo == "roaring") return gen_roaring(buckets, output_dir, rows, cardinality);
     if (algo == "ewah")    return gen_ewah(buckets, output_dir, rows, cardinality);
@@ -356,7 +398,7 @@ static bool generate_compressed(const std::string& algorithm,
     if (algo == "combit")  return gen_combit(buckets, output_dir, rows, cardinality);
 
     std::cerr << "[gen_bitmap] Error: unsupported algorithm '" << algorithm << "'\n"
-              << "[gen_bitmap] Supported: wah, roaring, ewah, concise, combit\n";
+              << "[gen_bitmap] Supported: bitset, wah, roaring, ewah, concise, combit\n";
     return false;
 }
 
@@ -367,16 +409,19 @@ static bool generate_compressed(const std::string& algorithm,
 int main(int argc, char* argv[]) {
     int n = -1;
     int c = -1;
+    int z = 1;
     std::string algorithm;
     std::string base_dir = ".";
 
-    // Parse arguments: -n <n> -c <c> <algorithm> [-d <base_dir>]
+    // Parse arguments: -n <n> -c <c> <algorithm> [-d <base_dir>] [-z <zip_length>]
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
         if (arg == "-n" && i + 1 < argc) {
             n = std::stoi(argv[++i]);
         } else if (arg == "-c" && i + 1 < argc) {
             c = std::stoi(argv[++i]);
+        } else if (arg == "-z" && i + 1 < argc) {
+            z = std::stoi(argv[++i]);
         } else if (arg == "-d" && i + 1 < argc) {
             base_dir = argv[++i];
         } else if (arg[0] != '-') {
@@ -388,15 +433,31 @@ int main(int argc, char* argv[]) {
     }
 
     if (n <= 0 || c <= 0 || algorithm.empty()) {
-        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [-d <base_dir>]\n"
+        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [-d <base_dir>] [-z <zip_length>]\n"
                   << "  -n <n>        : number of rows\n"
                   << "  -c <c>        : cardinality\n"
-                  << "  <algorithm>   : compression algorithm (wah, roaring, ewah, concise, combit)\n"
-                  << "  -d <base_dir> : base directory (default: .)\n";
+                  << "  <algorithm>   : compression algorithm (bitset, wah, roaring, ewah, concise, combit)\n"
+                  << "  -d <base_dir> : base directory (default: .)\n"
+                  << "  -z <z>        : zip length for bitset mode (default: 1)\n";
         return 1;
     }
 
-    std::string comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
+    std::string algo_lower = algorithm;
+    for (auto& ch : algo_lower)
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+
+    if (z != 1 && algo_lower != "bitset") {
+        std::cerr << "Error: -z is only valid for bitset mode" << std::endl;
+        return 1;
+    }
+
+    // Bitset mode uses a different directory naming: bitmap_n<n>_c<c>_z<z>/
+    std::string comp_dir;
+    if (algo_lower == "bitset")
+        comp_dir = base_dir + "/bitmap_n" + format_rows(n)
+                 + "_c" + std::to_string(c) + "_z" + std::to_string(z);
+    else
+        comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
 
     std::cout << "[gen_bitmap] n=" << n << " c=" << c
               << " algorithm=" << algorithm
@@ -448,7 +509,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Generate compressed bitmaps
-    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c)) {
+    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c, z)) {
         std::cerr << "[gen_bitmap] Error: compression failed." << std::endl;
         return 1;
     }

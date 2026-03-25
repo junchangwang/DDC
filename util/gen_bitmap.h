@@ -15,6 +15,11 @@ std::vector<std::vector<uint32_t>> read_dataset_buckets(
 bool gen_raw(const std::vector<std::vector<uint32_t>>& buckets,
              const std::string& output_dir, uint64_t rows, int cardinality);
 
+/// Generate bitset bitmaps with zip_length z.
+/// z=1: individual .bm files.  z>1: merged .bmz files (z bitmaps per file).
+bool gen_bitset(const std::vector<std::vector<uint32_t>>& buckets,
+                const std::string& output_dir, uint64_t rows, int cardinality, int z);
+
 /// Generate WAH-compressed bitmaps using FastBit.
 bool gen_wah(const std::vector<std::vector<uint32_t>>& buckets,
              const std::string& output_dir, uint64_t rows, int cardinality);
