@@ -58,15 +58,15 @@ static std::string format_rows(int n) {
     return std::to_string(n);
 }
 
-/// wah/roaring/ewah/concise/combit: base_dir/bm_<rows>_c<c>_<algo>/
+/// wah/roaring/ewah/concise/combit: base_dir/bitmap/bm_<rows>_c<c>_<algo>/
 static std::string compressed_dir(const std::string& base_dir, int n, int c,
                                    const std::string& algo) {
-    return base_dir + "/bm_" + format_rows(n) + "_c" + std::to_string(c) + "_" + algo;
+    return base_dir + "/bitmap/bm_" + format_rows(n) + "_c" + std::to_string(c) + "_" + algo;
 }
 
-/// bitset: base_dir/bitmap_n<n>_c<c>_z<z>/
+/// bitset: base_dir/bitmap/bitmap_n<n>_c<c>_z<z>/
 static std::string bitset_dir(const std::string& base_dir, int n, int c, int z) {
-    return base_dir + "/bitmap_n" + format_rows(n)
+    return base_dir + "/bitmap/bitmap_n" + format_rows(n)
          + "_c" + std::to_string(c) + "_z" + std::to_string(z);
 }
 
@@ -493,7 +493,7 @@ int main(int argc, char* argv[]) {
     ctx.z    = z;
 
     if (mode == "raw")
-        ctx.dir = base_dir + "/src/core/bitset/bitmaps_" + format_rows(n) + "_c" + std::to_string(c);
+        ctx.dir = base_dir + "/bitmap/bitmaps_" + format_rows(n) + "_c" + std::to_string(c);
     else if (mode == "bitset")
         ctx.dir = bitset_dir(base_dir, n, c, z);
     else

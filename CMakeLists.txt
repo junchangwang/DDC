@@ -11,7 +11,10 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 # 1. Compile ComBit library
 add_subdirectory(src/core/combit)
 
-# 2. Demo executable
+# 2. Compile Bitset core library
+add_subdirectory(src/core/bitset)
+
+# 3. Demo executable
 add_executable(combit_demo src/main.cpp)
 target_link_libraries(combit_demo PRIVATE combit)
 
@@ -39,6 +42,8 @@ set(BENCHMARK_SOURCES
     src/benchmark/backends/combit/combit_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/benchmark/backends/Concise/concise_backend.cpp
+    src/benchmark/backends/bitset/bitset_backend.cpp
+    src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
     src/core/croaring/roaring.c
 )
 
@@ -49,10 +54,18 @@ target_include_directories(benchmark_app PRIVATE
     ${CMAKE_SOURCE_DIR}/src 
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 
+# Enable AVX2 baseline + AVX-512 via target attributes for bitset_avx512 backend
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-mavx2" BENCHMARK_HAS_AVX2)
+if(BENCHMARK_HAS_AVX2)
+    target_compile_options(benchmark_app PRIVATE -mavx2)
+endif()
+
 # Bring back combit library link
-target_link_libraries(benchmark_app PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
 
 # ==========================================
 # Testing (Google Test)
@@ -102,6 +115,8 @@ set(ALL_BACKEND_SOURCES
     src/benchmark/backends/combit/combit_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/benchmark/backends/Concise/concise_backend.cpp
+    src/benchmark/backends/bitset/bitset_backend.cpp
+    src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
     src/core/croaring/roaring.c
 )
 
@@ -114,8 +129,9 @@ target_include_directories(all_backend_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
-target_link_libraries(all_backend_tests PRIVATE combit Threads::Threads atomic Boost::program_options GTest::gtest_main)
+target_link_libraries(all_backend_tests PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
 gtest_discover_tests(all_backend_tests)
 
 # Raw .bm file integration tests (reads gen_test_bitmaps.sh output)
@@ -128,8 +144,9 @@ target_include_directories(bm_file_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
-target_link_libraries(bm_file_tests PRIVATE combit Threads::Threads atomic Boost::program_options GTest::gtest_main)
+target_link_libraries(bm_file_tests PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
 gtest_discover_tests(bm_file_tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # ==========================================

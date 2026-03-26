@@ -117,6 +117,8 @@ std::string algo_to_backend_key(const std::string& algo) {
     if (algo == "ewah") return "ewah";
     if (algo == "concise") return "concise";
     if (algo == "combit") return "combit";
+    if (algo == "bitset") return "bitset";
+    if (algo == "bitset_avx512") return "bitset_avx512";
     return "";
 }
 
@@ -126,7 +128,7 @@ std::string algo_to_backend_key(const std::string& algo) {
 void print_usage(const char* prog) {
     std::cout << "Usage: " << prog << " [OPTIONS]\n\n"
               << "Options:\n"
-              << "  --backend <wah|croaring|combit|ewah|concise|all>  Backend to benchmark (default: all)\n"
+              << "  --backend <wah|croaring|combit|ewah|concise|bitset|bitset_avx512|all>  Backend to benchmark (default: all)\n"
               << "  --bm-dir <path>                      Directory with raw .bm files\n"
               << "  --compressed-dir <path>              Directory with pre-compressed .bm files\n"
               << "  --num-rows <N>                       Number of rows (default: auto-detect from dir name)\n"
@@ -136,6 +138,8 @@ void print_usage(const char* prog) {
               << "  --help                               Show this help\n\n"
               << "Examples:\n"
               << "  " << prog << " --bm-dir ../test_bitmaps --num-rows 100000000\n"
-              << "  " << prog << " --compressed-dir bm_100m_c100_wah --iterations 5 --csv results.csv\n"
-              << "  " << prog << " --compressed-dir bm_100m_c100_ewah --backend ewah\n";
+              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_wah --iterations 5 --csv results.csv\n"
+              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_ewah --backend ewah\n"
+              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_bitset --backend bitset\n"
+              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_bitset --backend bitset_avx512\n";
 }
