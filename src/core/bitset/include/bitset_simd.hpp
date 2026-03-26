@@ -28,7 +28,6 @@ namespace simd {
 // -----------------------------------------------------------------------
 enum SupportFlags : int {
     BITSET_NONE   = 0,
-    BITSET_AVX2   = 1,
     BITSET_AVX512 = 2,  // requires F + BW
     BITSET_AVX512_VPOPCNTDQ = 4,
 };
@@ -53,8 +52,6 @@ inline int detect_hardware() {
     if (!avx_os) return flags;
 
     __cpuid_count(7, 0, eax, ebx, ecx, edx);
-    bool has_avx2 = (ebx >> 5) & 1;
-    if (has_avx2) flags |= BITSET_AVX2;
 
     bool avx512_os = (xcr0_lo & 0xE0) == 0xE0;
     bool has_avx512f  = (ebx >> 16) & 1;
@@ -152,101 +149,6 @@ inline uint64_t words_popcount_avx512(const uint64_t* data, size_t n)
     return sum;
 }
 
-// -----------------------------------------------------------------------
-// AVX2 paths
-// -----------------------------------------------------------------------
-
-__attribute__((target("avx2")))
-inline void words_or_avx2(const uint64_t* __restrict__ a,
-                          const uint64_t* __restrict__ b,
-                          uint64_t* __restrict__ dst, size_t n)
-{
-    size_t i = 0;
-    for (; i + 4 <= n; i += 4) {
-        __m256i va = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(a + i));
-        __m256i vb = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(b + i));
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), _mm256_or_si256(va, vb));
-    }
-    for (; i < n; ++i) dst[i] = a[i] | b[i];
-}
-
-__attribute__((target("avx2")))
-inline void words_and_avx2(const uint64_t* __restrict__ a,
-                           const uint64_t* __restrict__ b,
-                           uint64_t* __restrict__ dst, size_t n)
-{
-    size_t i = 0;
-    for (; i + 4 <= n; i += 4) {
-        __m256i va = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(a + i));
-        __m256i vb = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(b + i));
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), _mm256_and_si256(va, vb));
-    }
-    for (; i < n; ++i) dst[i] = a[i] & b[i];
-}
-
-__attribute__((target("avx2")))
-inline void words_xor_avx2(const uint64_t* __restrict__ a,
-                           const uint64_t* __restrict__ b,
-                           uint64_t* __restrict__ dst, size_t n)
-{
-    size_t i = 0;
-    for (; i + 4 <= n; i += 4) {
-        __m256i va = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(a + i));
-        __m256i vb = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(b + i));
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), _mm256_xor_si256(va, vb));
-    }
-    for (; i < n; ++i) dst[i] = a[i] ^ b[i];
-}
-
-__attribute__((target("avx2")))
-inline void words_andnot_avx2(const uint64_t* __restrict__ a,
-                              const uint64_t* __restrict__ b,
-                              uint64_t* __restrict__ dst, size_t n)
-{
-    size_t i = 0;
-    for (; i + 4 <= n; i += 4) {
-        __m256i va = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(a + i));
-        __m256i vb = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(b + i));
-        _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst + i), _mm256_andnot_si256(vb, va));
-    }
-    for (; i < n; ++i) dst[i] = a[i] & ~b[i];
-}
-
-__attribute__((target("avx2")))
-inline uint64_t words_popcount_avx2(const uint64_t* data, size_t n)
-{
-    const __m256i lookup = _mm256_setr_epi8(
-        0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,
-        0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4);
-    const __m256i low_mask = _mm256_set1_epi8(0x0f);
-
-    __m256i acc = _mm256_setzero_si256();
-    const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
-    size_t total_bytes = n * sizeof(uint64_t);
-    size_t i = 0;
-    uint64_t sum = 0;
-
-    while (i + 32 <= total_bytes) {
-        __m256i local = _mm256_setzero_si256();
-        size_t limit = i + 31 * 32;
-        if (limit > total_bytes) limit = total_bytes & ~31ULL;
-        for (; i + 32 <= limit; i += 32) {
-            __m256i v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + i));
-            __m256i lo = _mm256_and_si256(v, low_mask);
-            __m256i hi = _mm256_and_si256(_mm256_srli_epi16(v, 4), low_mask);
-            local = _mm256_add_epi8(local, _mm256_shuffle_epi8(lookup, lo));
-            local = _mm256_add_epi8(local, _mm256_shuffle_epi8(lookup, hi));
-        }
-        acc = _mm256_add_epi64(acc, _mm256_sad_epu8(local, _mm256_setzero_si256()));
-    }
-
-    uint64_t buf[4];
-    _mm256_storeu_si256(reinterpret_cast<__m256i*>(buf), acc);
-    sum += buf[0] + buf[1] + buf[2] + buf[3];
-    for (; i < total_bytes; ++i) sum += __builtin_popcount(p[i]);
-    return sum;
-}
-
 #endif // BITSET_IS_X64
 
 // -----------------------------------------------------------------------
@@ -305,7 +207,6 @@ inline void words_or_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, s
 #if BITSET_IS_X64
     int hw = hardware_support();
     if (hw & BITSET_AVX512) { words_or_avx512(a, b, dst, n); return; }
-    if (hw & BITSET_AVX2)   { words_or_avx2(a, b, dst, n); return; }
 #endif
     words_or_scalar(a, b, dst, n);
 }
@@ -315,7 +216,6 @@ inline void words_and_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, 
 #if BITSET_IS_X64
     int hw = hardware_support();
     if (hw & BITSET_AVX512) { words_and_avx512(a, b, dst, n); return; }
-    if (hw & BITSET_AVX2)   { words_and_avx2(a, b, dst, n); return; }
 #endif
     words_and_scalar(a, b, dst, n);
 }
@@ -325,7 +225,6 @@ inline void words_xor_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, 
 #if BITSET_IS_X64
     int hw = hardware_support();
     if (hw & BITSET_AVX512) { words_xor_avx512(a, b, dst, n); return; }
-    if (hw & BITSET_AVX2)   { words_xor_avx2(a, b, dst, n); return; }
 #endif
     words_xor_scalar(a, b, dst, n);
 }
@@ -335,7 +234,6 @@ inline void words_andnot_simd(const uint64_t* a, const uint64_t* b, uint64_t* ds
 #if BITSET_IS_X64
     int hw = hardware_support();
     if (hw & BITSET_AVX512) { words_andnot_avx512(a, b, dst, n); return; }
-    if (hw & BITSET_AVX2)   { words_andnot_avx2(a, b, dst, n); return; }
 #endif
     words_andnot_scalar(a, b, dst, n);
 }
@@ -345,7 +243,6 @@ inline uint64_t words_popcount_simd(const uint64_t* data, size_t n)
 #if BITSET_IS_X64
     int hw = hardware_support();
     if (hw & BITSET_AVX512_VPOPCNTDQ) { return words_popcount_avx512(data, n); }
-    if (hw & BITSET_AVX2)   { return words_popcount_avx2(data, n); }
 #endif
     return words_popcount_scalar(data, n);
 }

@@ -57,12 +57,7 @@ target_include_directories(benchmark_app PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 
-# Enable AVX2 baseline + AVX-512 via target attributes for bitset_avx512 backend
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-mavx2" BENCHMARK_HAS_AVX2)
-if(BENCHMARK_HAS_AVX2)
-    target_compile_options(benchmark_app PRIVATE -mavx2)
-endif()
+# AVX-512 uses function-level target attributes; no global SIMD flags needed
 
 # Bring back combit library link
 target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
