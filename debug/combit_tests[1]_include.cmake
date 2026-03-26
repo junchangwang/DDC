@@ -1,0 +1,5 @@
+if(EXISTS "/home/lichenhang/Desktop/thesis/combit/debug/combit_tests[1]_tests.cmake")
+  include("/home/lichenhang/Desktop/thesis/combit/debug/combit_tests[1]_tests.cmake")
+else()
+  add_test(combit_tests_NOT_BUILT combit_tests_NOT_BUILT)
+endif()

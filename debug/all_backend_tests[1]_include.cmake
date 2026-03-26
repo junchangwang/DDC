@@ -1,0 +1,5 @@
+if(EXISTS "/home/lichenhang/Desktop/thesis/combit/debug/all_backend_tests[1]_tests.cmake")
+  include("/home/lichenhang/Desktop/thesis/combit/debug/all_backend_tests[1]_tests.cmake")
+else()
+  add_test(all_backend_tests_NOT_BUILT all_backend_tests_NOT_BUILT)
+endif()
