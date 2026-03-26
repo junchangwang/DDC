@@ -33,6 +33,7 @@ set(FASTBIT_SOURCES
 # Bring back combit_backend.cpp
 set(BENCHMARK_SOURCES
     src/benchmark/benchmark_main.cpp
+    src/benchmark/uti.cpp
     src/benchmark/backends/wah/wah_backend.cpp
     src/benchmark/backends/croaring/croaring_backend.cpp
     src/benchmark/backends/combit/combit_backend.cpp
