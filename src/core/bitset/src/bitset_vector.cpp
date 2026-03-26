@@ -2,37 +2,124 @@
 #include <bitset_simd.hpp>
 #include <fstream>
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 namespace bitset {
 
-void BitsetVector::ensure_capacity(uint64_t pos) {
-    size_t word_index = pos / 64;
-    if (word_index >= words_.size())
-        words_.resize(word_index + 1, 0);
+// ---------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------
+// Round word count up to multiple of 8 so AVX-512 (8 words = 512 bits)
+// can read without bounds issues; also ensures the byte count is a
+// multiple of 64 which satisfies aligned_alloc.
+static inline size_t padded_words(size_t n) {
+    return (n + 7) & ~size_t(7);
 }
 
+static uint64_t* alloc_words(size_t n) {
+    if (n == 0) return nullptr;
+    size_t pw = padded_words(n);
+    size_t bytes = pw * sizeof(uint64_t);
+    auto* p = static_cast<uint64_t*>(aligned_alloc(64, bytes));
+    memset(p, 0, bytes);
+    return p;
+}
+
+// ---------------------------------------------------------------
+// Rule-of-5
+// ---------------------------------------------------------------
+BitsetVector::BitsetVector(const BitsetVector& o)
+    : words_(nullptr), words_cnt_(o.words_cnt_), num_bits_(o.num_bits_) {
+    if (words_cnt_ > 0) {
+        size_t pw = padded_words(words_cnt_);
+        size_t bytes = pw * sizeof(uint64_t);
+        words_ = static_cast<uint64_t*>(aligned_alloc(64, bytes));
+        memcpy(words_, o.words_, words_cnt_ * sizeof(uint64_t));
+        if (pw > words_cnt_)
+            memset(words_ + words_cnt_, 0, (pw - words_cnt_) * sizeof(uint64_t));
+    }
+}
+
+BitsetVector& BitsetVector::operator=(const BitsetVector& o) {
+    if (this == &o) return *this;
+    free(words_);
+    words_ = nullptr;
+    words_cnt_ = o.words_cnt_;
+    num_bits_  = o.num_bits_;
+    if (words_cnt_ > 0) {
+        size_t pw = padded_words(words_cnt_);
+        size_t bytes = pw * sizeof(uint64_t);
+        words_ = static_cast<uint64_t*>(aligned_alloc(64, bytes));
+        memcpy(words_, o.words_, words_cnt_ * sizeof(uint64_t));
+        if (pw > words_cnt_)
+            memset(words_ + words_cnt_, 0, (pw - words_cnt_) * sizeof(uint64_t));
+    }
+    return *this;
+}
+
+BitsetVector::BitsetVector(BitsetVector&& o) noexcept
+    : words_(o.words_), words_cnt_(o.words_cnt_), num_bits_(o.num_bits_) {
+    o.words_     = nullptr;
+    o.words_cnt_ = 0;
+    o.num_bits_  = 0;
+}
+
+BitsetVector& BitsetVector::operator=(BitsetVector&& o) noexcept {
+    if (this == &o) return *this;
+    free(words_);
+    words_     = o.words_;
+    words_cnt_ = o.words_cnt_;
+    num_bits_  = o.num_bits_;
+    o.words_     = nullptr;
+    o.words_cnt_ = 0;
+    o.num_bits_  = 0;
+    return *this;
+}
+
+// ---------------------------------------------------------------
+// Allocation
+// ---------------------------------------------------------------
+void BitsetVector::allocate(size_t n) {
+    free(words_);
+    words_     = alloc_words(n);
+    words_cnt_ = n;
+}
+
+void BitsetVector::ensure_capacity(uint64_t pos) {
+    size_t need = pos / 64 + 1;
+    if (need <= words_cnt_) return;
+    uint64_t* old = words_;
+    size_t    old_cnt = words_cnt_;
+    words_     = alloc_words(need);   // zero-filled
+    words_cnt_ = need;
+    if (old_cnt > 0)
+        memcpy(words_, old, old_cnt * sizeof(uint64_t));
+    free(old);
+}
+
+// ---------------------------------------------------------------
+// Bit access
+// ---------------------------------------------------------------
 void BitsetVector::set_bit(uint64_t position) {
     ensure_capacity(position);
-    size_t word_index = position / 64;
-    size_t bit_offset = position % 64;
-    words_[word_index] |= (uint64_t(1) << bit_offset);
+    words_[position / 64] |= uint64_t(1) << (position % 64);
     if (position >= num_bits_)
         num_bits_ = position + 1;
 }
 
 bool BitsetVector::get_bit(uint64_t position) const {
-    size_t word_index = position / 64;
-    if (word_index >= words_.size()) return false;
-    size_t bit_offset = position % 64;
-    return (words_[word_index] >> bit_offset) & 1;
+    size_t wi = position / 64;
+    if (wi >= words_cnt_) return false;
+    return (words_[wi] >> (position % 64)) & 1;
 }
 
 uint64_t BitsetVector::popcount(bool use_simd) const {
-    if (words_.empty()) return 0;
+    if (words_cnt_ == 0) return 0;
     if (use_simd)
-        return simd::words_popcount_simd(words_.data(), words_.size());
+        return simd::words_popcount_simd(words_, words_cnt_);
     else
-        return simd::words_popcount_scalar(words_.data(), words_.size());
+        return simd::words_popcount_scalar(words_, words_cnt_);
 }
 
 // -----------------------------------------------------------------
@@ -41,34 +128,35 @@ uint64_t BitsetVector::popcount(bool use_simd) const {
 
 BitsetVector BitsetVector::word_or(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
-    size_t na = a.words_.size(), nb = b.words_.size();
+    size_t na = a.words_cnt_, nb = b.words_cnt_;
     size_t max_n = std::max(na, nb);
     size_t min_n = std::min(na, nb);
-    result.words_.resize(max_n, 0);
+    result.allocate(max_n);
 
     if (min_n > 0) {
         if (use_simd)
-            simd::words_or_simd(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_or_simd(a.words_, b.words_, result.words_, min_n);
         else
-            simd::words_or_scalar(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_or_scalar(a.words_, b.words_, result.words_, min_n);
     }
-    const auto& longer = (na > nb) ? a : b;
-    for (size_t i = min_n; i < max_n; ++i)
-        result.words_[i] = longer.words_[i];
+    if (max_n > min_n) {
+        const uint64_t* tail = (na > nb) ? a.words_ : b.words_;
+        memcpy(result.words_ + min_n, tail + min_n, (max_n - min_n) * sizeof(uint64_t));
+    }
     result.num_bits_ = std::max(a.num_bits_, b.num_bits_);
     return result;
 }
 
 BitsetVector BitsetVector::word_and(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
-    size_t min_n = std::min(a.words_.size(), b.words_.size());
+    size_t min_n = std::min(a.words_cnt_, b.words_cnt_);
     if (min_n == 0) return result;
-    result.words_.resize(min_n);
+    result.allocate(min_n);
 
     if (use_simd)
-        simd::words_and_simd(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+        simd::words_and_simd(a.words_, b.words_, result.words_, min_n);
     else
-        simd::words_and_scalar(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+        simd::words_and_scalar(a.words_, b.words_, result.words_, min_n);
 
     result.num_bits_ = std::max(a.num_bits_, b.num_bits_);
     return result;
@@ -76,48 +164,47 @@ BitsetVector BitsetVector::word_and(const BitsetVector& a, const BitsetVector& b
 
 BitsetVector BitsetVector::word_xor(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
-    size_t na = a.words_.size(), nb = b.words_.size();
+    size_t na = a.words_cnt_, nb = b.words_cnt_;
     size_t max_n = std::max(na, nb);
     size_t min_n = std::min(na, nb);
-    result.words_.resize(max_n, 0);
+    result.allocate(max_n);
 
     if (min_n > 0) {
         if (use_simd)
-            simd::words_xor_simd(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_xor_simd(a.words_, b.words_, result.words_, min_n);
         else
-            simd::words_xor_scalar(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_xor_scalar(a.words_, b.words_, result.words_, min_n);
     }
-    const auto& longer = (na > nb) ? a : b;
-    for (size_t i = min_n; i < max_n; ++i)
-        result.words_[i] = longer.words_[i];
+    if (max_n > min_n) {
+        const uint64_t* tail = (na > nb) ? a.words_ : b.words_;
+        memcpy(result.words_ + min_n, tail + min_n, (max_n - min_n) * sizeof(uint64_t));
+    }
     result.num_bits_ = std::max(a.num_bits_, b.num_bits_);
     return result;
 }
 
 BitsetVector BitsetVector::word_andnot(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
-    size_t na = a.words_.size(), nb = b.words_.size();
+    size_t na = a.words_cnt_, nb = b.words_cnt_;
     if (na == 0) return result;
 
-    result.words_.resize(na, 0);
+    result.allocate(na);
     size_t min_n = std::min(na, nb);
     if (min_n > 0) {
         if (use_simd)
-            simd::words_andnot_simd(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_andnot_simd(a.words_, b.words_, result.words_, min_n);
         else
-            simd::words_andnot_scalar(a.words_.data(), b.words_.data(), result.words_.data(), min_n);
+            simd::words_andnot_scalar(a.words_, b.words_, result.words_, min_n);
     }
-    if (na > nb) {
-        for (size_t i = min_n; i < na; ++i)
-            result.words_[i] = a.words_[i];
-    }
+    if (na > nb)
+        memcpy(result.words_ + min_n, a.words_ + min_n, (na - min_n) * sizeof(uint64_t));
     result.num_bits_ = a.num_bits_;
     return result;
 }
 
 std::vector<uint32_t> BitsetVector::decode_positions() const {
     std::vector<uint32_t> out;
-    for (size_t i = 0; i < words_.size(); ++i) {
+    for (size_t i = 0; i < words_cnt_; ++i) {
         uint64_t w = words_[i];
         uint32_t base = static_cast<uint32_t>(i * 64);
         while (w) {
@@ -134,7 +221,7 @@ std::vector<uint32_t> BitsetVector::decode_positions() const {
 void BitsetVector::serialize(const std::string& path) const {
     std::ofstream out(path, std::ios::binary);
     size_t total_bytes = (num_bits_ + 7) / 8;
-    out.write(reinterpret_cast<const char*>(words_.data()), total_bytes);
+    out.write(reinterpret_cast<const char*>(words_), total_bytes);
 }
 
 bool BitsetVector::load(const std::string& path) {
@@ -146,8 +233,8 @@ bool BitsetVector::load(const std::string& path) {
 
     num_bits_ = file_size * 8;
     size_t num_words = (file_size + 7) / 8;
-    words_.resize(num_words, 0);
-    in.read(reinterpret_cast<char*>(words_.data()), file_size);
+    allocate(num_words);
+    in.read(reinterpret_cast<char*>(words_), file_size);
     return true;
 }
 
