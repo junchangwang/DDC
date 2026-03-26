@@ -7,11 +7,8 @@ bitmaps_*/
 dataset_*
 *.bmz
 
-# Compressed bitmap directories
-bm_*/
-
-# Raw bitmaps
-src/core/bitset/bitmaps_*/
+# All bitmap data (compressed + raw) under bitmap/
+bitmap/
 
 # Result CSV
 results_*.csv

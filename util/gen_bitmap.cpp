@@ -331,19 +331,19 @@ static std::string dataset_path(const std::string& base_dir, int n, int c) {
     return base_dir + "/dataset_" + std::to_string(n) + "_" + std::to_string(c);
 }
 
-/// Raw uncompressed bitmaps: src/core/bitset/bitmaps_100m_c100/
+/// Raw uncompressed bitmaps: bitmap/bitmaps_100m_c100/
 static std::string raw_dir_path(const std::string& base_dir, int n, int c) {
-    return base_dir + "/src/core/bitset/bitmaps_" + format_rows(n)
+    return base_dir + "/bitmap/bitmaps_" + format_rows(n)
          + "_c" + std::to_string(c);
 }
 
-/// Compressed bitmaps: bm_100m_c100_wah/ (root level)
+/// Compressed bitmaps: bitmap/bm_100m_c100_wah/
 static std::string compressed_dir_path(const std::string& base_dir, int n, int c,
                                        const std::string& algorithm) {
     std::string algo_lower = algorithm;
     for (auto& ch : algo_lower)
         ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
-    return base_dir + "/bm_" + format_rows(n)
+    return base_dir + "/bitmap/bm_" + format_rows(n)
          + "_c" + std::to_string(c) + "_" + algo_lower;
 }
 
@@ -451,13 +451,17 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Bitset mode uses a different directory naming: bitmap_n<n>_c<c>_z<z>/
+    // Determine output directory
     std::string comp_dir;
-    if (algo_lower == "bitset")
-        comp_dir = base_dir + "/bitmap_n" + format_rows(n)
-                 + "_c" + std::to_string(c) + "_z" + std::to_string(z);
-    else
+    if (algo_lower == "bitset") {
+        if (z == 1)
+            comp_dir = compressed_dir_path(base_dir, n, c, "bitset");
+        else
+            comp_dir = base_dir + "/bitmap/bitmap_n" + format_rows(n)
+                     + "_c" + std::to_string(c) + "_z" + std::to_string(z);
+    } else {
         comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
+    }
 
     std::cout << "[gen_bitmap] n=" << n << " c=" << c
               << " algorithm=" << algorithm

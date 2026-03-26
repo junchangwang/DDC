@@ -12,6 +12,8 @@
 #include "backends/croaring/croaring_backend.h"
 #include "backends/ewah/ewah_backend.h"
 #include "backends/Concise/concise_backend.h"
+#include "backends/bitset/bitset_backend.h"
+#include "backends/bitset_avx512/bitset_avx512_backend.h"
 
 namespace fs = std::filesystem;
 
@@ -321,15 +323,19 @@ int main(int argc, char** argv) {
     CombitBackend combit;
     EwahBackend ewah;
     ConciseBackend concise;
+    BitsetBackend bitset;
+    BitsetAVX512Backend bitset_avx512;
 
     // Build list of (backend_ptr, name) to run
     struct BackendEntry { IBitmapBackend* ptr; std::string name; std::string key; };
     std::vector<BackendEntry> backends = {
-        {&wah,      "WAH (FastBit)", "wah"},
-        {&croaring, "CRoaring",      "croaring"},
-        {&combit,   "ComBIT (New)",   "combit"},
-        {&ewah,     "EWAH",          "ewah"},
-        {&concise,  "Concise",       "concise"},
+        {&wah,            "WAH (FastBit)",       "wah"},
+        {&croaring,       "CRoaring",            "croaring"},
+        {&combit,         "ComBIT (New)",         "combit"},
+        {&ewah,           "EWAH",                "ewah"},
+        {&concise,        "Concise",             "concise"},
+        {&bitset,         "Bitset (Plain)",      "bitset"},
+        {&bitset_avx512,  "Bitset (AVX512)",     "bitset_avx512"},
     };
 
     if (!compressed_dir.empty()) {
@@ -348,15 +354,21 @@ int main(int argc, char** argv) {
             return 1;
         }
         // Auto-select backend from directory name if --backend not specified
-        if (backend_type == "all" && !detected_key.empty())
-            backend_type = detected_key;
+        // For bitset directories, run both plain and AVX512 backends
+        if (backend_type == "all" && !detected_key.empty()) {
+            if (detected_key == "bitset")
+                backend_type = "bitset_both";
+            else
+                backend_type = detected_key;
+        }
 
         std::cout << "=== Compressed .bm Benchmark Mode ===\n";
         std::cout << "Directory: " << compressed_dir << "\n";
         std::cout << "Rows: " << rows << " | Cardinality: " << card << "\n";
 
         for (auto& be : backends) {
-            if (backend_type == be.key || backend_type == "all")
+            if (backend_type == be.key || backend_type == "all"
+                || (backend_type == "bitset_both" && (be.key == "bitset" || be.key == "bitset_avx512")))
                 run_compressed_benchmark(be.ptr, be.name, compressed_dir, rows, card, sample_count, iterations);
         }
     } else if (!bm_dir.empty()) {
