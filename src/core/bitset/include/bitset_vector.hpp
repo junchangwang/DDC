@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 
 namespace bitset {
@@ -11,7 +13,8 @@ namespace bitset {
  * BitsetVector
  *
  * Represents a single uncompressed bitmap stored as packed uint64_t words.
- * Provides both plain scalar and SIMD-accelerated (AVX-512 / AVX2) bitwise
+ * Uses a raw 64-byte-aligned uint64_t* array for maximum SIMD throughput.
+ * Provides both plain scalar and SIMD-accelerated (AVX-512) bitwise
  * operations for OR, AND, XOR, ANDNOT, and popcount.
  *
  * This class is the core data structure; thin IBitmapBackend wrappers live
@@ -19,7 +22,19 @@ namespace bitset {
  */
 class BitsetVector {
 public:
-    BitsetVector() = default;
+    BitsetVector() : words_(nullptr), words_cnt_(0), num_bits_(0) {}
+    ~BitsetVector() { std::free(words_); }
+
+    // Copy
+    BitsetVector(const BitsetVector& o);
+    BitsetVector& operator=(const BitsetVector& o);
+
+    // Move
+    BitsetVector(BitsetVector&& o) noexcept;
+    BitsetVector& operator=(BitsetVector&& o) noexcept;
+
+    /// Allocate (or reallocate) exactly `n` words, 64-byte aligned, zero-filled.
+    void allocate(size_t n);
 
     /// Set the bit at the given position (0-based).
     void set_bit(uint64_t position);
@@ -27,25 +42,21 @@ public:
     /// Get the value of the bit at the given position.
     bool get_bit(uint64_t position) const;
 
-    /// Return the logical number of bits (MUST be set explicitly via
-    /// set_num_bits or inferred from the word array size * 64).
+    /// Return the logical number of bits.
     uint64_t num_bits() const { return num_bits_; }
     void set_num_bits(uint64_t n) { num_bits_ = n; }
 
     /// Return the number of set bits.
-    /// If `use_simd` is true, uses best available SIMD (AVX-512 → AVX2).
-    /// If false, uses plain scalar loop.
     uint64_t popcount(bool use_simd) const;
 
-    /// Access the raw uint64_t words (read-only).
-    const std::vector<uint64_t>& words() const { return words_; }
-
-    /// Access the raw uint64_t words (mutable).
-    std::vector<uint64_t>& words_mut() { return words_; }
+    /// Raw pointer access.
+    const uint64_t* words() const { return words_; }
+    uint64_t*       words_mut()   { return words_; }
+    size_t          words_cnt() const { return words_cnt_; }
 
     // -----------------------------------------------------------------
     //  Word-level bitwise operations
-    //  use_simd = true  → AVX-512 / AVX2 runtime dispatch
+    //  use_simd = true  → AVX-512 runtime dispatch
     //  use_simd = false → plain scalar C++ loop
     // -----------------------------------------------------------------
 
@@ -66,8 +77,9 @@ public:
 private:
     void ensure_capacity(uint64_t pos);
 
-    std::vector<uint64_t> words_;
-    uint64_t num_bits_ = 0;
+    uint64_t* words_;
+    size_t    words_cnt_;   // number of uint64_t words in use
+    uint64_t  num_bits_;
 };
 
 } // namespace bitset

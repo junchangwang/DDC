@@ -74,7 +74,7 @@ void BitsetBackend::Serialize(const BitmapHandle& handle, const std::string& pat
     if (!out) return;
     size_t packed_bytes = (h.current_bits + 7) / 8;
     // Write raw packed bytes (same format as gen_bitmap)
-    out.write(reinterpret_cast<const char*>(h.btv.words().data()), packed_bytes);
+    out.write(reinterpret_cast<const char*>(h.btv.words()), packed_bytes);
 }
 
 std::unique_ptr<BitmapHandle> BitsetBackend::Load(const std::string& path) {
@@ -86,7 +86,7 @@ std::unique_ptr<BitmapHandle> BitsetBackend::Load(const std::string& path) {
     res->current_bits = file_size * 8;
     res->btv.set_num_bits(res->current_bits);
     size_t num_words = (file_size + sizeof(uint64_t) - 1) / sizeof(uint64_t);
-    res->btv.words_mut().resize(num_words, 0);
-    in.read(reinterpret_cast<char*>(res->btv.words_mut().data()), file_size);
+    res->btv.allocate(num_words);
+    in.read(reinterpret_cast<char*>(res->btv.words_mut()), file_size);
     return res;
 }
