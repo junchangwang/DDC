@@ -1,0 +1,85 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Compressed Benchmark (WAH)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug/benchmark_app",
+            "args": ["--compressed-dir", "bm_100m_c100_wah"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-debug"
+        },
+        {
+            "name": "Debug Compressed Benchmark (Roaring)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug/benchmark_app",
+            "args": ["--compressed-dir", "bm_100m_c100_roaring"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-debug"
+        },
+        {
+            "name": "Debug Compressed Benchmark (EWAH)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug/benchmark_app",
+            "args": ["--compressed-dir", "bm_100m_c100_ewah"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-debug"
+        },
+        {
+            "name": "Debug Compressed Benchmark (ComBIT)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug/benchmark_app",
+            "args": ["--compressed-dir", "bm_100m_c100_combit"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-debug"
+        }
+    ]
+}
