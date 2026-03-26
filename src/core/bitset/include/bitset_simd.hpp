@@ -251,8 +251,11 @@ inline uint64_t words_popcount_avx2(const uint64_t* data, size_t n)
 
 // -----------------------------------------------------------------------
 // Scalar paths (always available)
+// Annotated to prevent compiler auto-vectorization so that "Plain"
+// benchmarks reflect true scalar performance.
 // -----------------------------------------------------------------------
 
+__attribute__((optimize("no-tree-vectorize")))
 inline void words_or_scalar(const uint64_t* __restrict__ a,
                             const uint64_t* __restrict__ b,
                             uint64_t* __restrict__ dst, size_t n)
@@ -260,6 +263,7 @@ inline void words_or_scalar(const uint64_t* __restrict__ a,
     for (size_t i = 0; i < n; ++i) dst[i] = a[i] | b[i];
 }
 
+__attribute__((optimize("no-tree-vectorize")))
 inline void words_and_scalar(const uint64_t* __restrict__ a,
                              const uint64_t* __restrict__ b,
                              uint64_t* __restrict__ dst, size_t n)
@@ -267,6 +271,7 @@ inline void words_and_scalar(const uint64_t* __restrict__ a,
     for (size_t i = 0; i < n; ++i) dst[i] = a[i] & b[i];
 }
 
+__attribute__((optimize("no-tree-vectorize")))
 inline void words_xor_scalar(const uint64_t* __restrict__ a,
                              const uint64_t* __restrict__ b,
                              uint64_t* __restrict__ dst, size_t n)
@@ -274,6 +279,7 @@ inline void words_xor_scalar(const uint64_t* __restrict__ a,
     for (size_t i = 0; i < n; ++i) dst[i] = a[i] ^ b[i];
 }
 
+__attribute__((optimize("no-tree-vectorize")))
 inline void words_andnot_scalar(const uint64_t* __restrict__ a,
                                 const uint64_t* __restrict__ b,
                                 uint64_t* __restrict__ dst, size_t n)
@@ -281,6 +287,7 @@ inline void words_andnot_scalar(const uint64_t* __restrict__ a,
     for (size_t i = 0; i < n; ++i) dst[i] = a[i] & ~b[i];
 }
 
+__attribute__((optimize("no-tree-vectorize")))
 inline uint64_t words_popcount_scalar(const uint64_t* data, size_t n)
 {
     uint64_t sum = 0;

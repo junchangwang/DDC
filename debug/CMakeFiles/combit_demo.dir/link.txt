@@ -1,0 +1,1 @@
+/usr/bin/c++ -O0 -ggdb -g CMakeFiles/combit_demo.dir/src/main.cpp.o -o combit_demo  src/core/combit/libcombit.a 

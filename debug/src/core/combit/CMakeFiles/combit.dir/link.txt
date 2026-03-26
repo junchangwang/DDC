@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcombit.a CMakeFiles/combit.dir/src/types.cpp.o CMakeFiles/combit.dir/src/combit_encoder.cpp.o CMakeFiles/combit.dir/src/combit_decoder.cpp.o CMakeFiles/combit.dir/src/bitmap_vector.cpp.o
+/usr/bin/ranlib libcombit.a
