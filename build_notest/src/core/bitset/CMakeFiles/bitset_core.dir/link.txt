@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbitset_core.a CMakeFiles/bitset_core.dir/src/bitset_vector.cpp.o
+/usr/bin/ranlib libbitset_core.a
