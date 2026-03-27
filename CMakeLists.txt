@@ -63,8 +63,11 @@ target_include_directories(benchmark_app PRIVATE
 target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
 
 # ==========================================
-# Testing (Google Test)
+# Testing (Google Test) — disable with -DBUILD_TESTS=OFF
 # ==========================================
+option(BUILD_TESTS "Build Google Test targets (requires internet)" ON)
+
+if(BUILD_TESTS)
 enable_testing()
 include(FetchContent)
 FetchContent_Declare(
@@ -143,6 +146,8 @@ target_include_directories(bm_file_tests PRIVATE
 )
 target_link_libraries(bm_file_tests PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
 gtest_discover_tests(bm_file_tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+endif() # BUILD_TESTS
 
 # ==========================================
 # gen_bitmap: dataset + bitmap generator (all algorithms)
