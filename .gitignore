@@ -1,6 +1,6 @@
 build/
+build_notest/
 .cache/
-build/
 
 # Generated bitmap data
 bitmaps_*/
