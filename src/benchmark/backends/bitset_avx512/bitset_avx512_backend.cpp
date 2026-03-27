@@ -1,12 +1,6 @@
 #include "bitset_avx512_backend.h"
-#include <bitset_vector.hpp>
 #include <fstream>
 #include <algorithm>
-
-struct BitsetAVX512Handle : public BitmapHandle {
-    bitset::BitsetVector btv;
-    uint64_t current_bits = 0;
-};
 
 inline BitsetAVX512Handle& getHandle(BitmapHandle& h) {
     return static_cast<BitsetAVX512Handle&>(h);

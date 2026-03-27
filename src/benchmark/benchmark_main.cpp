@@ -14,6 +14,7 @@
 #include "backends/Concise/concise_backend.h"
 #include "backends/bitset/bitset_backend.h"
 #include "backends/bitset_avx512/bitset_avx512_backend.h"
+#include <bitset_simd.hpp>
 
 namespace fs = std::filesystem;
 
@@ -44,7 +45,15 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
                 bm_files.push_back(entry.path().string());
         }
     }
-    std::sort(bm_files.begin(), bm_files.end());
+    std::sort(bm_files.begin(), bm_files.end(), [](const std::string& a, const std::string& b){
+        auto sa = fs::path(a).stem().string();
+        auto sb = fs::path(b).stem().string();
+        // column/ files sort after top-level files
+        bool ca = a.find("/column/") != std::string::npos;
+        bool cb = b.find("/column/") != std::string::npos;
+        if (ca != cb) return !ca;
+        return std::stoi(sa) < std::stoi(sb);
+    });
 
     if (bm_files.empty()) {
         std::cerr << "  No .bm files found in " << bm_dir << "\n";
@@ -95,6 +104,60 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
         std::cout << "  bitOr:  " << or_t  << " ms (card: " << backend->Cardinality(*or_res)  << ")\n";
         std::cout << "  bitAnd: " << and_t << " ms (card: " << backend->Cardinality(*and_res) << ")\n";
         std::cout << "  bitXor: " << xor_t << " ms (card: " << backend->Cardinality(*xor_res) << ")\n";
+
+        // --- Pure ops timing (operation-only, no allocation overhead) ---
+        // Bitset (Plain)
+        if (backend_name.find("Plain") != std::string::npos) {
+            auto* ha = dynamic_cast<BitsetHandle*>(a.get());
+            auto* hb = dynamic_cast<BitsetHandle*>(b.get());
+            if (ha && hb) {
+                size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
+                bitset::BitsetVector result_buf;
+                result_buf.allocate_nozero(n);
+                bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+
+                timer.reset();
+                bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                double and_pre = timer.elapsed_ms();
+                timer.reset();
+                bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                double or_pre = timer.elapsed_ms();
+
+                bitset::BitsetVector a_copy = ha->btv;
+                timer.reset();
+                bitset::simd::words_and_inplace_scalar(a_copy.words_mut(), hb->btv.words(), n);
+                double and_inplace = timer.elapsed_ms();
+
+                std::cout << "\n[Pure Ops] Bitset (Plain) operation-only:\n";
+                std::cout << "  AND (pre-alloc): " << and_pre << " ms\n";
+                std::cout << "  OR  (pre-alloc): " << or_pre  << " ms\n";
+                std::cout << "  AND (in-place):  " << and_inplace << " ms\n";
+            }
+        }
+        // CRoaring
+        if (backend_name == "CRoaring") {
+            auto* ha = dynamic_cast<CroaringHandle*>(a.get());
+            auto* hb = dynamic_cast<CroaringHandle*>(b.get());
+            if (ha && hb) {
+                { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
+                timer.reset();
+                roaring::Roaring and_r = ha->bitmap & hb->bitmap;
+                double and_pure = timer.elapsed_ms();
+                timer.reset();
+                roaring::Roaring or_r = ha->bitmap | hb->bitmap;
+                double or_pure = timer.elapsed_ms();
+
+                roaring::Roaring a_copy = ha->bitmap;
+                timer.reset();
+                a_copy &= hb->bitmap;
+                double and_inplace = timer.elapsed_ms();
+
+                std::cout << "\n[Pure Ops] CRoaring operation-only:\n";
+                std::cout << "  AND: " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
+                std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.cardinality() << ")\n";
+                std::cout << "  AND (in-place): " << and_inplace << " ms\n";
+            }
+        }
     }
 
     // --- Phase 3: Multi-way OR over column bitmaps ---
@@ -266,6 +329,123 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
             std::cout << "\n[Compute] Multi-way OR of " << selected.size()
                       << " bitmaps: " << multi_or_times[0] << " ms (card: " << multi_or_card << ")\n";
     }
+
+    // ============================================================
+    // Phase 4: Pure operation timing (operation-only, no alloc)
+    // ============================================================
+    {
+        auto bm0 = backend->Load(selected[0]);
+        auto bm1 = backend->Load(selected[1]);
+        if (bm0 && bm1) {
+            // --- Bitset (Plain) pure ops ---
+            if (backend_name.find("Plain") != std::string::npos) {
+                auto* ha = dynamic_cast<BitsetHandle*>(bm0.get());
+                auto* hb = dynamic_cast<BitsetHandle*>(bm1.get());
+                if (ha && hb) {
+                    size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
+                    bitset::BitsetVector result_buf;
+                    result_buf.allocate_nozero(n);
+
+                    // Warm up
+                    bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+
+                    timer.reset();
+                    bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double and_pre = timer.elapsed_ms();
+
+                    timer.reset();
+                    bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double or_pre = timer.elapsed_ms();
+
+                    timer.reset();
+                    bitset::simd::words_xor_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double xor_pre = timer.elapsed_ms();
+
+                    // In-place AND (a[i] &= b[i])
+                    bitset::BitsetVector a_copy = ha->btv;
+                    timer.reset();
+                    bitset::simd::words_and_inplace_scalar(a_copy.words_mut(), hb->btv.words(), n);
+                    double and_inplace = timer.elapsed_ms();
+
+                    std::cout << "\n[Pure Ops] Bitset (Plain) operation-only (no allocation):\n";
+                    std::cout << "  AND (pre-alloc):  " << and_pre << " ms\n";
+                    std::cout << "  OR  (pre-alloc):  " << or_pre  << " ms\n";
+                    std::cout << "  XOR (pre-alloc):  " << xor_pre << " ms\n";
+                    std::cout << "  AND (in-place):   " << and_inplace << " ms\n";
+                }
+            }
+
+            // --- Bitset (AVX512) pure ops ---
+            if (backend_name.find("AVX") != std::string::npos) {
+                auto* ha = dynamic_cast<BitsetAVX512Handle*>(bm0.get());
+                auto* hb = dynamic_cast<BitsetAVX512Handle*>(bm1.get());
+                if (ha && hb) {
+                    size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
+                    bitset::BitsetVector result_buf;
+                    result_buf.allocate_nozero(n);
+
+                    bitset::simd::words_and_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+
+                    timer.reset();
+                    bitset::simd::words_and_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double and_pre = timer.elapsed_ms();
+
+                    timer.reset();
+                    bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double or_pre = timer.elapsed_ms();
+
+                    timer.reset();
+                    bitset::simd::words_xor_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    double xor_pre = timer.elapsed_ms();
+
+                    bitset::BitsetVector a_copy = ha->btv;
+                    timer.reset();
+                    bitset::simd::words_and_inplace_simd(a_copy.words_mut(), hb->btv.words(), n);
+                    double and_inplace = timer.elapsed_ms();
+
+                    std::cout << "\n[Pure Ops] Bitset (AVX512) operation-only (no allocation):\n";
+                    std::cout << "  AND (pre-alloc):  " << and_pre << " ms\n";
+                    std::cout << "  OR  (pre-alloc):  " << or_pre  << " ms\n";
+                    std::cout << "  XOR (pre-alloc):  " << xor_pre << " ms\n";
+                    std::cout << "  AND (in-place):   " << and_inplace << " ms\n";
+                }
+            }
+
+            // --- CRoaring pure ops ---
+            if (backend_name == "CRoaring") {
+                auto* ha = dynamic_cast<CroaringHandle*>(bm0.get());
+                auto* hb = dynamic_cast<CroaringHandle*>(bm1.get());
+                if (ha && hb) {
+                    // Warm up
+                    { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
+
+                    timer.reset();
+                    roaring::Roaring and_r = ha->bitmap & hb->bitmap;
+                    double and_pure = timer.elapsed_ms();
+
+                    timer.reset();
+                    roaring::Roaring or_r = ha->bitmap | hb->bitmap;
+                    double or_pure = timer.elapsed_ms();
+
+                    timer.reset();
+                    roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
+                    double xor_pure = timer.elapsed_ms();
+
+                    roaring::Roaring a_copy = ha->bitmap;
+                    timer.reset();
+                    a_copy &= hb->bitmap;
+                    double and_inplace = timer.elapsed_ms();
+
+                    std::cout << "\n[Pure Ops] CRoaring operation-only timing:\n";
+                    std::cout << "  AND: " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
+                    std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.cardinality() << ")\n";
+                    std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.cardinality() << ")\n";
+                    std::cout << "  AND (in-place): " << and_inplace << " ms\n";
+                }
+            }
+        }
+    }
+
     std::cout << "---------------------------------------\n";
 }
 

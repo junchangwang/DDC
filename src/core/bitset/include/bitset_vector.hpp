@@ -36,6 +36,9 @@ public:
     /// Allocate (or reallocate) exactly `n` words, 64-byte aligned, zero-filled.
     void allocate(size_t n);
 
+    /// Allocate exactly `n` words without zero-filling (caller must write all words).
+    void allocate_nozero(size_t n);
+
     /// Set the bit at the given position (0-based).
     void set_bit(uint64_t position);
 
@@ -62,6 +65,7 @@ public:
 
     static BitsetVector word_or(const BitsetVector& a, const BitsetVector& b, bool use_simd);
     static BitsetVector word_and(const BitsetVector& a, const BitsetVector& b, bool use_simd);
+    static void word_and_inplace(BitsetVector& a, const BitsetVector& b, bool use_simd);
     static BitsetVector word_xor(const BitsetVector& a, const BitsetVector& b, bool use_simd);
     static BitsetVector word_andnot(const BitsetVector& a, const BitsetVector& b, bool use_simd);
 
