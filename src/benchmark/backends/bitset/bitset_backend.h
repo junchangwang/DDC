@@ -1,6 +1,12 @@
 #pragma once
 
 #include "../../bitmap_backend.h"
+#include <bitset_vector.hpp>
+
+struct BitsetHandle : public BitmapHandle {
+    bitset::BitsetVector btv;
+    uint64_t current_bits = 0;
+};
 
 class BitsetBackend : public IBitmapBackend {
 public:

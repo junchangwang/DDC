@@ -1,12 +1,6 @@
 #include "bitset_backend.h"
-#include <bitset_vector.hpp>
 #include <fstream>
 #include <algorithm>
-
-struct BitsetHandle : public BitmapHandle {
-    bitset::BitsetVector btv;
-    uint64_t current_bits = 0;
-};
 
 inline BitsetHandle& getHandle(BitmapHandle& h) {
     return static_cast<BitsetHandle&>(h);

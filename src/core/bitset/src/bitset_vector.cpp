@@ -26,6 +26,16 @@ static uint64_t* alloc_words(size_t n) {
     return p;
 }
 
+static uint64_t* alloc_words_nozero(size_t n) {
+    if (n == 0) return nullptr;
+    size_t pw = padded_words(n);
+    size_t bytes = pw * sizeof(uint64_t);
+    auto* p = static_cast<uint64_t*>(aligned_alloc(64, bytes));
+    // Zero only the padding tail (at most 7 words) for SIMD safety
+    if (pw > n) memset(p + n, 0, (pw - n) * sizeof(uint64_t));
+    return p;
+}
+
 // ---------------------------------------------------------------
 // Rule-of-5
 // ---------------------------------------------------------------
@@ -86,6 +96,12 @@ void BitsetVector::allocate(size_t n) {
     words_cnt_ = n;
 }
 
+void BitsetVector::allocate_nozero(size_t n) {
+    free(words_);
+    words_     = alloc_words_nozero(n);
+    words_cnt_ = n;
+}
+
 void BitsetVector::ensure_capacity(uint64_t pos) {
     size_t need = pos / 64 + 1;
     if (need <= words_cnt_) return;
@@ -131,7 +147,7 @@ BitsetVector BitsetVector::word_or(const BitsetVector& a, const BitsetVector& b,
     size_t na = a.words_cnt_, nb = b.words_cnt_;
     size_t max_n = std::max(na, nb);
     size_t min_n = std::min(na, nb);
-    result.allocate(max_n);
+    result.allocate_nozero(max_n);
 
     if (min_n > 0) {
         if (use_simd)
@@ -151,7 +167,7 @@ BitsetVector BitsetVector::word_and(const BitsetVector& a, const BitsetVector& b
     BitsetVector result;
     size_t min_n = std::min(a.words_cnt_, b.words_cnt_);
     if (min_n == 0) return result;
-    result.allocate(min_n);
+    result.allocate_nozero(min_n);
 
     if (use_simd)
         simd::words_and_simd(a.words_, b.words_, result.words_, min_n);
@@ -162,12 +178,28 @@ BitsetVector BitsetVector::word_and(const BitsetVector& a, const BitsetVector& b
     return result;
 }
 
+void BitsetVector::word_and_inplace(BitsetVector& a, const BitsetVector& b, bool use_simd) {
+    size_t min_n = std::min(a.words_cnt_, b.words_cnt_);
+    if (min_n == 0) { a.words_cnt_ = 0; return; }
+
+    if (use_simd)
+        simd::words_and_inplace_simd(a.words_, b.words_, min_n);
+    else
+        simd::words_and_inplace_scalar(a.words_, b.words_, min_n);
+
+    // Truncate: words beyond min_n become zero (AND with missing = 0)
+    if (a.words_cnt_ > min_n) {
+        memset(a.words_ + min_n, 0, (a.words_cnt_ - min_n) * sizeof(uint64_t));
+        a.words_cnt_ = min_n;
+    }
+}
+
 BitsetVector BitsetVector::word_xor(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
     size_t na = a.words_cnt_, nb = b.words_cnt_;
     size_t max_n = std::max(na, nb);
     size_t min_n = std::min(na, nb);
-    result.allocate(max_n);
+    result.allocate_nozero(max_n);
 
     if (min_n > 0) {
         if (use_simd)
@@ -188,7 +220,7 @@ BitsetVector BitsetVector::word_andnot(const BitsetVector& a, const BitsetVector
     size_t na = a.words_cnt_, nb = b.words_cnt_;
     if (na == 0) return result;
 
-    result.allocate(na);
+    result.allocate_nozero(na);
     size_t min_n = std::min(na, nb);
     if (min_n > 0) {
         if (use_simd)

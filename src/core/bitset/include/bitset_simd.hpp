@@ -106,6 +106,19 @@ inline void words_and_avx512(const uint64_t* __restrict__ a,
 }
 
 __attribute__((target("avx512f")))
+inline void words_and_inplace_avx512(uint64_t* __restrict__ a,
+                                     const uint64_t* __restrict__ b, size_t n)
+{
+    size_t i = 0;
+    for (; i + 8 <= n; i += 8) {
+        __m512i va = _mm512_loadu_si512(a + i);
+        __m512i vb = _mm512_loadu_si512(b + i);
+        _mm512_storeu_si512(a + i, _mm512_and_si512(va, vb));
+    }
+    for (; i < n; ++i) a[i] &= b[i];
+}
+
+__attribute__((target("avx512f")))
 inline void words_xor_avx512(const uint64_t* __restrict__ a,
                              const uint64_t* __restrict__ b,
                              uint64_t* __restrict__ dst, size_t n)
@@ -174,6 +187,13 @@ inline void words_and_scalar(const uint64_t* __restrict__ a,
 }
 
 __attribute__((optimize("no-tree-vectorize")))
+inline void words_and_inplace_scalar(uint64_t* __restrict__ a,
+                                     const uint64_t* __restrict__ b, size_t n)
+{
+    for (size_t i = 0; i < n; ++i) a[i] &= b[i];
+}
+
+__attribute__((optimize("no-tree-vectorize")))
 inline void words_xor_scalar(const uint64_t* __restrict__ a,
                              const uint64_t* __restrict__ b,
                              uint64_t* __restrict__ dst, size_t n)
@@ -218,6 +238,15 @@ inline void words_and_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, 
     if (hw & BITSET_AVX512) { words_and_avx512(a, b, dst, n); return; }
 #endif
     words_and_scalar(a, b, dst, n);
+}
+
+inline void words_and_inplace_simd(uint64_t* a, const uint64_t* b, size_t n)
+{
+#if BITSET_IS_X64
+    int hw = hardware_support();
+    if (hw & BITSET_AVX512) { words_and_inplace_avx512(a, b, n); return; }
+#endif
+    words_and_inplace_scalar(a, b, n);
 }
 
 inline void words_xor_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, size_t n)
