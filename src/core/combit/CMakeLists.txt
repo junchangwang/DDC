@@ -1,33 +1,29 @@
-add_library(combit
-    src/types.cpp
-    src/combit_encoder.cpp
-    src/combit_decoder.cpp
-    src/bitmap_vector.cpp
-)
+cmake_minimum_required(VERSION 3.14)
+project(combit_eval CXX)
 
-target_include_directories(combit
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Enable SIMD intrinsics. We compile with -mavx2 as the baseline (safe for
-# runtime), and use function-level __attribute__((target("avx512f,..."))) for
-# AVX-512 paths so the compiler can emit those instructions only in the
-# explicitly annotated functions.  Runtime dispatch ensures AVX-512 code is
-# never executed on CPUs that lack it.
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-mavx2" COMBIT_HAS_AVX2)
-if(COMBIT_HAS_AVX2)
-    target_compile_options(combit PRIVATE -mavx2)
+# Release build by default for accurate benchmarks
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Check if the compiler understands AVX-512 intrinsics (for the target-attr functions)
-check_cxx_compiler_flag("-mavx512f -mavx512bw -mavx512vpopcntdq" COMBIT_HAS_AVX512_COMPILER)
-if(COMBIT_HAS_AVX512_COMPILER)
-    target_compile_definitions(combit PUBLIC COMBIT_COMPILER_SUPPORTS_AVX512=1)
-else()
-    target_compile_definitions(combit PUBLIC COMBIT_COMPILER_SUPPORTS_AVX512=0)
-endif()
+option(COMBIT_DEBUG "Enable detailed debug timing output" OFF)
+
+set(COMBIT_COMMON_OPTIONS
+    -Wall -Wextra -Wpedantic
+    -mavx512f -mavx512bw -mavx512vbmi2
+    $<$<CONFIG:Release>:-O2>
+)
+
+# combit_eval: release build without debug timing
+add_executable(combit_eval main.cpp src/combit.cpp src/and.cpp src/or.cpp src/xor.cpp)
+target_include_directories(combit_eval PRIVATE include)
+target_compile_options(combit_eval PRIVATE ${COMBIT_COMMON_OPTIONS})
+
+# combit_debug: build with detailed debug timing output
+add_executable(combit_debug main.cpp src/combit.cpp src/and.cpp src/or.cpp src/xor.cpp)
+target_include_directories(combit_debug PRIVATE include)
+target_compile_definitions(combit_debug PRIVATE COMBIT_DEBUG)
+target_compile_options(combit_debug PRIVATE ${COMBIT_COMMON_OPTIONS})
