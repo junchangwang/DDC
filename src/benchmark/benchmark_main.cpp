@@ -464,6 +464,33 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     std::cout << "  AND (in-place): " << and_inplace << " ms\n";
                 }
             }
+
+            // --- ComBit pure ops ---
+            if (backend_name.find("ComBIT") != std::string::npos) {
+                auto* ha = dynamic_cast<CombitHandle*>(bm0.get());
+                auto* hb = dynamic_cast<CombitHandle*>(bm1.get());
+                if (ha && hb) {
+                    // Warm up
+                    { ComBit w = ha->compressed & hb->compressed; (void)w; }
+
+                    timer.reset();
+                    ComBit and_r = ha->compressed & hb->compressed;
+                    double and_pure = timer.elapsed_ms();
+
+                    timer.reset();
+                    ComBit or_r = ha->compressed | hb->compressed;
+                    double or_pure = timer.elapsed_ms();
+
+                    timer.reset();
+                    ComBit xor_r = ha->compressed ^ hb->compressed;
+                    double xor_pure = timer.elapsed_ms();
+
+                    std::cout << "\n[Pure Ops] ComBIT operation-only timing:\n";
+                    std::cout << "  AND: " << and_pure << " ms (card: " << and_r.popcount() << ")\n";
+                    std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.popcount() << ")\n";
+                    std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.popcount() << ")\n";
+                }
+            }
         }
     }
 
@@ -635,6 +662,25 @@ void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_
             std::cout << "\n[Pure Ops] Bitset (AVX512):\n";
             std::cout << "  OR  (pre-alloc): " << or_pre  << " ms\n";
             std::cout << "  AND (pre-alloc): " << and_pre << " ms\n";
+        }
+    }
+
+    // Pure ops for ComBit
+    if (backend_name.find("ComBIT") != std::string::npos) {
+        auto* ha = dynamic_cast<CombitHandle*>(bm_a.get());
+        auto* hb = dynamic_cast<CombitHandle*>(bm_b.get());
+        if (ha && hb) {
+            { ComBit w = ha->compressed | hb->compressed; (void)w; }
+            timer.reset();
+            ComBit or_r = ha->compressed | hb->compressed;
+            double or_pure = timer.elapsed_ms();
+            timer.reset();
+            ComBit and_r = ha->compressed & hb->compressed;
+            double and_pure = timer.elapsed_ms();
+
+            std::cout << "\n[Pure Ops] ComBIT:\n";
+            std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.popcount() << ")\n";
+            std::cout << "  AND: " << and_pure << " ms (card: " << and_r.popcount() << ")\n";
         }
     }
 
