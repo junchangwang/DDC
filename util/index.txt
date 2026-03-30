@@ -1,1 +1,0 @@
-n=10 c=5 dir=./dataset_10_5
