@@ -131,6 +131,7 @@ void print_usage(const char* prog) {
               << "  --backend <wah|croaring|combit|ewah|concise|bitset|bitset_avx512|all>  Backend to benchmark (default: all)\n"
               << "  --bm-dir <path>                      Directory with raw .bm files\n"
               << "  --compressed-dir <path>              Directory with pre-compressed .bm files\n"
+              << "  --cross-or <dir_a> <dir_b>           Cross-cardinality OR: load bitmap 1 from each dir\n"
               << "  --num-rows <N>                       Number of rows (default: auto-detect from dir name)\n"
               << "  --sample <N>                         Number of bitmaps to sample (default: all)\n"
               << "  --csv <path>                         Write results to CSV file (appends if exists)\n"
@@ -141,5 +142,7 @@ void print_usage(const char* prog) {
               << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_wah --iterations 5 --csv results.csv\n"
               << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_ewah --backend ewah\n"
               << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_bitset --backend bitset\n"
-              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_bitset --backend bitset_avx512\n";
+              << "  " << prog << " --compressed-dir bitmap/bm_100m_c100_bitset --backend bitset_avx512\n"
+              << "  " << prog << " --cross-or bitmap/bm_100m_c10_roaring bitmap/bm_100m_c20_roaring\n"
+              << "  " << prog << " --cross-or bitmap/bm_100m_c10_bitset bitmap/bm_100m_c100_bitset --backend bitset\n";
 }

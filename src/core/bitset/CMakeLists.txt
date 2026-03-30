@@ -1,5 +1,6 @@
 add_library(bitset_core
     src/bitset_vector.cpp
+    src/segmented_bitset.cpp
 )
 
 target_include_directories(bitset_core

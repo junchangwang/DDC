@@ -15,6 +15,7 @@
 #include "backends/bitset/bitset_backend.h"
 #include "backends/bitset_avx512/bitset_avx512_backend.h"
 #include <bitset_simd.hpp>
+#include <segmented_bitset.hpp>
 
 namespace fs = std::filesystem;
 
@@ -372,6 +373,26 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     std::cout << "  OR  (pre-alloc):  " << or_pre  << " ms\n";
                     std::cout << "  XOR (pre-alloc):  " << xor_pre << " ms\n";
                     std::cout << "  AND (in-place):   " << and_inplace << " ms\n";
+
+                    // --- Segmented Bitset (8KB segments) ---
+                    bitset::SegmentedBitset seg_a, seg_b;
+                    seg_a.build_from(ha->btv);
+                    seg_b.build_from(hb->btv);
+
+                    // warm up
+                    { auto w = bitset::SegmentedBitset::seg_or(seg_a, seg_b, false); (void)w; }
+
+                    timer.reset();
+                    auto seg_or_res = bitset::SegmentedBitset::seg_or(seg_a, seg_b, false);
+                    double seg_or_t = timer.elapsed_ms();
+
+                    timer.reset();
+                    auto seg_and_res = bitset::SegmentedBitset::seg_and(seg_a, seg_b, false);
+                    double seg_and_t = timer.elapsed_ms();
+
+                    std::cout << "\n[Segmented] Bitset (8KB segs, " << seg_a.num_segments() << " segs):\n";
+                    std::cout << "  OR:  " << seg_or_t  << " ms (card: " << seg_or_res.popcount(false) << ")\n";
+                    std::cout << "  AND: " << seg_and_t << " ms (card: " << seg_and_res.popcount(false) << ")\n";
                 }
             }
 
@@ -450,12 +471,189 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
 }
 
 // ==========================================
+// 3. Cross-cardinality OR benchmark
+// ==========================================
+void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_name,
+                            const std::string& dir_a, const std::string& dir_b,
+                            size_t num_rows)
+{
+    auto info_a = parse_compressed_dir_name(dir_a);
+    auto info_b = parse_compressed_dir_name(dir_b);
+
+    std::cout << "\n=======================================\n";
+    std::cout << "Cross-Cardinality OR [" << backend_name << "]\n";
+    std::cout << "  A: " << dir_a << " (c=" << info_a.cardinality << ")\n";
+    std::cout << "  B: " << dir_b << " (c=" << info_b.cardinality << ")\n";
+    std::cout << "  Rows: " << num_rows << "\n";
+    std::cout << "=======================================\n";
+
+    Timer timer;
+
+    // Load first bitmap from each directory
+    std::vector<std::string> files_a, files_b;
+    for (auto& e : fs::directory_iterator(dir_a))
+        if (e.path().extension() == ".bm") files_a.push_back(e.path().string());
+    for (auto& e : fs::directory_iterator(dir_b))
+        if (e.path().extension() == ".bm") files_b.push_back(e.path().string());
+
+    std::sort(files_a.begin(), files_a.end(), [](const std::string& a, const std::string& b){
+        return std::stoi(fs::path(a).stem().string()) < std::stoi(fs::path(b).stem().string());
+    });
+    std::sort(files_b.begin(), files_b.end(), [](const std::string& a, const std::string& b){
+        return std::stoi(fs::path(a).stem().string()) < std::stoi(fs::path(b).stem().string());
+    });
+
+    if (files_a.empty() || files_b.empty()) {
+        std::cerr << "  Error: no .bm files found\n";
+        return;
+    }
+
+    // Load bitmap 1 from each directory
+    auto bm_a = backend->Load(files_a[0]);
+    auto bm_b = backend->Load(files_b[0]);
+    if (!bm_a || !bm_b) {
+        std::cerr << "  Error: failed to load bitmaps\n";
+        return;
+    }
+    uint64_t card_a = backend->Cardinality(*bm_a);
+    uint64_t card_b = backend->Cardinality(*bm_b);
+    std::cout << "  " << fs::path(files_a[0]).filename().string()
+              << " (c=" << info_a.cardinality << ") card=" << card_a << "\n";
+    std::cout << "  " << fs::path(files_b[0]).filename().string()
+              << " (c=" << info_b.cardinality << ") card=" << card_b << "\n";
+
+    // OR
+    { auto w = backend->bitOr(*bm_a, *bm_b); (void)w; }  // warm-up
+    timer.reset();
+    auto or_res = backend->bitOr(*bm_a, *bm_b);
+    double or_t = timer.elapsed_ms();
+    uint64_t or_card = backend->Cardinality(*or_res);
+
+    // AND
+    timer.reset();
+    auto and_res = backend->bitAnd(*bm_a, *bm_b);
+    double and_t = timer.elapsed_ms();
+    uint64_t and_card = backend->Cardinality(*and_res);
+
+    std::cout << "\n[Result] c=" << info_a.cardinality << " OR c=" << info_b.cardinality << ":\n";
+    std::cout << "  OR:  " << or_t  << " ms (card: " << or_card  << ")\n";
+    std::cout << "  AND: " << and_t << " ms (card: " << and_card << ")\n";
+
+    // Pure ops for CRoaring
+    if (backend_name == "CRoaring") {
+        auto* ha = dynamic_cast<CroaringHandle*>(bm_a.get());
+        auto* hb = dynamic_cast<CroaringHandle*>(bm_b.get());
+        if (ha && hb) {
+            { roaring::Roaring w = ha->bitmap | hb->bitmap; (void)w; }
+            timer.reset();
+            roaring::Roaring or_r = ha->bitmap | hb->bitmap;
+            double or_pure = timer.elapsed_ms();
+            timer.reset();
+            roaring::Roaring and_r = ha->bitmap & hb->bitmap;
+            double and_pure = timer.elapsed_ms();
+
+            roaring::Roaring a_copy = ha->bitmap;
+            timer.reset();
+            a_copy |= hb->bitmap;
+            double or_inplace = timer.elapsed_ms();
+
+            std::cout << "\n[Pure Ops] CRoaring:\n";
+            std::cout << "  OR:           " << or_pure << " ms (card: " << or_r.cardinality() << ")\n";
+            std::cout << "  AND:          " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
+            std::cout << "  OR (in-place): " << or_inplace << " ms\n";
+
+            // Print container stats for both
+            roaring::api::roaring_statistics_t sa, sb;
+            roaring::api::roaring_bitmap_statistics(&ha->bitmap.roaring, &sa);
+            roaring::api::roaring_bitmap_statistics(&hb->bitmap.roaring, &sb);
+            std::cout << "\n[Containers] A (c=" << info_a.cardinality << "): "
+                      << "array=" << sa.n_array_containers
+                      << " bitset=" << sa.n_bitset_containers
+                      << " run=" << sa.n_run_containers << "\n";
+            std::cout << "[Containers] B (c=" << info_b.cardinality << "): "
+                      << "array=" << sb.n_array_containers
+                      << " bitset=" << sb.n_bitset_containers
+                      << " run=" << sb.n_run_containers << "\n";
+        }
+    }
+
+    // Pure ops for Bitset (Plain)
+    if (backend_name.find("Plain") != std::string::npos) {
+        auto* ha = dynamic_cast<BitsetHandle*>(bm_a.get());
+        auto* hb = dynamic_cast<BitsetHandle*>(bm_b.get());
+        if (ha && hb) {
+            size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
+            bitset::BitsetVector result_buf;
+            result_buf.allocate_nozero(n);
+            bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+
+            timer.reset();
+            bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+            double or_pre = timer.elapsed_ms();
+            timer.reset();
+            bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+            double and_pre = timer.elapsed_ms();
+
+            std::cout << "\n[Pure Ops] Bitset (Plain):\n";
+            std::cout << "  OR  (pre-alloc): " << or_pre  << " ms\n";
+            std::cout << "  AND (pre-alloc): " << and_pre << " ms\n";
+
+            // Segmented
+            bitset::SegmentedBitset seg_a, seg_b;
+            seg_a.build_from(ha->btv);
+            seg_b.build_from(hb->btv);
+            { auto w = bitset::SegmentedBitset::seg_or(seg_a, seg_b, false); (void)w; }
+            timer.reset();
+            auto seg_or_res = bitset::SegmentedBitset::seg_or(seg_a, seg_b, false);
+            double seg_or_t = timer.elapsed_ms();
+            timer.reset();
+            auto seg_and_res = bitset::SegmentedBitset::seg_and(seg_a, seg_b, false);
+            double seg_and_t = timer.elapsed_ms();
+            std::cout << "\n[Segmented] Bitset (8KB segs, " << seg_a.num_segments() << " segs):\n";
+            std::cout << "  OR:  " << seg_or_t  << " ms (card: " << seg_or_res.popcount(false) << ")\n";
+            std::cout << "  AND: " << seg_and_t << " ms (card: " << seg_and_res.popcount(false) << ")\n";
+        }
+    }
+
+    // Pure ops for Bitset (AVX512)
+    if (backend_name.find("AVX") != std::string::npos) {
+        auto* ha = dynamic_cast<BitsetAVX512Handle*>(bm_a.get());
+        auto* hb = dynamic_cast<BitsetAVX512Handle*>(bm_b.get());
+        if (ha && hb) {
+            size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
+            bitset::BitsetVector result_buf;
+            result_buf.allocate_nozero(n);
+            bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+
+            timer.reset();
+            bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+            double or_pre = timer.elapsed_ms();
+            timer.reset();
+            bitset::simd::words_and_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+            double and_pre = timer.elapsed_ms();
+
+            std::cout << "\n[Pure Ops] Bitset (AVX512):\n";
+            std::cout << "  OR  (pre-alloc): " << or_pre  << " ms\n";
+            std::cout << "  AND (pre-alloc): " << and_pre << " ms\n";
+        }
+    }
+
+    // CSV
+    std::string label = "c" + std::to_string(info_a.cardinality) + ":c" + std::to_string(info_b.cardinality);
+    csv_row(backend_name, num_rows, 0, "cross-OR(" + label + ")", or_t, 0, 0, or_card, 1);
+    csv_row(backend_name, num_rows, 0, "cross-AND(" + label + ")", and_t, 0, 0, and_card, 1);
+
+    std::cout << "---------------------------------------\n";
+}
+
+// ==========================================
 // Main function: CLI argument parsing
 // ==========================================
 int main(int argc, char** argv) {
     std::string backend_type = "all";
     std::string bm_dir;
     std::string compressed_dir;
+    std::string cross_or_dir_a, cross_or_dir_b;
     size_t num_rows = 0;
     size_t sample_count = 0;  // 0 = all
     std::string csv_path;
@@ -469,6 +667,9 @@ int main(int argc, char** argv) {
             bm_dir = argv[++i];
         } else if (arg == "--compressed-dir" && i + 1 < argc) {
             compressed_dir = argv[++i];
+        } else if (arg == "--cross-or" && i + 2 < argc) {
+            cross_or_dir_a = argv[++i];
+            cross_or_dir_b = argv[++i];
         } else if (arg == "--num-rows" && i + 1 < argc) {
             num_rows = std::stoull(argv[++i]);
         } else if (arg == "--sample" && i + 1 < argc) {
@@ -518,7 +719,40 @@ int main(int argc, char** argv) {
         {&bitset_avx512,  "Bitset (AVX512)",     "bitset_avx512"},
     };
 
-    if (!compressed_dir.empty()) {
+    if (!cross_or_dir_a.empty() && !cross_or_dir_b.empty()) {
+        // === Cross-cardinality OR mode ===
+        if (!fs::is_directory(cross_or_dir_a) || !fs::is_directory(cross_or_dir_b)) {
+            std::cerr << "Error: --cross-or directories must exist\n";
+            return 1;
+        }
+        auto info_a = parse_compressed_dir_name(cross_or_dir_a);
+        auto info_b = parse_compressed_dir_name(cross_or_dir_b);
+        size_t rows = (num_rows > 0) ? num_rows : info_a.rows;
+        if (rows == 0) rows = info_b.rows;
+        if (rows == 0) {
+            std::cerr << "Error: cannot determine num_rows. Use --num-rows\n";
+            return 1;
+        }
+        std::string detected_key = algo_to_backend_key(info_a.algo);
+
+        if (backend_type == "all" && !detected_key.empty()) {
+            if (detected_key == "bitset")
+                backend_type = "bitset_both";
+            else
+                backend_type = detected_key;
+        }
+
+        std::cout << "=== Cross-Cardinality OR Benchmark Mode ===\n";
+        std::cout << "Dir A: " << cross_or_dir_a << " (c=" << info_a.cardinality << ")\n";
+        std::cout << "Dir B: " << cross_or_dir_b << " (c=" << info_b.cardinality << ")\n";
+        std::cout << "Rows: " << rows << "\n";
+
+        for (auto& be : backends) {
+            if (backend_type == be.key || backend_type == "all"
+                || (backend_type == "bitset_both" && (be.key == "bitset" || be.key == "bitset_avx512")))
+                run_cross_or_benchmark(be.ptr, be.name, cross_or_dir_a, cross_or_dir_b, rows);
+        }
+    } else if (!compressed_dir.empty()) {
         // === Pre-compressed .bm file mode ===
         if (!fs::is_directory(compressed_dir)) {
             std::cerr << "Error: " << compressed_dir << " is not a directory\n";

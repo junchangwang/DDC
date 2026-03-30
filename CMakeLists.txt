@@ -180,3 +180,15 @@ target_include_directories(verify_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/util
 )
 target_link_libraries(verify_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# inspect_croaring: CRoaring container type diagnostic
+# ==========================================
+add_executable(inspect_croaring
+    util/inspect_croaring.cpp
+    src/core/croaring/roaring.c
+)
+target_include_directories(inspect_croaring PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core
+)
+target_link_libraries(inspect_croaring PRIVATE Threads::Threads)
