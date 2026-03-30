@@ -1,5 +1,7 @@
 #include "combit.h"
 
+#include <stdexcept>
+
 // ====================================================================
 // ComBitBtv<WordSize> member function definitions
 // ====================================================================
