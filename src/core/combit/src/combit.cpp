@@ -551,9 +551,9 @@ ComBit ComBit::deserialize(std::istream& is) {
     cb.segments_.reserve(num_segs);
 
     for (uint64_t i = 0; i < num_segs; i++) {
-        // Peek at the word_size byte to dispatch
+        // Read word_size byte to dispatch, then seek back so segment deserializer reads it too
         uint8_t ws = read_val<uint8_t>(is);
-        is.putback(static_cast<char>(ws));
+        is.seekg(-1, std::ios::cur);
 
         switch (ws) {
             case 8:  cb.segments_.push_back(ComBitBtv<8>::deserialize(is));  break;
