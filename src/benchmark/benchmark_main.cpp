@@ -266,6 +266,26 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
             std::cout << "\n[Storage] Total compressed: " << total_compressed
                       << " bytes (" << total_compressed / 1024.0 << " KB)"
                       << " | Ratio: " << ratio << "x\n";
+
+            // ComBit size breakdown: leading bits + literal words
+            if (backend_name.find("ComBIT") != std::string::npos) {
+                size_t total_lb = 0, total_lit = 0, total_cb = 0;
+                for (auto& bm : bitmaps) {
+                    auto* ch = dynamic_cast<CombitHandle*>(bm.get());
+                    if (ch) {
+                        auto sb = ch->compressed.size_breakdown();
+                        total_lb  += sb.leading_bits_count;
+                        total_lit += sb.literal_bits;
+                        total_cb  += sb.total_bits;
+                    }
+                }
+                std::cout << "[ComBit Storage] leading bits: " << total_lb
+                          << " bits (" << total_lb / 8.0 / 1024.0 << " KB)"
+                          << " | literal words: " << total_lit
+                          << " bits (" << total_lit / 8.0 / 1024.0 << " KB)"
+                          << " | total: " << total_cb
+                          << " bits (" << total_cb / 8.0 / 1024.0 << " KB)\n";
+            }
         }
 
         if (bitmaps.size() < 2) {
@@ -548,6 +568,22 @@ void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_
               << " (c=" << info_a.cardinality << ") card=" << card_a << "\n";
     std::cout << "  " << fs::path(files_b[0]).filename().string()
               << " (c=" << info_b.cardinality << ") card=" << card_b << "\n";
+
+    // ComBit size breakdown
+    if (backend_name.find("ComBIT") != std::string::npos) {
+        auto print_sb = [](const std::string& label, BitmapHandle* bm) {
+            auto* ch = dynamic_cast<CombitHandle*>(bm);
+            if (ch) {
+                auto sb = ch->compressed.size_breakdown();
+                std::cout << "  [ComBit " << label << "] leading: " << sb.leading_bits_count
+                          << " bits | literal: " << sb.literal_bits
+                          << " bits | total: " << sb.total_bits << " bits ("
+                          << sb.total_bits / 8.0 / 1024.0 << " KB)\n";
+            }
+        };
+        print_sb("A", bm_a.get());
+        print_sb("B", bm_b.get());
+    }
 
     // OR
     { auto w = backend->bitOr(*bm_a, *bm_b); (void)w; }  // warm-up

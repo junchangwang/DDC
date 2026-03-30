@@ -5,7 +5,7 @@
 // Also generates raw uncompressed bitmaps as a baseline.
 //
 // Usage:
-//   gen_bitmap -n <rows> -c <cardinality> <algorithm> [-d <base_dir>] [-z <zip_length>]
+//   gen_bitmap -n <rows> -c <cardinality> <algorithm> [-d <base_dir>] [-z <zip_length>] [-w <word_size>]
 //
 // Supported algorithms: wah, roaring, ewah, concise, combit, bitset
 
@@ -277,7 +277,8 @@ bool gen_concise(const std::vector<std::vector<uint32_t>>& buckets,
 // ==================================================================
 
 bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
-                const std::string& output_dir, uint64_t rows, int cardinality)
+                const std::string& output_dir, uint64_t rows, int cardinality,
+                int word_size)
 {
     fs::create_directories(output_dir);
 
@@ -288,8 +289,15 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
         for (size_t i = 0; i < raw.size() && raw[i] < rows; i++)
             bits[raw[i]] = true;
 
-        // Compress and serialize
-        ComBit cb = ComBit::compress<8>(bits);
+        // Compress with the selected word size and serialize
+        ComBit cb;
+        switch (word_size) {
+        case  8: cb = ComBit::compress<8>(bits);  break;
+        case 16: cb = ComBit::compress<16>(bits); break;
+        case 32: cb = ComBit::compress<32>(bits); break;
+        case 64: cb = ComBit::compress<64>(bits); break;
+        default: cb = ComBit::compress<8>(bits);  break;
+        }
         std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
         std::ofstream out(out_path, std::ios::binary);
         cb.serialize(out);
@@ -298,7 +306,8 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
             std::cout << "[gen_combit] Written " << v << "/" << cardinality << " bitmaps\n";
         }
     }
-    std::cout << "[gen_combit] All " << cardinality << " ComBit bitmaps written to " << output_dir << "\n";
+    std::cout << "[gen_combit] All " << cardinality << " ComBit (w" << word_size
+              << ") bitmaps written to " << output_dir << "\n";
     return true;
 }
 
@@ -375,7 +384,8 @@ static bool call_gen_dataset(const std::string& base_dir, int n, int c) {
 static bool generate_compressed(const std::string& algorithm,
                                 const std::vector<std::vector<uint32_t>>& buckets,
                                 const std::string& output_dir,
-                                uint64_t rows, int cardinality, int z) {
+                                uint64_t rows, int cardinality, int z,
+                                int word_size) {
     std::string algo = algorithm;
     for (auto& ch : algo)
         ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
@@ -385,7 +395,7 @@ static bool generate_compressed(const std::string& algorithm,
     if (algo == "roaring") return gen_roaring(buckets, output_dir, rows, cardinality);
     if (algo == "ewah")    return gen_ewah(buckets, output_dir, rows, cardinality);
     if (algo == "concise") return gen_concise(buckets, output_dir, rows, cardinality);
-    if (algo == "combit")  return gen_combit(buckets, output_dir, rows, cardinality);
+    if (algo == "combit")  return gen_combit(buckets, output_dir, rows, cardinality, word_size);
 
     std::cerr << "[gen_bitmap] Error: unsupported algorithm '" << algorithm << "'\n"
               << "[gen_bitmap] Supported: bitset, wah, roaring, ewah, concise, combit\n";
@@ -400,6 +410,7 @@ int main(int argc, char* argv[]) {
     int n = -1;
     int c = -1;
     int z = 1;
+    int w = 8;
     std::string algorithm;
     std::string base_dir = ".";
 
@@ -412,6 +423,8 @@ int main(int argc, char* argv[]) {
             c = std::stoi(argv[++i]);
         } else if (arg == "-z" && i + 1 < argc) {
             z = std::stoi(argv[++i]);
+        } else if (arg == "-w" && i + 1 < argc) {
+            w = std::stoi(argv[++i]);
         } else if (arg == "-d" && i + 1 < argc) {
             base_dir = argv[++i];
         } else if (arg[0] != '-') {
@@ -423,12 +436,13 @@ int main(int argc, char* argv[]) {
     }
 
     if (n <= 0 || c <= 0 || algorithm.empty()) {
-        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [-d <base_dir>] [-z <zip_length>]\n"
+        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [-d <base_dir>] [-z <zip_length>] [-w <word_size>]\n"
                   << "  -n <n>        : number of rows\n"
                   << "  -c <c>        : cardinality\n"
                   << "  <algorithm>   : compression algorithm (bitset, wah, roaring, ewah, concise, combit)\n"
                   << "  -d <base_dir> : base directory (default: .)\n"
-                  << "  -z <z>        : zip length for bitset mode (default: 1)\n";
+                  << "  -z <z>        : zip length for bitset mode (default: 1)\n"
+                  << "  -w <w>        : ComBit word size: 8, 16, 32, or 64 (default: 8)\n";
         return 1;
     }
 
@@ -441,6 +455,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if (w != 8 && w != 16 && w != 32 && w != 64) {
+        std::cerr << "Error: -w must be 8, 16, 32, or 64" << std::endl;
+        return 1;
+    }
+
     // Determine output directory
     std::string comp_dir;
     if (algo_lower == "bitset") {
@@ -449,6 +468,9 @@ int main(int argc, char* argv[]) {
         else
             comp_dir = base_dir + "/bitmap/bitmap_n" + format_rows(n)
                      + "_c" + std::to_string(c) + "_z" + std::to_string(z);
+    } else if (algo_lower == "combit") {
+        comp_dir = compressed_dir_path(base_dir, n, c, algorithm)
+                 + "_w" + std::to_string(w);
     } else {
         comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
     }
@@ -503,7 +525,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Generate compressed bitmaps
-    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c, z)) {
+    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c, z, w)) {
         std::cerr << "[gen_bitmap] Error: compression failed." << std::endl;
         return 1;
     }
