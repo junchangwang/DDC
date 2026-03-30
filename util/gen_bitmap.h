@@ -36,6 +36,7 @@ bool gen_ewah(const std::vector<std::vector<uint32_t>>& buckets,
 bool gen_concise(const std::vector<std::vector<uint32_t>>& buckets,
                  const std::string& output_dir, uint64_t rows, int cardinality);
 
-/// Generate ComBit-compressed bitmaps.
+/// Generate ComBit-compressed bitmaps with specified word size (8/16/32/64).
 bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
-                const std::string& output_dir, uint64_t rows, int cardinality);
+                const std::string& output_dir, uint64_t rows, int cardinality,
+                int word_size);
