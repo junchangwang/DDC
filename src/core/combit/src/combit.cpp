@@ -450,3 +450,120 @@ template ComBit ComBit::from_string<8>(const std::string&, bool, size_t);
 template ComBit ComBit::from_string<16>(const std::string&, bool, size_t);
 template ComBit ComBit::from_string<32>(const std::string&, bool, size_t);
 template ComBit ComBit::from_string<64>(const std::string&, bool, size_t);
+
+// ====================================================================
+// Serialization / Deserialization
+// ====================================================================
+
+// Helper: write POD value to stream
+template<typename T>
+static void write_val(std::ostream& os, T val) {
+    os.write(reinterpret_cast<const char*>(&val), sizeof(val));
+}
+
+// Helper: read POD value from stream
+template<typename T>
+static T read_val(std::istream& is) {
+    T val;
+    is.read(reinterpret_cast<char*>(&val), sizeof(val));
+    return val;
+}
+
+// ----------------------------------------------------------------
+// ComBitBtv<WS>::serialize / deserialize
+// ----------------------------------------------------------------
+
+template<unsigned WS>
+void ComBitBtv<WS>::serialize(std::ostream& os) const {
+    write_val<uint8_t>(os, static_cast<uint8_t>(WS));
+    write_val<uint8_t>(os, fill_ones_ ? 1 : 0);
+    write_val<uint64_t>(os, bit_count_);
+    write_val<uint64_t>(os, leading_bits_count_);
+
+    uint64_t lb_vec_size = leading_bits_.size();
+    write_val<uint64_t>(os, lb_vec_size);
+    if (lb_vec_size > 0)
+        os.write(reinterpret_cast<const char*>(leading_bits_.data()),
+                 lb_vec_size * sizeof(uint64_t));
+
+    write_val<uint64_t>(os, literal_count_);
+    uint64_t lit_data_size = literal_data_.size();
+    write_val<uint64_t>(os, lit_data_size);
+    if (lit_data_size > 0)
+        os.write(reinterpret_cast<const char*>(literal_data_.data()), lit_data_size);
+}
+
+template<unsigned WS>
+ComBitBtv<WS> ComBitBtv<WS>::deserialize(std::istream& is) {
+    uint8_t ws = read_val<uint8_t>(is);
+    (void)ws; // already determined by template parameter
+    uint8_t fo = read_val<uint8_t>(is);
+
+    ComBitBtv<WS> btv(fo != 0);
+    btv.bit_count_ = read_val<uint64_t>(is);
+    btv.leading_bits_count_ = read_val<uint64_t>(is);
+
+    uint64_t lb_vec_size = read_val<uint64_t>(is);
+    btv.leading_bits_.resize(lb_vec_size);
+    if (lb_vec_size > 0)
+        is.read(reinterpret_cast<char*>(btv.leading_bits_.data()),
+                lb_vec_size * sizeof(uint64_t));
+
+    btv.literal_count_ = read_val<uint64_t>(is);
+    uint64_t lit_data_size = read_val<uint64_t>(is);
+    btv.literal_data_.resize(lit_data_size);
+    if (lit_data_size > 0)
+        is.read(reinterpret_cast<char*>(btv.literal_data_.data()), lit_data_size);
+
+    return btv;
+}
+
+// Explicit instantiations for serialize/deserialize
+template void ComBitBtv<8>::serialize(std::ostream&) const;
+template void ComBitBtv<16>::serialize(std::ostream&) const;
+template void ComBitBtv<32>::serialize(std::ostream&) const;
+template void ComBitBtv<64>::serialize(std::ostream&) const;
+
+template ComBitBtv<8>  ComBitBtv<8>::deserialize(std::istream&);
+template ComBitBtv<16> ComBitBtv<16>::deserialize(std::istream&);
+template ComBitBtv<32> ComBitBtv<32>::deserialize(std::istream&);
+template ComBitBtv<64> ComBitBtv<64>::deserialize(std::istream&);
+
+// ----------------------------------------------------------------
+// ComBit::serialize / deserialize
+// ----------------------------------------------------------------
+
+void ComBit::serialize(std::ostream& os) const {
+    write_val<uint64_t>(os, bit_count_);
+    write_val<uint64_t>(os, segment_bits_);
+    write_val<uint64_t>(os, segments_.size());
+
+    for (const auto& seg : segments_) {
+        std::visit([&os](const auto& btv) { btv.serialize(os); }, seg);
+    }
+}
+
+ComBit ComBit::deserialize(std::istream& is) {
+    ComBit cb;
+    cb.bit_count_ = read_val<uint64_t>(is);
+    cb.segment_bits_ = read_val<uint64_t>(is);
+    uint64_t num_segs = read_val<uint64_t>(is);
+    cb.segments_.reserve(num_segs);
+
+    for (uint64_t i = 0; i < num_segs; i++) {
+        // Peek at the word_size byte to dispatch
+        uint8_t ws = read_val<uint8_t>(is);
+        is.putback(static_cast<char>(ws));
+
+        switch (ws) {
+            case 8:  cb.segments_.push_back(ComBitBtv<8>::deserialize(is));  break;
+            case 16: cb.segments_.push_back(ComBitBtv<16>::deserialize(is)); break;
+            case 32: cb.segments_.push_back(ComBitBtv<32>::deserialize(is)); break;
+            case 64: cb.segments_.push_back(ComBitBtv<64>::deserialize(is)); break;
+            default:
+                throw std::runtime_error("ComBit::deserialize: invalid word size " +
+                                         std::to_string(ws));
+        }
+    }
+    return cb;
+}
