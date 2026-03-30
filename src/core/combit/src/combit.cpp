@@ -495,8 +495,7 @@ void ComBitBtv<WS>::serialize(std::ostream& os) const {
 
 template<unsigned WS>
 ComBitBtv<WS> ComBitBtv<WS>::deserialize(std::istream& is) {
-    uint8_t ws = read_val<uint8_t>(is);
-    (void)ws; // already determined by template parameter
+    // Note: the word_size tag byte must already be consumed by the caller
     uint8_t fo = read_val<uint8_t>(is);
 
     ComBitBtv<WS> btv(fo != 0);
@@ -551,9 +550,8 @@ ComBit ComBit::deserialize(std::istream& is) {
     cb.segments_.reserve(num_segs);
 
     for (uint64_t i = 0; i < num_segs; i++) {
-        // Read word_size byte to dispatch, then seek back so segment deserializer reads it too
+        // Read word_size tag byte, then dispatch to correct deserializer
         uint8_t ws = read_val<uint8_t>(is);
-        is.seekg(-1, std::ios::cur);
 
         switch (ws) {
             case 8:  cb.segments_.push_back(ComBitBtv<8>::deserialize(is));  break;
