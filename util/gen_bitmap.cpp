@@ -33,8 +33,7 @@
 // Concise
 #include "Concise/concise.h"
 
-// ComBit
-#include <bitmap_vector.hpp>
+// ComBit — gen_combit uses position-index format directly
 
 namespace fs = std::filesystem;
 
@@ -282,26 +281,22 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
     fs::create_directories(output_dir);
 
     for (int v = 1; v <= cardinality; v++) {
-        combit::BitmapVector btv;
-        for (uint32_t idx : buckets[v]) {
-            btv.set_bit(idx);
-        }
-
         // Serialize: [current_bits (uint64_t)] [num_indices (size_t)] [indices...]
         uint64_t current_bits = rows;
-        std::vector<uint32_t> indices = btv.decode_positions();
+        // buckets[v] already contains sorted set-bit positions
+        const auto& raw = buckets[v];
         // Filter to valid range
-        while (!indices.empty() && indices.back() >= current_bits) {
-            indices.pop_back();
+        size_t num_indices = raw.size();
+        while (num_indices > 0 && raw[num_indices - 1] >= current_bits) {
+            --num_indices;
         }
-        size_t num_indices = indices.size();
 
         std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
         std::ofstream out(out_path, std::ios::binary);
         out.write(reinterpret_cast<const char*>(&current_bits), sizeof(current_bits));
         out.write(reinterpret_cast<const char*>(&num_indices), sizeof(num_indices));
         if (num_indices > 0) {
-            out.write(reinterpret_cast<const char*>(indices.data()), num_indices * sizeof(uint32_t));
+            out.write(reinterpret_cast<const char*>(raw.data()), num_indices * sizeof(uint32_t));
         }
 
         if (v % 100 == 0 || v == cardinality) {
