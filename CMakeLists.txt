@@ -57,9 +57,9 @@ target_include_directories(benchmark_app PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 
-# AVX-512 uses function-level target attributes; no global SIMD flags needed
+# ComBit's AVX-512 VBMI2 expand-load needs these flags
+target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
 
-# Bring back combit library link
 target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
 
 # ==========================================
@@ -79,15 +79,12 @@ FetchContent_MakeAvailable(googletest)
 
 # Core library tests
 add_executable(combit_tests
-    tests/test_bitmap_vector.cpp
-    tests/test_combit_decoder.cpp
-    tests/test_combit_encoder.cpp
-    tests/test_bitmap_index.cpp
-    tests/test_compression.cpp
+    tests/test_combit.cpp
 )
 target_include_directories(combit_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core/combit/include
 )
+target_compile_options(combit_tests PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
 target_link_libraries(combit_tests PRIVATE combit GTest::gtest_main)
 
 # Backend tests (serialization, logical ops)

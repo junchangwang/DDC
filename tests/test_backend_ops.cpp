@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "benchmark/backends/combit/combit_backend.h"
-#include <bitmap_vector.hpp>
 #include <cstdio>
 #include <filesystem>
 #include <set>

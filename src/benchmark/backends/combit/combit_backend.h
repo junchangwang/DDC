@@ -1,6 +1,11 @@
 #pragma once
 
 #include "../../bitmap_backend.h"
+#include <combit.h>
+
+struct CombitHandle : public BitmapHandle {
+    ComBit compressed;
+};
 
 class CombitBackend : public IBitmapBackend {
 public:
