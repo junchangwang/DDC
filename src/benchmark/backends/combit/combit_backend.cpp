@@ -84,41 +84,13 @@ void CombitBackend::Serialize(const BitmapHandle& handle, const std::string& pat
     const auto& h = getHandle(handle);
     std::ofstream out(path, std::ios::binary);
     if (!out) return;
-
-    uint64_t total_bits = h.compressed.bit_count();
-    out.write(reinterpret_cast<const char*>(&total_bits), sizeof(total_bits));
-
-    auto indices = Decode(handle);
-    size_t size = indices.size();
-    out.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    if (size > 0) {
-        out.write(reinterpret_cast<const char*>(indices.data()), size * sizeof(uint32_t));
-    }
+    h.compressed.serialize(out);
 }
 
 std::unique_ptr<BitmapHandle> CombitBackend::Load(const std::string& path) {
     auto res = std::make_unique<CombitHandle>();
     std::ifstream in(path, std::ios::binary);
     if (!in) return res;
-
-    uint64_t total_bits = 0;
-    in.read(reinterpret_cast<char*>(&total_bits), sizeof(total_bits));
-
-    size_t size = 0;
-    in.read(reinterpret_cast<char*>(&size), sizeof(size));
-
-    std::vector<uint32_t> indices;
-    if (size > 0) {
-        indices.resize(size);
-        in.read(reinterpret_cast<char*>(indices.data()), size * sizeof(uint32_t));
-    }
-
-    // Build vector<bool> and compress
-    std::vector<bool> bits(total_bits, false);
-    for (auto idx : indices) {
-        if (idx < total_bits)
-            bits[idx] = true;
-    }
-    res->compressed = ComBit::compress<8>(bits);
+    res->compressed = ComBit::deserialize(in);
     return res;
 }

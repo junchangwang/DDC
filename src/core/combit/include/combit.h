@@ -111,6 +111,16 @@ public:
     uint64_t get_literal(size_t idx) const;
 
     // ----------------------------------------------------------------
+    // Serialization
+    // ----------------------------------------------------------------
+
+    /// Write compressed representation to binary stream.
+    void serialize(std::ostream& os) const;
+
+    /// Read compressed representation from binary stream.
+    static ComBitBtv deserialize(std::istream& is);
+
+    // ----------------------------------------------------------------
     // Debug printing
     // ----------------------------------------------------------------
 
@@ -267,6 +277,16 @@ public:
 
     const std::vector<ComBitBtvSegment>& segments() const { return segments_; }
     const ComBitBtvSegment& segment(size_t i) const { return segments_[i]; }
+
+    // ----------------------------------------------------------------
+    // Serialization
+    // ----------------------------------------------------------------
+
+    /// Write all segments to binary stream.
+    void serialize(std::ostream& os) const;
+
+    /// Read back from binary stream.
+    static ComBit deserialize(std::istream& is);
 
     // ----------------------------------------------------------------
     // Debug printing
