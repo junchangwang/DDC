@@ -43,7 +43,6 @@
 #include "Concise/concise.h"
 
 // ComBit
-#include <bitmap_vector.hpp>
 
 namespace fs = std::filesystem;
 
