@@ -73,9 +73,12 @@ ComBitBtv<WordSize>::compress(const std::vector<bool>& bits, bool fill_ones) {
 
     result.leading_bits_count_ = num_words;
     result.leading_bits_.assign((num_words + 63) / 64, 0);
+    const uint64_t fill_val = fill_ones
+        ? (WordSize == 64 ? ~uint64_t(0) : (uint64_t(1) << WordSize) - 1)
+        : uint64_t(0);
     for (size_t i = 0; i < num_words; i++) {
         uint64_t word = read_word_from_bits(bits, i);
-        if (word == 0) {
+        if (word == fill_val) {
             result.set_fill_bit(i);
         } else {
             result.push_literal(word);
@@ -99,7 +102,7 @@ ComBitBtv<WordSize>::decompress() const {
     for (size_t i = 0; i < leading_bits_count_; i++) {
         if (is_fill_bit(i)) {
             for (unsigned b = 0; b < WordSize; b++)
-                result.push_back(false);
+                result.push_back(fill_ones_);
         } else {
             append_word_to_bits(result, get_literal(lit_idx++));
         }
@@ -164,6 +167,11 @@ ComBitBtv<WordSize>::popcount() const {
 
     for (size_t i = 0; i < leading_bits_count_; i++) {
         if (is_fill_bit(i)) {
+            if (fill_ones_) {
+                size_t remaining = (bits_seen < bit_count_)
+                    ? bit_count_ - bits_seen : 0;
+                count += std::min(static_cast<size_t>(WordSize), remaining);
+            }
             bits_seen += WordSize;
         } else {
             uint64_t w = get_literal(lit_idx++);
