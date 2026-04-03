@@ -71,8 +71,8 @@ ComBitBtv<WordSize>::operator^(const ComBitBtv& other) const {
 
 #ifdef __AVX512VBMI2__
     for (size_t region = 0; region < total_512regions; region++) {
-        uint64_t raw_a = ~(leading_bits_[word_pos / 64] >> (word_pos % 64));
-        uint64_t raw_b = ~(other.leading_bits_[word_pos / 64] >> (word_pos % 64));
+        uint64_t raw_a = (leading_bits_[word_pos / 64] >> (word_pos % 64));
+        uint64_t raw_b = (other.leading_bits_[word_pos / 64] >> (word_pos % 64));
 
         const __m512i fill_a = fill_ones_
             ? _mm512_set1_epi8(static_cast<char>(-1))
@@ -193,8 +193,8 @@ ComBitBtv<64> cross_xor(const ComBitBtv<A>& a, const ComBitBtv<B>& b) {
 
 #ifdef __AVX512VBMI2__
     for (size_t region = 0; region < total_512regions; region++) {
-        uint64_t raw_a = ~(a.leading_bits()[a_word_pos / 64] >> (a_word_pos % 64));
-        uint64_t raw_b = ~(b.leading_bits()[b_word_pos / 64] >> (b_word_pos % 64));
+        uint64_t raw_a = (a.leading_bits()[a_word_pos / 64] >> (a_word_pos % 64));
+        uint64_t raw_b = (b.leading_bits()[b_word_pos / 64] >> (b_word_pos % 64));
 
         const __m512i fill_a = a.fill_ones()
             ? _mm512_set1_epi8(static_cast<char>(-1))

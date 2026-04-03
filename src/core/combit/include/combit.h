@@ -25,7 +25,7 @@
 /// fill_ones is a runtime parameter controlling the fill value.
 ///
 /// Compressed representation:
-///   - leading bitstring: one bit per word; 1 = fill, 0 = literal
+///   - leading bitstring: one bit per word; 0 = fill, 1 = literal
 ///   - literal data array: literal word values, stored sequentially
 ///
 template<unsigned WordSize>
@@ -128,16 +128,16 @@ public:
 
 private:
     bool                    fill_ones_;
-    std::vector<uint64_t>   leading_bits_;         // packed bits: 1=fill, 0=literal
+    std::vector<uint64_t>   leading_bits_;         // packed bits: 0=fill, 1=literal
     size_t                  leading_bits_count_;   // number of words (leading bits)
     std::vector<uint8_t>    literal_data_;         // packed literal word bytes
     size_t                  literal_count_;        // number of literal words
     size_t                  bit_count_;            // original bitvector length
 
     bool is_fill_bit(size_t i) const {
-        return (leading_bits_[i / 64] >> (i % 64)) & 1;
+        return !((leading_bits_[i / 64] >> (i % 64)) & 1);
     }
-    void set_fill_bit(size_t i) {
+    void set_literal_bit(size_t i) {
         leading_bits_[i / 64] |= uint64_t(1) << (i % 64);
     }
 
