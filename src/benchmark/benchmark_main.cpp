@@ -20,6 +20,38 @@
 namespace fs = std::filesystem;
 
 // ==========================================
+// CRoaring helper: ensure result is in bitset form
+// ==========================================
+// After a logical operation, if the result has array or run containers,
+// convert to a flat bitset (simulating "I need the result as btv").
+// Returns the conversion time in ms (0 if already all-bitset).
+static double croaring_to_bitset_if_needed(const roaring::Roaring& r,
+                                           uint32_t logical_size) {
+    roaring::api::roaring_statistics_t stats;
+    roaring::api::roaring_bitmap_statistics(&r.roaring, &stats);
+    if (stats.n_array_containers == 0 && stats.n_run_containers == 0)
+        return 0.0;  // already all bitset containers, no conversion needed
+
+    Timer conv_timer;
+    conv_timer.reset();
+    roaring::api::bitset_t* bs = roaring::api::bitset_create_with_capacity(
+        (logical_size + 63) / 64);
+    roaring::api::roaring_bitmap_to_bitset(&r.roaring, bs);
+    roaring::api::bitset_free(bs);
+    return conv_timer.elapsed_ms();
+}
+
+// Print container breakdown for a CRoaring result
+static void croaring_print_containers(const std::string& label,
+                                      const roaring::Roaring& r) {
+    roaring::api::roaring_statistics_t s;
+    roaring::api::roaring_bitmap_statistics(&r.roaring, &s);
+    std::cout << "  [" << label << " containers] array=" << s.n_array_containers
+              << " bitset=" << s.n_bitset_containers
+              << " run=" << s.n_run_containers << "\n";
+}
+
+// ==========================================
 // 1. BM File Benchmark: Load raw .bm files
 // ==========================================
 void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
@@ -101,6 +133,21 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
         auto xor_res = backend->bitXor(*a, *b);
         double xor_t = timer.elapsed_ms();
 
+        // For CRoaring: add to-bitset conversion time if result has array/run containers
+        if (backend_name == "CRoaring") {
+            auto* ha_c = dynamic_cast<CroaringHandle*>(a.get());
+            auto* hb_c = dynamic_cast<CroaringHandle*>(b.get());
+            if (ha_c && hb_c) {
+                uint32_t logical_sz = std::max(ha_c->current_size, hb_c->current_size);
+                auto* or_h  = dynamic_cast<CroaringHandle*>(or_res.get());
+                auto* and_h = dynamic_cast<CroaringHandle*>(and_res.get());
+                auto* xor_h = dynamic_cast<CroaringHandle*>(xor_res.get());
+                if (or_h)  or_t  += croaring_to_bitset_if_needed(or_h->bitmap, logical_sz);
+                if (and_h) and_t += croaring_to_bitset_if_needed(and_h->bitmap, logical_sz);
+                if (xor_h) xor_t += croaring_to_bitset_if_needed(xor_h->bitmap, logical_sz);
+            }
+        }
+
         std::cout << "\n[Compute] Pairwise ops on " << na << " & " << nb << ":\n";
         std::cout << "  bitOr:  " << or_t  << " ms (card: " << backend->Cardinality(*or_res)  << ")\n";
         std::cout << "  bitAnd: " << and_t << " ms (card: " << backend->Cardinality(*and_res) << ")\n";
@@ -140,23 +187,40 @@ void run_bm_benchmark(IBitmapBackend* backend, const std::string& backend_name,
             auto* ha = dynamic_cast<CroaringHandle*>(a.get());
             auto* hb = dynamic_cast<CroaringHandle*>(b.get());
             if (ha && hb) {
+                uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
                 { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
+
                 timer.reset();
                 roaring::Roaring and_r = ha->bitmap & hb->bitmap;
                 double and_pure = timer.elapsed_ms();
+                and_pure += croaring_to_bitset_if_needed(and_r, logical_sz);
+
                 timer.reset();
                 roaring::Roaring or_r = ha->bitmap | hb->bitmap;
                 double or_pure = timer.elapsed_ms();
+                or_pure += croaring_to_bitset_if_needed(or_r, logical_sz);
+
+                timer.reset();
+                roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
+                double xor_pure = timer.elapsed_ms();
+                xor_pure += croaring_to_bitset_if_needed(xor_r, logical_sz);
 
                 roaring::Roaring a_copy = ha->bitmap;
                 timer.reset();
                 a_copy &= hb->bitmap;
                 double and_inplace = timer.elapsed_ms();
+                and_inplace += croaring_to_bitset_if_needed(a_copy, logical_sz);
 
-                std::cout << "\n[Pure Ops] CRoaring operation-only:\n";
+                std::cout << "\n[Pure Ops] CRoaring operation-only (+ to-bitset if needed):\n";
                 std::cout << "  AND: " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
                 std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.cardinality() << ")\n";
+                std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.cardinality() << ")\n";
                 std::cout << "  AND (in-place): " << and_inplace << " ms\n";
+                croaring_print_containers("AND result", and_r);
+                croaring_print_containers("OR  result", or_r);
+                croaring_print_containers("XOR result", xor_r);
+                croaring_print_containers("Input A", ha->bitmap);
+                croaring_print_containers("Input B", hb->bitmap);
             }
         }
     }
@@ -298,17 +362,38 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
             auto& a = bitmaps[0]; auto& b = bitmaps[1];
             timer.reset();
             auto or_res = backend->bitOr(*a, *b);
-            or_times.push_back(timer.elapsed_ms());
-            or_card = backend->Cardinality(*or_res);
+            double or_elapsed = timer.elapsed_ms();
 
             timer.reset();
             auto and_res = backend->bitAnd(*a, *b);
-            and_times.push_back(timer.elapsed_ms());
-            and_card = backend->Cardinality(*and_res);
+            double and_elapsed = timer.elapsed_ms();
 
             timer.reset();
             auto xor_res = backend->bitXor(*a, *b);
-            xor_times.push_back(timer.elapsed_ms());
+            double xor_elapsed = timer.elapsed_ms();
+
+            // For CRoaring: add to-bitset conversion time if result has array/run containers
+            if (backend_name == "CRoaring") {
+                auto* ha = dynamic_cast<CroaringHandle*>(a.get());
+                auto* hb = dynamic_cast<CroaringHandle*>(b.get());
+                if (ha && hb) {
+                    uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
+                    auto* or_h  = dynamic_cast<CroaringHandle*>(or_res.get());
+                    auto* and_h = dynamic_cast<CroaringHandle*>(and_res.get());
+                    auto* xor_h = dynamic_cast<CroaringHandle*>(xor_res.get());
+                    if (or_h)  or_elapsed  += croaring_to_bitset_if_needed(or_h->bitmap, logical_sz);
+                    if (and_h) and_elapsed += croaring_to_bitset_if_needed(and_h->bitmap, logical_sz);
+                    if (xor_h) xor_elapsed += croaring_to_bitset_if_needed(xor_h->bitmap, logical_sz);
+                }
+            }
+
+            or_times.push_back(or_elapsed);
+            or_card = backend->Cardinality(*or_res);
+
+            and_times.push_back(and_elapsed);
+            and_card = backend->Cardinality(*and_res);
+
+            xor_times.push_back(xor_elapsed);
             xor_card = backend->Cardinality(*xor_res);
         }
 
@@ -457,31 +542,41 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                 auto* ha = dynamic_cast<CroaringHandle*>(bm0.get());
                 auto* hb = dynamic_cast<CroaringHandle*>(bm1.get());
                 if (ha && hb) {
+                    uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
                     // Warm up
                     { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
 
                     timer.reset();
                     roaring::Roaring and_r = ha->bitmap & hb->bitmap;
                     double and_pure = timer.elapsed_ms();
+                    and_pure += croaring_to_bitset_if_needed(and_r, logical_sz);
 
                     timer.reset();
                     roaring::Roaring or_r = ha->bitmap | hb->bitmap;
                     double or_pure = timer.elapsed_ms();
+                    or_pure += croaring_to_bitset_if_needed(or_r, logical_sz);
 
                     timer.reset();
                     roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
                     double xor_pure = timer.elapsed_ms();
+                    xor_pure += croaring_to_bitset_if_needed(xor_r, logical_sz);
 
                     roaring::Roaring a_copy = ha->bitmap;
                     timer.reset();
                     a_copy &= hb->bitmap;
                     double and_inplace = timer.elapsed_ms();
+                    and_inplace += croaring_to_bitset_if_needed(a_copy, logical_sz);
 
-                    std::cout << "\n[Pure Ops] CRoaring operation-only timing:\n";
+                    std::cout << "\n[Pure Ops] CRoaring operation-only (+ to-bitset if needed):\n";
                     std::cout << "  AND: " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
                     std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.cardinality() << ")\n";
                     std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.cardinality() << ")\n";
                     std::cout << "  AND (in-place): " << and_inplace << " ms\n";
+                    croaring_print_containers("AND result", and_r);
+                    croaring_print_containers("OR  result", or_r);
+                    croaring_print_containers("XOR result", xor_r);
+                    croaring_print_containers("Input A", ha->bitmap);
+                    croaring_print_containers("Input B", hb->bitmap);
                 }
             }
 
@@ -590,12 +685,26 @@ void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_
     timer.reset();
     auto or_res = backend->bitOr(*bm_a, *bm_b);
     double or_t = timer.elapsed_ms();
-    uint64_t or_card = backend->Cardinality(*or_res);
 
     // AND
     timer.reset();
     auto and_res = backend->bitAnd(*bm_a, *bm_b);
     double and_t = timer.elapsed_ms();
+
+    // For CRoaring: add to-bitset conversion time if result has array/run containers
+    if (backend_name == "CRoaring") {
+        auto* ha = dynamic_cast<CroaringHandle*>(bm_a.get());
+        auto* hb = dynamic_cast<CroaringHandle*>(bm_b.get());
+        if (ha && hb) {
+            uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
+            auto* or_h  = dynamic_cast<CroaringHandle*>(or_res.get());
+            auto* and_h = dynamic_cast<CroaringHandle*>(and_res.get());
+            if (or_h)  or_t  += croaring_to_bitset_if_needed(or_h->bitmap, logical_sz);
+            if (and_h) and_t += croaring_to_bitset_if_needed(and_h->bitmap, logical_sz);
+        }
+    }
+
+    uint64_t or_card = backend->Cardinality(*or_res);
     uint64_t and_card = backend->Cardinality(*and_res);
 
     std::cout << "\n[Result] c=" << info_a.cardinality << " OR c=" << info_b.cardinality << ":\n";
@@ -607,36 +716,40 @@ void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_
         auto* ha = dynamic_cast<CroaringHandle*>(bm_a.get());
         auto* hb = dynamic_cast<CroaringHandle*>(bm_b.get());
         if (ha && hb) {
+            uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
             { roaring::Roaring w = ha->bitmap | hb->bitmap; (void)w; }
+
             timer.reset();
             roaring::Roaring or_r = ha->bitmap | hb->bitmap;
             double or_pure = timer.elapsed_ms();
+            or_pure += croaring_to_bitset_if_needed(or_r, logical_sz);
+
             timer.reset();
             roaring::Roaring and_r = ha->bitmap & hb->bitmap;
             double and_pure = timer.elapsed_ms();
+            and_pure += croaring_to_bitset_if_needed(and_r, logical_sz);
+
+            timer.reset();
+            roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
+            double xor_pure = timer.elapsed_ms();
+            xor_pure += croaring_to_bitset_if_needed(xor_r, logical_sz);
 
             roaring::Roaring a_copy = ha->bitmap;
             timer.reset();
             a_copy |= hb->bitmap;
             double or_inplace = timer.elapsed_ms();
+            or_inplace += croaring_to_bitset_if_needed(a_copy, logical_sz);
 
-            std::cout << "\n[Pure Ops] CRoaring:\n";
-            std::cout << "  OR:           " << or_pure << " ms (card: " << or_r.cardinality() << ")\n";
-            std::cout << "  AND:          " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
+            std::cout << "\n[Pure Ops] CRoaring (+ to-bitset if needed):\n";
+            std::cout << "  OR:            " << or_pure << " ms (card: " << or_r.cardinality() << ")\n";
+            std::cout << "  AND:           " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
+            std::cout << "  XOR:           " << xor_pure << " ms (card: " << xor_r.cardinality() << ")\n";
             std::cout << "  OR (in-place): " << or_inplace << " ms\n";
-
-            // Print container stats for both
-            roaring::api::roaring_statistics_t sa, sb;
-            roaring::api::roaring_bitmap_statistics(&ha->bitmap.roaring, &sa);
-            roaring::api::roaring_bitmap_statistics(&hb->bitmap.roaring, &sb);
-            std::cout << "\n[Containers] A (c=" << info_a.cardinality << "): "
-                      << "array=" << sa.n_array_containers
-                      << " bitset=" << sa.n_bitset_containers
-                      << " run=" << sa.n_run_containers << "\n";
-            std::cout << "[Containers] B (c=" << info_b.cardinality << "): "
-                      << "array=" << sb.n_array_containers
-                      << " bitset=" << sb.n_bitset_containers
-                      << " run=" << sb.n_run_containers << "\n";
+            croaring_print_containers("AND result", and_r);
+            croaring_print_containers("OR  result", or_r);
+            croaring_print_containers("XOR result", xor_r);
+            croaring_print_containers("Input A", ha->bitmap);
+            croaring_print_containers("Input B", hb->bitmap);
         }
     }
 
