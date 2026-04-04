@@ -1,0 +1,4 @@
+[submodule "src/core/combit"]
+	path = src/core/combit
+	url = git@github.com:junchangwang/ComBit-core.git
+	branch = hierarchical
