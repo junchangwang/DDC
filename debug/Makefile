@@ -57,23 +57,13 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/thesis/combit
+CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/lch/combit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lichenhang/Desktop/thesis/combit/debug
+CMAKE_BINARY_DIR = /home/lichenhang/Desktop/lch/combit/debug
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-.PHONY : test/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -95,56 +85,11 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"gmock\" \"gtest\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles /home/lichenhang/Desktop/thesis/combit/debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles /home/lichenhang/Desktop/lch/combit/debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -198,58 +143,6 @@ benchmark_app/fast:
 .PHONY : benchmark_app/fast
 
 #=============================================================================
-# Target rules for targets named combit_tests
-
-# Build rule for target.
-combit_tests: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 combit_tests
-.PHONY : combit_tests
-
-# fast build rule for target.
-combit_tests/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/build
-.PHONY : combit_tests/fast
-
-#=============================================================================
-# Target rules for targets named combit_backend_tests
-
-# Build rule for target.
-combit_backend_tests: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 combit_backend_tests
-.PHONY : combit_backend_tests
-
-# fast build rule for target.
-combit_backend_tests/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/build
-.PHONY : combit_backend_tests/fast
-
-#=============================================================================
-# Target rules for targets named all_backend_tests
-
-# Build rule for target.
-all_backend_tests: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all_backend_tests
-.PHONY : all_backend_tests
-
-# fast build rule for target.
-all_backend_tests/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/build
-.PHONY : all_backend_tests/fast
-
-#=============================================================================
-# Target rules for targets named bm_file_tests
-
-# Build rule for target.
-bm_file_tests: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bm_file_tests
-.PHONY : bm_file_tests
-
-# fast build rule for target.
-bm_file_tests/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/build
-.PHONY : bm_file_tests/fast
-
-#=============================================================================
 # Target rules for targets named gen_bitmap
 
 # Build rule for target.
@@ -289,56 +182,56 @@ combit/fast:
 .PHONY : combit/fast
 
 #=============================================================================
-# Target rules for targets named gmock
+# Target rules for targets named combit_eval
 
 # Build rule for target.
-gmock: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock
-.PHONY : gmock
+combit_eval: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 combit_eval
+.PHONY : combit_eval
 
 # fast build rule for target.
-gmock/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/build
-.PHONY : gmock/fast
+combit_eval/fast:
+	$(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval.dir/build.make src/core/combit/CMakeFiles/combit_eval.dir/build
+.PHONY : combit_eval/fast
 
 #=============================================================================
-# Target rules for targets named gmock_main
+# Target rules for targets named combit_debug
 
 # Build rule for target.
-gmock_main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gmock_main
-.PHONY : gmock_main
+combit_debug: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 combit_debug
+.PHONY : combit_debug
 
 # fast build rule for target.
-gmock_main/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build.make _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/build
-.PHONY : gmock_main/fast
+combit_debug/fast:
+	$(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/build
+.PHONY : combit_debug/fast
 
 #=============================================================================
-# Target rules for targets named gtest
+# Target rules for targets named combit_eval_debug
 
 # Build rule for target.
-gtest: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest
-.PHONY : gtest
+combit_eval_debug: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 combit_eval_debug
+.PHONY : combit_eval_debug
 
 # fast build rule for target.
-gtest/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
-.PHONY : gtest/fast
+combit_eval_debug/fast:
+	$(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval_debug.dir/build.make src/core/combit/CMakeFiles/combit_eval_debug.dir/build
+.PHONY : combit_eval_debug/fast
 
 #=============================================================================
-# Target rules for targets named gtest_main
+# Target rules for targets named bitset_core
 
 # Build rule for target.
-gtest_main: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gtest_main
-.PHONY : gtest_main
+bitset_core: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 bitset_core
+.PHONY : bitset_core
 
 # fast build rule for target.
-gtest_main/fast:
-	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
-.PHONY : gtest_main/fast
+bitset_core/fast:
+	$(MAKE) $(MAKESILENT) -f src/core/bitset/CMakeFiles/bitset_core.dir/build.make src/core/bitset/CMakeFiles/bitset_core.dir/build
+.PHONY : bitset_core/fast
 
 src/benchmark/backends/Concise/concise_backend.o: src/benchmark/backends/Concise/concise_backend.cpp.o
 .PHONY : src/benchmark/backends/Concise/concise_backend.o
@@ -346,8 +239,6 @@ src/benchmark/backends/Concise/concise_backend.o: src/benchmark/backends/Concise
 # target to build an object file
 src/benchmark/backends/Concise/concise_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.o
 .PHONY : src/benchmark/backends/Concise/concise_backend.cpp.o
 
 src/benchmark/backends/Concise/concise_backend.i: src/benchmark/backends/Concise/concise_backend.cpp.i
@@ -356,8 +247,6 @@ src/benchmark/backends/Concise/concise_backend.i: src/benchmark/backends/Concise
 # target to preprocess a source file
 src/benchmark/backends/Concise/concise_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.i
 .PHONY : src/benchmark/backends/Concise/concise_backend.cpp.i
 
 src/benchmark/backends/Concise/concise_backend.s: src/benchmark/backends/Concise/concise_backend.cpp.s
@@ -366,8 +255,6 @@ src/benchmark/backends/Concise/concise_backend.s: src/benchmark/backends/Concise
 # target to generate assembly for a file
 src/benchmark/backends/Concise/concise_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/Concise/concise_backend.cpp.s
 .PHONY : src/benchmark/backends/Concise/concise_backend.cpp.s
 
 src/benchmark/backends/bitset/bitset_backend.o: src/benchmark/backends/bitset/bitset_backend.cpp.o
@@ -376,8 +263,6 @@ src/benchmark/backends/bitset/bitset_backend.o: src/benchmark/backends/bitset/bi
 # target to build an object file
 src/benchmark/backends/bitset/bitset_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o
 .PHONY : src/benchmark/backends/bitset/bitset_backend.cpp.o
 
 src/benchmark/backends/bitset/bitset_backend.i: src/benchmark/backends/bitset/bitset_backend.cpp.i
@@ -386,8 +271,6 @@ src/benchmark/backends/bitset/bitset_backend.i: src/benchmark/backends/bitset/bi
 # target to preprocess a source file
 src/benchmark/backends/bitset/bitset_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i
 .PHONY : src/benchmark/backends/bitset/bitset_backend.cpp.i
 
 src/benchmark/backends/bitset/bitset_backend.s: src/benchmark/backends/bitset/bitset_backend.cpp.s
@@ -396,8 +279,6 @@ src/benchmark/backends/bitset/bitset_backend.s: src/benchmark/backends/bitset/bi
 # target to generate assembly for a file
 src/benchmark/backends/bitset/bitset_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s
 .PHONY : src/benchmark/backends/bitset/bitset_backend.cpp.s
 
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.o: src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o
@@ -406,8 +287,6 @@ src/benchmark/backends/bitset_avx512/bitset_avx512_backend.o: src/benchmark/back
 # target to build an object file
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o
 .PHONY : src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o
 
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.i: src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
@@ -416,8 +295,6 @@ src/benchmark/backends/bitset_avx512/bitset_avx512_backend.i: src/benchmark/back
 # target to preprocess a source file
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
 .PHONY : src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
 
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.s: src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
@@ -426,8 +303,6 @@ src/benchmark/backends/bitset_avx512/bitset_avx512_backend.s: src/benchmark/back
 # target to generate assembly for a file
 src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
 .PHONY : src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
 
 src/benchmark/backends/combit/combit_backend.o: src/benchmark/backends/combit/combit_backend.cpp.o
@@ -436,9 +311,6 @@ src/benchmark/backends/combit/combit_backend.o: src/benchmark/backends/combit/co
 # target to build an object file
 src/benchmark/backends/combit/combit_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.o
 .PHONY : src/benchmark/backends/combit/combit_backend.cpp.o
 
 src/benchmark/backends/combit/combit_backend.i: src/benchmark/backends/combit/combit_backend.cpp.i
@@ -447,9 +319,6 @@ src/benchmark/backends/combit/combit_backend.i: src/benchmark/backends/combit/co
 # target to preprocess a source file
 src/benchmark/backends/combit/combit_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.i
 .PHONY : src/benchmark/backends/combit/combit_backend.cpp.i
 
 src/benchmark/backends/combit/combit_backend.s: src/benchmark/backends/combit/combit_backend.cpp.s
@@ -458,9 +327,6 @@ src/benchmark/backends/combit/combit_backend.s: src/benchmark/backends/combit/co
 # target to generate assembly for a file
 src/benchmark/backends/combit/combit_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.s
 .PHONY : src/benchmark/backends/combit/combit_backend.cpp.s
 
 src/benchmark/backends/croaring/croaring_backend.o: src/benchmark/backends/croaring/croaring_backend.cpp.o
@@ -469,8 +335,6 @@ src/benchmark/backends/croaring/croaring_backend.o: src/benchmark/backends/croar
 # target to build an object file
 src/benchmark/backends/croaring/croaring_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o
 .PHONY : src/benchmark/backends/croaring/croaring_backend.cpp.o
 
 src/benchmark/backends/croaring/croaring_backend.i: src/benchmark/backends/croaring/croaring_backend.cpp.i
@@ -479,8 +343,6 @@ src/benchmark/backends/croaring/croaring_backend.i: src/benchmark/backends/croar
 # target to preprocess a source file
 src/benchmark/backends/croaring/croaring_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i
 .PHONY : src/benchmark/backends/croaring/croaring_backend.cpp.i
 
 src/benchmark/backends/croaring/croaring_backend.s: src/benchmark/backends/croaring/croaring_backend.cpp.s
@@ -489,8 +351,6 @@ src/benchmark/backends/croaring/croaring_backend.s: src/benchmark/backends/croar
 # target to generate assembly for a file
 src/benchmark/backends/croaring/croaring_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s
 .PHONY : src/benchmark/backends/croaring/croaring_backend.cpp.s
 
 src/benchmark/backends/ewah/ewah_backend.o: src/benchmark/backends/ewah/ewah_backend.cpp.o
@@ -499,8 +359,6 @@ src/benchmark/backends/ewah/ewah_backend.o: src/benchmark/backends/ewah/ewah_bac
 # target to build an object file
 src/benchmark/backends/ewah/ewah_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o
 .PHONY : src/benchmark/backends/ewah/ewah_backend.cpp.o
 
 src/benchmark/backends/ewah/ewah_backend.i: src/benchmark/backends/ewah/ewah_backend.cpp.i
@@ -509,8 +367,6 @@ src/benchmark/backends/ewah/ewah_backend.i: src/benchmark/backends/ewah/ewah_bac
 # target to preprocess a source file
 src/benchmark/backends/ewah/ewah_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i
 .PHONY : src/benchmark/backends/ewah/ewah_backend.cpp.i
 
 src/benchmark/backends/ewah/ewah_backend.s: src/benchmark/backends/ewah/ewah_backend.cpp.s
@@ -519,8 +375,6 @@ src/benchmark/backends/ewah/ewah_backend.s: src/benchmark/backends/ewah/ewah_bac
 # target to generate assembly for a file
 src/benchmark/backends/ewah/ewah_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s
 .PHONY : src/benchmark/backends/ewah/ewah_backend.cpp.s
 
 src/benchmark/backends/wah/wah_backend.o: src/benchmark/backends/wah/wah_backend.cpp.o
@@ -529,8 +383,6 @@ src/benchmark/backends/wah/wah_backend.o: src/benchmark/backends/wah/wah_backend
 # target to build an object file
 src/benchmark/backends/wah/wah_backend.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o
 .PHONY : src/benchmark/backends/wah/wah_backend.cpp.o
 
@@ -540,8 +392,6 @@ src/benchmark/backends/wah/wah_backend.i: src/benchmark/backends/wah/wah_backend
 # target to preprocess a source file
 src/benchmark/backends/wah/wah_backend.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.i
 .PHONY : src/benchmark/backends/wah/wah_backend.cpp.i
 
@@ -551,8 +401,6 @@ src/benchmark/backends/wah/wah_backend.s: src/benchmark/backends/wah/wah_backend
 # target to generate assembly for a file
 src/benchmark/backends/wah/wah_backend.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/benchmark/backends/wah/wah_backend.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.s
 .PHONY : src/benchmark/backends/wah/wah_backend.cpp.s
 
@@ -610,8 +458,6 @@ src/core/croaring/roaring.o: src/core/croaring/roaring.c.o
 # target to build an object file
 src/core/croaring/roaring.c.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/croaring/roaring.c.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/croaring/roaring.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/croaring/roaring.c.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o
 .PHONY : src/core/croaring/roaring.c.o
@@ -622,8 +468,6 @@ src/core/croaring/roaring.i: src/core/croaring/roaring.c.i
 # target to preprocess a source file
 src/core/croaring/roaring.c.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/croaring/roaring.c.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/croaring/roaring.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/croaring/roaring.c.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.i
 .PHONY : src/core/croaring/roaring.c.i
@@ -634,8 +478,6 @@ src/core/croaring/roaring.s: src/core/croaring/roaring.c.s
 # target to generate assembly for a file
 src/core/croaring/roaring.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/croaring/roaring.c.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/croaring/roaring.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/croaring/roaring.c.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.s
 .PHONY : src/core/croaring/roaring.c.s
@@ -646,8 +488,6 @@ src/core/fastbit/array_t.o: src/core/fastbit/array_t.cpp.o
 # target to build an object file
 src/core/fastbit/array_t.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/array_t.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/array_t.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/array_t.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o
 .PHONY : src/core/fastbit/array_t.cpp.o
@@ -658,8 +498,6 @@ src/core/fastbit/array_t.i: src/core/fastbit/array_t.cpp.i
 # target to preprocess a source file
 src/core/fastbit/array_t.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/array_t.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/array_t.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/array_t.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.i
 .PHONY : src/core/fastbit/array_t.cpp.i
@@ -670,8 +508,6 @@ src/core/fastbit/array_t.s: src/core/fastbit/array_t.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/array_t.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/array_t.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/array_t.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/array_t.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.s
 .PHONY : src/core/fastbit/array_t.cpp.s
@@ -682,8 +518,6 @@ src/core/fastbit/bitvector.o: src/core/fastbit/bitvector.cpp.o
 # target to build an object file
 src/core/fastbit/bitvector.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o
 .PHONY : src/core/fastbit/bitvector.cpp.o
@@ -694,8 +528,6 @@ src/core/fastbit/bitvector.i: src/core/fastbit/bitvector.cpp.i
 # target to preprocess a source file
 src/core/fastbit/bitvector.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.i
 .PHONY : src/core/fastbit/bitvector.cpp.i
@@ -706,8 +538,6 @@ src/core/fastbit/bitvector.s: src/core/fastbit/bitvector.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/bitvector.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.s
 .PHONY : src/core/fastbit/bitvector.cpp.s
@@ -718,8 +548,6 @@ src/core/fastbit/bitvector16.o: src/core/fastbit/bitvector16.cpp.o
 # target to build an object file
 src/core/fastbit/bitvector16.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector16.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector16.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector16.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o
 .PHONY : src/core/fastbit/bitvector16.cpp.o
@@ -730,8 +558,6 @@ src/core/fastbit/bitvector16.i: src/core/fastbit/bitvector16.cpp.i
 # target to preprocess a source file
 src/core/fastbit/bitvector16.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector16.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector16.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector16.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.i
 .PHONY : src/core/fastbit/bitvector16.cpp.i
@@ -742,8 +568,6 @@ src/core/fastbit/bitvector16.s: src/core/fastbit/bitvector16.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/bitvector16.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector16.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector16.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector16.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.s
 .PHONY : src/core/fastbit/bitvector16.cpp.s
@@ -754,8 +578,6 @@ src/core/fastbit/bitvector8.o: src/core/fastbit/bitvector8.cpp.o
 # target to build an object file
 src/core/fastbit/bitvector8.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector8.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector8.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector8.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o
 .PHONY : src/core/fastbit/bitvector8.cpp.o
@@ -766,8 +588,6 @@ src/core/fastbit/bitvector8.i: src/core/fastbit/bitvector8.cpp.i
 # target to preprocess a source file
 src/core/fastbit/bitvector8.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector8.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector8.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector8.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.i
 .PHONY : src/core/fastbit/bitvector8.cpp.i
@@ -778,8 +598,6 @@ src/core/fastbit/bitvector8.s: src/core/fastbit/bitvector8.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/bitvector8.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/bitvector8.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/bitvector8.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/bitvector8.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.s
 .PHONY : src/core/fastbit/bitvector8.cpp.s
@@ -790,8 +608,6 @@ src/core/fastbit/fileManager.o: src/core/fastbit/fileManager.cpp.o
 # target to build an object file
 src/core/fastbit/fileManager.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/fileManager.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/fileManager.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/fileManager.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o
 .PHONY : src/core/fastbit/fileManager.cpp.o
@@ -802,8 +618,6 @@ src/core/fastbit/fileManager.i: src/core/fastbit/fileManager.cpp.i
 # target to preprocess a source file
 src/core/fastbit/fileManager.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/fileManager.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/fileManager.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/fileManager.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.i
 .PHONY : src/core/fastbit/fileManager.cpp.i
@@ -814,8 +628,6 @@ src/core/fastbit/fileManager.s: src/core/fastbit/fileManager.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/fileManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/fileManager.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/fileManager.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/fileManager.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.s
 .PHONY : src/core/fastbit/fileManager.cpp.s
@@ -826,8 +638,6 @@ src/core/fastbit/resource.o: src/core/fastbit/resource.cpp.o
 # target to build an object file
 src/core/fastbit/resource.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/resource.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/resource.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/resource.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o
 .PHONY : src/core/fastbit/resource.cpp.o
@@ -838,8 +648,6 @@ src/core/fastbit/resource.i: src/core/fastbit/resource.cpp.i
 # target to preprocess a source file
 src/core/fastbit/resource.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/resource.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/resource.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/resource.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.i
 .PHONY : src/core/fastbit/resource.cpp.i
@@ -850,8 +658,6 @@ src/core/fastbit/resource.s: src/core/fastbit/resource.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/resource.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/resource.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/resource.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/resource.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.s
 .PHONY : src/core/fastbit/resource.cpp.s
@@ -862,8 +668,6 @@ src/core/fastbit/util.o: src/core/fastbit/util.cpp.o
 # target to build an object file
 src/core/fastbit/util.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/util.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/util.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/util.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o
 .PHONY : src/core/fastbit/util.cpp.o
@@ -874,8 +678,6 @@ src/core/fastbit/util.i: src/core/fastbit/util.cpp.i
 # target to preprocess a source file
 src/core/fastbit/util.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/util.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/util.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/util.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.i
 .PHONY : src/core/fastbit/util.cpp.i
@@ -886,8 +688,6 @@ src/core/fastbit/util.s: src/core/fastbit/util.cpp.s
 # target to generate assembly for a file
 src/core/fastbit/util.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/fastbit/util.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/fastbit/util.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/fastbit/util.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.s
 .PHONY : src/core/fastbit/util.cpp.s
@@ -898,8 +698,6 @@ src/core/utils/util.o: src/core/utils/util.cpp.o
 # target to build an object file
 src/core/utils/util.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/utils/util.cpp.o
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/utils/util.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/utils/util.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o
 .PHONY : src/core/utils/util.cpp.o
@@ -910,8 +708,6 @@ src/core/utils/util.i: src/core/utils/util.cpp.i
 # target to preprocess a source file
 src/core/utils/util.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/utils/util.cpp.i
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/utils/util.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/utils/util.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.i
 .PHONY : src/core/utils/util.cpp.i
@@ -922,8 +718,6 @@ src/core/utils/util.s: src/core/utils/util.cpp.s
 # target to generate assembly for a file
 src/core/utils/util.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/benchmark_app.dir/build.make CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/src/core/utils/util.cpp.s
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/src/core/utils/util.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gen_bitmap.dir/build.make CMakeFiles/gen_bitmap.dir/src/core/utils/util.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/verify_bitmap.dir/build.make CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.s
 .PHONY : src/core/utils/util.cpp.s
@@ -951,198 +745,6 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_demo.dir/build.make CMakeFiles/combit_demo.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
-
-tests/test_all_backends.o: tests/test_all_backends.cpp.o
-.PHONY : tests/test_all_backends.o
-
-# target to build an object file
-tests/test_all_backends.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/tests/test_all_backends.cpp.o
-.PHONY : tests/test_all_backends.cpp.o
-
-tests/test_all_backends.i: tests/test_all_backends.cpp.i
-.PHONY : tests/test_all_backends.i
-
-# target to preprocess a source file
-tests/test_all_backends.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/tests/test_all_backends.cpp.i
-.PHONY : tests/test_all_backends.cpp.i
-
-tests/test_all_backends.s: tests/test_all_backends.cpp.s
-.PHONY : tests/test_all_backends.s
-
-# target to generate assembly for a file
-tests/test_all_backends.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_backend_tests.dir/build.make CMakeFiles/all_backend_tests.dir/tests/test_all_backends.cpp.s
-.PHONY : tests/test_all_backends.cpp.s
-
-tests/test_backend_ops.o: tests/test_backend_ops.cpp.o
-.PHONY : tests/test_backend_ops.o
-
-# target to build an object file
-tests/test_backend_ops.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/tests/test_backend_ops.cpp.o
-.PHONY : tests/test_backend_ops.cpp.o
-
-tests/test_backend_ops.i: tests/test_backend_ops.cpp.i
-.PHONY : tests/test_backend_ops.i
-
-# target to preprocess a source file
-tests/test_backend_ops.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/tests/test_backend_ops.cpp.i
-.PHONY : tests/test_backend_ops.cpp.i
-
-tests/test_backend_ops.s: tests/test_backend_ops.cpp.s
-.PHONY : tests/test_backend_ops.s
-
-# target to generate assembly for a file
-tests/test_backend_ops.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_backend_tests.dir/build.make CMakeFiles/combit_backend_tests.dir/tests/test_backend_ops.cpp.s
-.PHONY : tests/test_backend_ops.cpp.s
-
-tests/test_bitmap_index.o: tests/test_bitmap_index.cpp.o
-.PHONY : tests/test_bitmap_index.o
-
-# target to build an object file
-tests/test_bitmap_index.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_index.cpp.o
-.PHONY : tests/test_bitmap_index.cpp.o
-
-tests/test_bitmap_index.i: tests/test_bitmap_index.cpp.i
-.PHONY : tests/test_bitmap_index.i
-
-# target to preprocess a source file
-tests/test_bitmap_index.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_index.cpp.i
-.PHONY : tests/test_bitmap_index.cpp.i
-
-tests/test_bitmap_index.s: tests/test_bitmap_index.cpp.s
-.PHONY : tests/test_bitmap_index.s
-
-# target to generate assembly for a file
-tests/test_bitmap_index.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_index.cpp.s
-.PHONY : tests/test_bitmap_index.cpp.s
-
-tests/test_bitmap_vector.o: tests/test_bitmap_vector.cpp.o
-.PHONY : tests/test_bitmap_vector.o
-
-# target to build an object file
-tests/test_bitmap_vector.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_vector.cpp.o
-.PHONY : tests/test_bitmap_vector.cpp.o
-
-tests/test_bitmap_vector.i: tests/test_bitmap_vector.cpp.i
-.PHONY : tests/test_bitmap_vector.i
-
-# target to preprocess a source file
-tests/test_bitmap_vector.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_vector.cpp.i
-.PHONY : tests/test_bitmap_vector.cpp.i
-
-tests/test_bitmap_vector.s: tests/test_bitmap_vector.cpp.s
-.PHONY : tests/test_bitmap_vector.s
-
-# target to generate assembly for a file
-tests/test_bitmap_vector.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_bitmap_vector.cpp.s
-.PHONY : tests/test_bitmap_vector.cpp.s
-
-tests/test_bm_files.o: tests/test_bm_files.cpp.o
-.PHONY : tests/test_bm_files.o
-
-# target to build an object file
-tests/test_bm_files.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/tests/test_bm_files.cpp.o
-.PHONY : tests/test_bm_files.cpp.o
-
-tests/test_bm_files.i: tests/test_bm_files.cpp.i
-.PHONY : tests/test_bm_files.i
-
-# target to preprocess a source file
-tests/test_bm_files.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/tests/test_bm_files.cpp.i
-.PHONY : tests/test_bm_files.cpp.i
-
-tests/test_bm_files.s: tests/test_bm_files.cpp.s
-.PHONY : tests/test_bm_files.s
-
-# target to generate assembly for a file
-tests/test_bm_files.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bm_file_tests.dir/build.make CMakeFiles/bm_file_tests.dir/tests/test_bm_files.cpp.s
-.PHONY : tests/test_bm_files.cpp.s
-
-tests/test_combit_decoder.o: tests/test_combit_decoder.cpp.o
-.PHONY : tests/test_combit_decoder.o
-
-# target to build an object file
-tests/test_combit_decoder.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_decoder.cpp.o
-.PHONY : tests/test_combit_decoder.cpp.o
-
-tests/test_combit_decoder.i: tests/test_combit_decoder.cpp.i
-.PHONY : tests/test_combit_decoder.i
-
-# target to preprocess a source file
-tests/test_combit_decoder.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_decoder.cpp.i
-.PHONY : tests/test_combit_decoder.cpp.i
-
-tests/test_combit_decoder.s: tests/test_combit_decoder.cpp.s
-.PHONY : tests/test_combit_decoder.s
-
-# target to generate assembly for a file
-tests/test_combit_decoder.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_decoder.cpp.s
-.PHONY : tests/test_combit_decoder.cpp.s
-
-tests/test_combit_encoder.o: tests/test_combit_encoder.cpp.o
-.PHONY : tests/test_combit_encoder.o
-
-# target to build an object file
-tests/test_combit_encoder.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_encoder.cpp.o
-.PHONY : tests/test_combit_encoder.cpp.o
-
-tests/test_combit_encoder.i: tests/test_combit_encoder.cpp.i
-.PHONY : tests/test_combit_encoder.i
-
-# target to preprocess a source file
-tests/test_combit_encoder.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_encoder.cpp.i
-.PHONY : tests/test_combit_encoder.cpp.i
-
-tests/test_combit_encoder.s: tests/test_combit_encoder.cpp.s
-.PHONY : tests/test_combit_encoder.s
-
-# target to generate assembly for a file
-tests/test_combit_encoder.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_combit_encoder.cpp.s
-.PHONY : tests/test_combit_encoder.cpp.s
-
-tests/test_compression.o: tests/test_compression.cpp.o
-.PHONY : tests/test_compression.o
-
-# target to build an object file
-tests/test_compression.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_compression.cpp.o
-.PHONY : tests/test_compression.cpp.o
-
-tests/test_compression.i: tests/test_compression.cpp.i
-.PHONY : tests/test_compression.i
-
-# target to preprocess a source file
-tests/test_compression.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_compression.cpp.i
-.PHONY : tests/test_compression.cpp.i
-
-tests/test_compression.s: tests/test_compression.cpp.s
-.PHONY : tests/test_compression.s
-
-# target to generate assembly for a file
-tests/test_compression.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/combit_tests.dir/build.make CMakeFiles/combit_tests.dir/tests/test_compression.cpp.s
-.PHONY : tests/test_compression.cpp.s
 
 util/gen_bitmap.o: util/gen_bitmap.cpp.o
 .PHONY : util/gen_bitmap.o
@@ -1199,24 +801,15 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... test"
-	@echo "... all_backend_tests"
 	@echo "... benchmark_app"
-	@echo "... bm_file_tests"
+	@echo "... bitset_core"
 	@echo "... combit"
-	@echo "... combit_backend_tests"
+	@echo "... combit_debug"
 	@echo "... combit_demo"
-	@echo "... combit_tests"
+	@echo "... combit_eval"
+	@echo "... combit_eval_debug"
 	@echo "... gen_bitmap"
-	@echo "... gmock"
-	@echo "... gmock_main"
-	@echo "... gtest"
-	@echo "... gtest_main"
 	@echo "... verify_bitmap"
 	@echo "... src/benchmark/backends/Concise/concise_backend.o"
 	@echo "... src/benchmark/backends/Concise/concise_backend.i"
@@ -1275,30 +868,6 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... tests/test_all_backends.o"
-	@echo "... tests/test_all_backends.i"
-	@echo "... tests/test_all_backends.s"
-	@echo "... tests/test_backend_ops.o"
-	@echo "... tests/test_backend_ops.i"
-	@echo "... tests/test_backend_ops.s"
-	@echo "... tests/test_bitmap_index.o"
-	@echo "... tests/test_bitmap_index.i"
-	@echo "... tests/test_bitmap_index.s"
-	@echo "... tests/test_bitmap_vector.o"
-	@echo "... tests/test_bitmap_vector.i"
-	@echo "... tests/test_bitmap_vector.s"
-	@echo "... tests/test_bm_files.o"
-	@echo "... tests/test_bm_files.i"
-	@echo "... tests/test_bm_files.s"
-	@echo "... tests/test_combit_decoder.o"
-	@echo "... tests/test_combit_decoder.i"
-	@echo "... tests/test_combit_decoder.s"
-	@echo "... tests/test_combit_encoder.o"
-	@echo "... tests/test_combit_encoder.i"
-	@echo "... tests/test_combit_encoder.s"
-	@echo "... tests/test_compression.o"
-	@echo "... tests/test_compression.i"
-	@echo "... tests/test_compression.s"
 	@echo "... util/gen_bitmap.o"
 	@echo "... util/gen_bitmap.i"
 	@echo "... util/gen_bitmap.s"

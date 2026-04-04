@@ -1,5 +1,0 @@
-if(EXISTS "/home/lichenhang/Desktop/thesis/combit/debug/combit_backend_tests[1]_tests.cmake")
-  include("/home/lichenhang/Desktop/thesis/combit/debug/combit_backend_tests[1]_tests.cmake")
-else()
-  add_test(combit_backend_tests_NOT_BUILT combit_backend_tests_NOT_BUILT)
-endif()

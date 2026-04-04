@@ -1,7 +1,7 @@
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o: \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c \
  /usr/include/stdc-predef.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \

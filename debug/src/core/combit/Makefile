@@ -57,23 +57,13 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/thesis/combit
+CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/lch/combit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lichenhang/Desktop/thesis/combit/debug
+CMAKE_BINARY_DIR = /home/lichenhang/Desktop/lch/combit/debug
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target test
-test:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running tests..."
-	/usr/bin/ctest --force-new-ctest-process $(ARGS)
-.PHONY : test
-
-# Special rule for the target test
-test/fast: test
-.PHONY : test/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -95,61 +85,16 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"gmock\" \"gtest\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit//CMakeFiles/progress.marks
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles 0
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles /home/lichenhang/Desktop/lch/combit/debug/src/core/combit//CMakeFiles/progress.marks
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/clean
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/clean
 .PHONY : clean
 
 # The main clean target
@@ -158,22 +103,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/preinstall
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/preinstall
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 src/core/combit/CMakeFiles/combit.dir/rule:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/CMakeFiles/combit.dir/rule
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/CMakeFiles/combit.dir/rule
 .PHONY : src/core/combit/CMakeFiles/combit.dir/rule
 
 # Convenience name for target.
@@ -182,104 +127,185 @@ combit: src/core/combit/CMakeFiles/combit.dir/rule
 
 # fast build rule for target.
 combit/fast:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/build
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/build
 .PHONY : combit/fast
 
-src/bitmap_vector.o: src/bitmap_vector.cpp.o
-.PHONY : src/bitmap_vector.o
+# Convenience name for target.
+src/core/combit/CMakeFiles/combit_eval.dir/rule:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/CMakeFiles/combit_eval.dir/rule
+.PHONY : src/core/combit/CMakeFiles/combit_eval.dir/rule
+
+# Convenience name for target.
+combit_eval: src/core/combit/CMakeFiles/combit_eval.dir/rule
+.PHONY : combit_eval
+
+# fast build rule for target.
+combit_eval/fast:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval.dir/build.make src/core/combit/CMakeFiles/combit_eval.dir/build
+.PHONY : combit_eval/fast
+
+# Convenience name for target.
+src/core/combit/CMakeFiles/combit_debug.dir/rule:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/CMakeFiles/combit_debug.dir/rule
+.PHONY : src/core/combit/CMakeFiles/combit_debug.dir/rule
+
+# Convenience name for target.
+combit_debug: src/core/combit/CMakeFiles/combit_debug.dir/rule
+.PHONY : combit_debug
+
+# fast build rule for target.
+combit_debug/fast:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/build
+.PHONY : combit_debug/fast
+
+# Convenience name for target.
+src/core/combit/CMakeFiles/combit_eval_debug.dir/rule:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/core/combit/CMakeFiles/combit_eval_debug.dir/rule
+.PHONY : src/core/combit/CMakeFiles/combit_eval_debug.dir/rule
+
+# Convenience name for target.
+combit_eval_debug: src/core/combit/CMakeFiles/combit_eval_debug.dir/rule
+.PHONY : combit_eval_debug
+
+# fast build rule for target.
+combit_eval_debug/fast:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval_debug.dir/build.make src/core/combit/CMakeFiles/combit_eval_debug.dir/build
+.PHONY : combit_eval_debug/fast
+
+src/and.o: src/and.cpp.o
+.PHONY : src/and.o
 
 # target to build an object file
-src/bitmap_vector.cpp.o:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o
-.PHONY : src/bitmap_vector.cpp.o
+src/and.cpp.o:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/and.cpp.o
+.PHONY : src/and.cpp.o
 
-src/bitmap_vector.i: src/bitmap_vector.cpp.i
-.PHONY : src/bitmap_vector.i
+src/and.i: src/and.cpp.i
+.PHONY : src/and.i
 
 # target to preprocess a source file
-src/bitmap_vector.cpp.i:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.i
-.PHONY : src/bitmap_vector.cpp.i
+src/and.cpp.i:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/and.cpp.i
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/and.cpp.i
+.PHONY : src/and.cpp.i
 
-src/bitmap_vector.s: src/bitmap_vector.cpp.s
-.PHONY : src/bitmap_vector.s
+src/and.s: src/and.cpp.s
+.PHONY : src/and.s
 
 # target to generate assembly for a file
-src/bitmap_vector.cpp.s:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.s
-.PHONY : src/bitmap_vector.cpp.s
+src/and.cpp.s:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/and.cpp.s
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/and.cpp.s
+.PHONY : src/and.cpp.s
 
-src/combit_decoder.o: src/combit_decoder.cpp.o
-.PHONY : src/combit_decoder.o
+src/combit.o: src/combit.cpp.o
+.PHONY : src/combit.o
 
 # target to build an object file
-src/combit_decoder.cpp.o:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o
-.PHONY : src/combit_decoder.cpp.o
+src/combit.cpp.o:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/combit.cpp.o
+.PHONY : src/combit.cpp.o
 
-src/combit_decoder.i: src/combit_decoder.cpp.i
-.PHONY : src/combit_decoder.i
+src/combit.i: src/combit.cpp.i
+.PHONY : src/combit.i
 
 # target to preprocess a source file
-src/combit_decoder.cpp.i:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.i
-.PHONY : src/combit_decoder.cpp.i
+src/combit.cpp.i:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.i
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/combit.cpp.i
+.PHONY : src/combit.cpp.i
 
-src/combit_decoder.s: src/combit_decoder.cpp.s
-.PHONY : src/combit_decoder.s
+src/combit.s: src/combit.cpp.s
+.PHONY : src/combit.s
 
 # target to generate assembly for a file
-src/combit_decoder.cpp.s:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.s
-.PHONY : src/combit_decoder.cpp.s
+src/combit.cpp.s:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.s
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/combit.cpp.s
+.PHONY : src/combit.cpp.s
 
-src/combit_encoder.o: src/combit_encoder.cpp.o
-.PHONY : src/combit_encoder.o
+src/combit_eval.o: src/combit_eval.cpp.o
+.PHONY : src/combit_eval.o
 
 # target to build an object file
-src/combit_encoder.cpp.o:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o
-.PHONY : src/combit_encoder.cpp.o
+src/combit_eval.cpp.o:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval.dir/build.make src/core/combit/CMakeFiles/combit_eval.dir/src/combit_eval.cpp.o
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval_debug.dir/build.make src/core/combit/CMakeFiles/combit_eval_debug.dir/src/combit_eval.cpp.o
+.PHONY : src/combit_eval.cpp.o
 
-src/combit_encoder.i: src/combit_encoder.cpp.i
-.PHONY : src/combit_encoder.i
+src/combit_eval.i: src/combit_eval.cpp.i
+.PHONY : src/combit_eval.i
 
 # target to preprocess a source file
-src/combit_encoder.cpp.i:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.i
-.PHONY : src/combit_encoder.cpp.i
+src/combit_eval.cpp.i:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval.dir/build.make src/core/combit/CMakeFiles/combit_eval.dir/src/combit_eval.cpp.i
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval_debug.dir/build.make src/core/combit/CMakeFiles/combit_eval_debug.dir/src/combit_eval.cpp.i
+.PHONY : src/combit_eval.cpp.i
 
-src/combit_encoder.s: src/combit_encoder.cpp.s
-.PHONY : src/combit_encoder.s
+src/combit_eval.s: src/combit_eval.cpp.s
+.PHONY : src/combit_eval.s
 
 # target to generate assembly for a file
-src/combit_encoder.cpp.s:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.s
-.PHONY : src/combit_encoder.cpp.s
+src/combit_eval.cpp.s:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval.dir/build.make src/core/combit/CMakeFiles/combit_eval.dir/src/combit_eval.cpp.s
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_eval_debug.dir/build.make src/core/combit/CMakeFiles/combit_eval_debug.dir/src/combit_eval.cpp.s
+.PHONY : src/combit_eval.cpp.s
 
-src/types.o: src/types.cpp.o
-.PHONY : src/types.o
+src/or.o: src/or.cpp.o
+.PHONY : src/or.o
 
 # target to build an object file
-src/types.cpp.o:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o
-.PHONY : src/types.cpp.o
+src/or.cpp.o:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/or.cpp.o
+.PHONY : src/or.cpp.o
 
-src/types.i: src/types.cpp.i
-.PHONY : src/types.i
+src/or.i: src/or.cpp.i
+.PHONY : src/or.i
 
 # target to preprocess a source file
-src/types.cpp.i:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/types.cpp.i
-.PHONY : src/types.cpp.i
+src/or.cpp.i:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/or.cpp.i
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/or.cpp.i
+.PHONY : src/or.cpp.i
 
-src/types.s: src/types.cpp.s
-.PHONY : src/types.s
+src/or.s: src/or.cpp.s
+.PHONY : src/or.s
 
 # target to generate assembly for a file
-src/types.cpp.s:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/types.cpp.s
-.PHONY : src/types.cpp.s
+src/or.cpp.s:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/or.cpp.s
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/or.cpp.s
+.PHONY : src/or.cpp.s
+
+src/xor.o: src/xor.cpp.o
+.PHONY : src/xor.o
+
+# target to build an object file
+src/xor.cpp.o:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/xor.cpp.o
+.PHONY : src/xor.cpp.o
+
+src/xor.i: src/xor.cpp.i
+.PHONY : src/xor.i
+
+# target to preprocess a source file
+src/xor.cpp.i:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.i
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/xor.cpp.i
+.PHONY : src/xor.cpp.i
+
+src/xor.s: src/xor.cpp.s
+.PHONY : src/xor.s
+
+# target to generate assembly for a file
+src/xor.cpp.s:
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit.dir/build.make src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.s
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(MAKE) $(MAKESILENT) -f src/core/combit/CMakeFiles/combit_debug.dir/build.make src/core/combit/CMakeFiles/combit_debug.dir/src/xor.cpp.s
+.PHONY : src/xor.cpp.s
 
 # Help Target
 help:
@@ -288,25 +314,26 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... test"
 	@echo "... combit"
-	@echo "... src/bitmap_vector.o"
-	@echo "... src/bitmap_vector.i"
-	@echo "... src/bitmap_vector.s"
-	@echo "... src/combit_decoder.o"
-	@echo "... src/combit_decoder.i"
-	@echo "... src/combit_decoder.s"
-	@echo "... src/combit_encoder.o"
-	@echo "... src/combit_encoder.i"
-	@echo "... src/combit_encoder.s"
-	@echo "... src/types.o"
-	@echo "... src/types.i"
-	@echo "... src/types.s"
+	@echo "... combit_debug"
+	@echo "... combit_eval"
+	@echo "... combit_eval_debug"
+	@echo "... src/and.o"
+	@echo "... src/and.i"
+	@echo "... src/and.s"
+	@echo "... src/combit.o"
+	@echo "... src/combit.i"
+	@echo "... src/combit.s"
+	@echo "... src/combit_eval.o"
+	@echo "... src/combit_eval.i"
+	@echo "... src/combit_eval.s"
+	@echo "... src/or.o"
+	@echo "... src/or.i"
+	@echo "... src/or.s"
+	@echo "... src/xor.o"
+	@echo "... src/xor.i"
+	@echo "... src/xor.s"
 .PHONY : help
 
 
@@ -318,6 +345,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

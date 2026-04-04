@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lichenhang/Desktop/thesis/combit/src/core/combit/src/bitmap_vector.cpp" "src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o.d"
-  "/home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_decoder.cpp" "src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o.d"
-  "/home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_encoder.cpp" "src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o.d"
-  "/home/lichenhang/Desktop/thesis/combit/src/core/combit/src/types.cpp" "src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o.d"
+  "/home/lichenhang/Desktop/lch/combit/src/core/combit/src/and.cpp" "src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o.d"
+  "/home/lichenhang/Desktop/lch/combit/src/core/combit/src/combit.cpp" "src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o.d"
+  "/home/lichenhang/Desktop/lch/combit/src/core/combit/src/or.cpp" "src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o.d"
+  "/home/lichenhang/Desktop/lch/combit/src/core/combit/src/xor.cpp" "src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o" "gcc" "src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o.d"
   )
 
 # Targets to which this target links.

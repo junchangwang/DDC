@@ -274,8 +274,8 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     auto* ch = dynamic_cast<CombitHandle*>(bm.get());
                     if (ch) {
                         auto sb = ch->compressed.size_breakdown();
-                        total_lb  += sb.leading_bits_count;
-                        total_lit += sb.literal_bits;
+                        total_lb  += sb.l3_bits;
+                        total_lit += sb.l1_literal_bits;
                         total_cb  += sb.total_bits;
                     }
                 }
@@ -575,8 +575,8 @@ void run_cross_or_benchmark(IBitmapBackend* backend, const std::string& backend_
             auto* ch = dynamic_cast<CombitHandle*>(bm);
             if (ch) {
                 auto sb = ch->compressed.size_breakdown();
-                std::cout << "  [ComBit " << label << "] leading: " << sb.leading_bits_count
-                          << " bits | literal: " << sb.literal_bits
+                std::cout << "  [ComBit " << label << "] leading: " << sb.l3_bits
+                          << " bits | literal: " << sb.l1_literal_bits
                           << " bits | total: " << sb.total_bits << " bits ("
                           << sb.total_bits / 8.0 / 1024.0 << " KB)\n";
             }

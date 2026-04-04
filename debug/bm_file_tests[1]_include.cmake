@@ -1,5 +1,0 @@
-if(EXISTS "/home/lichenhang/Desktop/thesis/combit/debug/bm_file_tests[1]_tests.cmake")
-  include("/home/lichenhang/Desktop/thesis/combit/debug/bm_file_tests[1]_tests.cmake")
-else()
-  add_test(bm_file_tests_NOT_BUILT bm_file_tests_NOT_BUILT)
-endif()

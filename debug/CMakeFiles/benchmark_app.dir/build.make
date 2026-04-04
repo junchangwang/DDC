@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/thesis/combit
+CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/lch/combit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lichenhang/Desktop/thesis/combit/debug
+CMAKE_BINARY_DIR = /home/lichenhang/Desktop/lch/combit/debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/benchmark_app.dir/depend.make
@@ -72,254 +72,254 @@ include CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmark/benchmark_main.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/benchmark_main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/benchmark_main.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/benchmark_main.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/benchmark_main.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/benchmark_main.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/benchmark_main.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: ../src/benchmark/uti.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o: ../src/benchmark/backends/wah/wah_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/wah/wah_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o: ../src/benchmark/backends/croaring/croaring_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o: ../src/benchmark/backends/combit/combit_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/combit/combit_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/combit/combit_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/combit/combit_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/combit/combit_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/combit/combit_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/combit/combit_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: ../src/benchmark/backends/ewah/ewah_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o: ../src/benchmark/backends/Concise/concise_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/Concise/concise_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/Concise/concise_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/Concise/concise_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/Concise/concise_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/Concise/concise_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/Concise/concise_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o: ../src/benchmark/backends/bitset/bitset_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset/bitset_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset/bitset_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset/bitset_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset/bitset_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset/bitset_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset/bitset_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o: ../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o -MF CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp > CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp -o CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o: ../src/core/croaring/roaring.c
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o -MF CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o.d -o CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o -c /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o -MF CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o.d -o CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.o -c /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c
 
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c > CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c > CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.i
 
 CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c -o CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c -o CMakeFiles/benchmark_app.dir/src/core/croaring/roaring.c.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o: ../src/core/fastbit/bitvector.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o: ../src/core/fastbit/bitvector16.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector16.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o: ../src/core/fastbit/bitvector8.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/bitvector8.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o: ../src/core/fastbit/fileManager.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/fileManager.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o: ../src/core/fastbit/resource.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/resource.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o: ../src/core/fastbit/util.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/util.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o: ../src/core/fastbit/array_t.cpp
 CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp > CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp -o CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.s
 
 CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: CMakeFiles/benchmark_app.dir/flags.make
 CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.cpp
 CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: CMakeFiles/benchmark_app.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o -MF CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o.d -o CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp
 
 CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp > CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp > CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.i
 
 CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp -o CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp -o CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.s
 
 # Object files for target benchmark_app
 benchmark_app_OBJECTS = \
@@ -365,9 +365,10 @@ benchmark_app: CMakeFiles/benchmark_app.dir/src/core/fastbit/array_t.cpp.o
 benchmark_app: CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o
 benchmark_app: CMakeFiles/benchmark_app.dir/build.make
 benchmark_app: src/core/combit/libcombit.a
+benchmark_app: src/core/bitset/libbitset_core.a
 benchmark_app: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.74.0
 benchmark_app: CMakeFiles/benchmark_app.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable benchmark_app"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking CXX executable benchmark_app"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/benchmark_app.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -379,6 +380,6 @@ CMakeFiles/benchmark_app.dir/clean:
 .PHONY : CMakeFiles/benchmark_app.dir/clean
 
 CMakeFiles/benchmark_app.dir/depend:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/thesis/combit /home/lichenhang/Desktop/thesis/combit /home/lichenhang/Desktop/thesis/combit/debug /home/lichenhang/Desktop/thesis/combit/debug /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles/benchmark_app.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/lch/combit /home/lichenhang/Desktop/lch/combit /home/lichenhang/Desktop/lch/combit/debug /home/lichenhang/Desktop/lch/combit/debug /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles/benchmark_app.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/benchmark_app.dir/depend
 

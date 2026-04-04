@@ -1,8 +1,8 @@
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.cpp \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.cpp \
  /usr/include/stdc-predef.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/../../bitmap_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/../../bitmap_backend.h \
  /usr/include/c++/11/cstdint \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -154,7 +154,7 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: \
  /usr/include/c++/11/vector /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
  /usr/include/c++/11/bits/vector.tcc \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah.h \
  /usr/include/c++/11/algorithm /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \
  /usr/include/c++/11/bits/stl_heap.h \
@@ -169,7 +169,7 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: \
  /usr/include/c++/11/bits/erase_if.h /usr/include/c++/11/queue \
  /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
  /usr/include/c++/11/bits/deque.tcc /usr/include/c++/11/bits/stl_queue.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/boolarray.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/boolarray.h \
  /usr/include/c++/11/cassert /usr/include/assert.h \
  /usr/include/c++/11/iostream /usr/include/c++/11/ostream \
  /usr/include/c++/11/ios /usr/include/c++/11/bits/ios_base.h \
@@ -190,7 +190,7 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: \
  /usr/include/c++/11/bits/istream.tcc \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/iso646.h \
  /usr/include/c++/11/sstream /usr/include/c++/11/bits/sstream.tcc \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewahutil.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewahutil.h \
  /usr/include/c++/11/cstddef \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
@@ -202,9 +202,9 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/ewah/ewah_backend.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
  /usr/include/c++/11/stdlib.h /usr/include/string.h \
  /usr/include/strings.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/runninglengthword.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah-inl.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/runninglengthword.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah-inl.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah.h \
  /usr/include/c++/11/fstream /usr/include/c++/11/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \

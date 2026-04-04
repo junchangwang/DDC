@@ -1,4 +1,4 @@
-# Install script for directory: /home/lichenhang/Desktop/thesis/combit
+# Install script for directory: /home/lichenhang/Desktop/lch/combit
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,12 +44,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/lichenhang/Desktop/thesis/combit/debug/src/core/combit/cmake_install.cmake")
+  include("/home/lichenhang/Desktop/lch/combit/debug/src/core/combit/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/lichenhang/Desktop/thesis/combit/debug/_deps/googletest-build/cmake_install.cmake")
+  include("/home/lichenhang/Desktop/lch/combit/debug/src/core/bitset/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -60,5 +60,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/lichenhang/Desktop/thesis/combit/debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/lichenhang/Desktop/lch/combit/debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

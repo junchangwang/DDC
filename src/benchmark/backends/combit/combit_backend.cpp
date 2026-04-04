@@ -9,7 +9,7 @@ struct CombitAppendHandle : public CombitHandle {
 
     void ensure_compressed() {
         if (needs_compress) {
-            compressed = ComBit::compress<8>(raw_bits);
+            compressed = ComBit::compress(raw_bits);
             needs_compress = false;
         }
     }

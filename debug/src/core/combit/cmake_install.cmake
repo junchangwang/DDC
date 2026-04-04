@@ -1,4 +1,4 @@
-# Install script for directory: /home/lichenhang/Desktop/thesis/combit/src/core/combit
+# Install script for directory: /home/lichenhang/Desktop/lch/combit/src/core/combit
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
