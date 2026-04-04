@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 // ====================================================================
-// ComBitBtv member function definitions
+// ComBitBtv member function definitions (3-level: L3/L2/L1)
 // ====================================================================
 
 // ----------------------------------------------------------------
@@ -11,24 +11,16 @@
 // ----------------------------------------------------------------
 
 ComBitBtv::ComBitBtv(bool fill_ones)
-    : fill_ones_(fill_ones),
-      leading_bits_count_(0), literal_count_(0), bit_count_(0) {}
+    : fill_ones_(fill_ones), bit_count_(0), use_l3_(false),
+      l2_count_(0), l3_count_(0), l2_literal_count_(0),
+      l1_literal_count_(0) {}
 
 // ----------------------------------------------------------------
 // Private helpers
 // ----------------------------------------------------------------
 
-void ComBitBtv::push_literal(uint64_t val) {
-    literal_data_.push_back(static_cast<uint8_t>(val));
-    literal_count_++;
-}
-
-void ComBitBtv::set_literal(size_t idx, uint64_t val) {
-    literal_data_[idx] = static_cast<uint8_t>(val);
-}
-
 uint64_t ComBitBtv::get_literal(size_t idx) const {
-    return literal_data_[idx];
+    return l1_literals_[idx];
 }
 
 uint64_t ComBitBtv::read_word_from_bits(const std::vector<bool>& bits,
@@ -47,6 +39,27 @@ void ComBitBtv::append_word_to_bits(std::vector<bool>& bits, uint64_t word) {
         bits.push_back((word >> i) & 1);
 }
 
+/// Rebuild the flat L2 byte array from L3 + l2_literals_.
+/// If !use_l3_, just returns l2_flat_ directly.
+std::vector<uint8_t>
+ComBitBtv::expand_l2() const {
+    if (!use_l3_)
+        return l2_flat_;
+
+    size_t l2_byte_count = (l2_count_ + 7) / 8;
+    std::vector<uint8_t> l2(l2_byte_count, 0);
+    size_t lit_idx = 0;
+    for (size_t i = 0; i < l3_count_; i++) {
+        uint8_t l3_byte = l3_bits_[i / 8];
+        bool is_literal = (l3_byte >> (i % 8)) & 1;
+        if (is_literal) {
+            if (i < l2_byte_count)
+                l2[i] = l2_literals_[lit_idx++];
+        }
+    }
+    return l2;
+}
+
 // ----------------------------------------------------------------
 // Compression
 // ----------------------------------------------------------------
@@ -59,15 +72,54 @@ ComBitBtv::compress(const std::vector<bool>& bits, bool fill_ones) {
     size_t num_words = (bits.size() + 7) / 8;
     if (num_words == 0) return result;
 
-    result.leading_bits_count_ = num_words;
-    result.leading_bits_.assign((num_words + 63) / 64, 0);
+    result.l2_count_ = num_words;
+
+    // Step 1: Build flat L2 (one bit per word, packed into bytes)
+    // and collect L1 literals.
+    size_t l2_byte_count = (num_words + 7) / 8;
+    std::vector<uint8_t> l2_flat(l2_byte_count, 0);
+
     const uint64_t fill_val = fill_ones ? uint64_t(0xFF) : uint64_t(0);
     for (size_t i = 0; i < num_words; i++) {
         uint64_t word = read_word_from_bits(bits, i);
         if (word != fill_val) {
-            result.set_literal_bit(i);
-            result.push_literal(word);
+            l2_flat[i / 8] |= uint8_t(1) << (i % 8);
+            result.l1_literals_.push_back(static_cast<uint8_t>(word));
         }
+    }
+    result.l1_literal_count_ = result.l1_literals_.size();
+
+    // Step 2: Decide whether to use L3 compression on L2.
+    // Count non-zero L2 bytes (each byte covers 8 words = 64 bits).
+    size_t l2_nonzero = 0;
+    for (size_t i = 0; i < l2_byte_count; i++) {
+        if (l2_flat[i] != 0) l2_nonzero++;
+    }
+
+    // Use L3 when L2 density < 1/64 (i.e., ≤ ~1.5% of L2 bytes are non-zero)
+    // or more practically, when L3 + L2 literals < flat L2 size.
+    size_t flat_cost = l2_byte_count;
+    size_t l3_byte_count = (l2_byte_count + 7) / 8;
+    size_t l3_cost = l3_byte_count + l2_nonzero;
+
+    if (l3_cost < flat_cost) {
+        result.use_l3_ = true;
+        result.l3_count_ = l2_byte_count;  // one L3 bit per L2 byte
+
+        result.l3_bits_.assign(l3_byte_count, 0);
+        for (size_t i = 0; i < l2_byte_count; i++) {
+            if (l2_flat[i] != 0) {
+                result.l3_bits_[i / 8] |= uint8_t(1) << (i % 8);
+                result.l2_literals_.push_back(l2_flat[i]);
+            }
+        }
+        result.l2_literal_count_ = result.l2_literals_.size();
+        // l2_flat_ left empty when L3 is active
+    } else {
+        result.use_l3_ = false;
+        result.l3_count_ = 0;
+        result.l2_flat_ = std::move(l2_flat);
+        result.l2_literal_count_ = 0;
     }
 
     return result;
@@ -82,13 +134,18 @@ ComBitBtv::decompress() const {
     std::vector<bool> result;
     result.reserve(bit_count_);
 
+    // Reconstruct flat L2
+    auto l2 = expand_l2();
+
     size_t lit_idx = 0;
-    for (size_t i = 0; i < leading_bits_count_; i++) {
-        if (is_fill_bit(i)) {
+    for (size_t i = 0; i < l2_count_; i++) {
+        uint8_t l2_byte = l2[i / 8];
+        bool is_literal = (l2_byte >> (i % 8)) & 1;
+        if (!is_literal) {
             for (unsigned b = 0; b < 8; b++)
                 result.push_back(fill_ones_);
         } else {
-            append_word_to_bits(result, get_literal(lit_idx++));
+            append_word_to_bits(result, l1_literals_[lit_idx++]);
         }
     }
 
@@ -141,12 +198,18 @@ ComBitBtv::operator~() const {
 
 size_t
 ComBitBtv::popcount() const {
+    // Reconstruct flat L2 for iteration
+    auto l2 = expand_l2();
+
     size_t count = 0;
     size_t bits_seen = 0;
     size_t lit_idx = 0;
 
-    for (size_t i = 0; i < leading_bits_count_; i++) {
-        if (is_fill_bit(i)) {
+    for (size_t i = 0; i < l2_count_; i++) {
+        uint8_t l2_byte = l2[i / 8];
+        bool is_literal = (l2_byte >> (i % 8)) & 1;
+
+        if (!is_literal) {
             if (fill_ones_) {
                 size_t remaining = (bits_seen < bit_count_)
                     ? bit_count_ - bits_seen : 0;
@@ -154,7 +217,7 @@ ComBitBtv::popcount() const {
             }
             bits_seen += 8;
         } else {
-            uint64_t w = get_literal(lit_idx++);
+            uint64_t w = l1_literals_[lit_idx++];
             size_t remaining = (bits_seen < bit_count_)
                 ? bit_count_ - bits_seen : 0;
             if (remaining >= 8) {
@@ -188,9 +251,15 @@ ComBitBtv::set_bit_positions() const {
 ComBitBtv::SizeBreakdown
 ComBitBtv::size_breakdown() const {
     SizeBreakdown sb;
-    sb.leading_bits_count = leading_bits_count_;
-    sb.literal_bits       = literal_count_ * 8;
-    sb.total_bits         = sb.leading_bits_count + sb.literal_bits;
+    if (use_l3_) {
+        sb.l3_bits = l3_count_;
+        sb.l2_literal_bits = l2_literal_count_ * 8;
+    } else {
+        sb.l3_bits = 0;
+        sb.l2_literal_bits = l2_flat_.size() * 8;
+    }
+    sb.l1_literal_bits = l1_literal_count_ * 8;
+    sb.total_bits = sb.l3_bits + sb.l2_literal_bits + sb.l1_literal_bits;
     return sb;
 }
 
@@ -206,10 +275,11 @@ ComBitBtv::compression_ratio() const {
 
 size_t
 ComBitBtv::num_fills() const {
-    size_t n = 0;
-    for (size_t w = 0; w < leading_bits_.size(); w++)
-        n += __builtin_popcountll(leading_bits_[w]);
-    return leading_bits_count_ - n;
+    auto l2 = expand_l2();
+    size_t lit = 0;
+    for (size_t i = 0; i < (l2_count_ + 7) / 8; i++)
+        lit += __builtin_popcount(l2[i]);
+    return l2_count_ - lit;
 }
 
 // ----------------------------------------------------------------
@@ -218,26 +288,23 @@ ComBitBtv::num_fills() const {
 
 void
 ComBitBtv::print(std::ostream& os) const {
-    os << "ComBitBtv compressed bitvector:\n";
+    os << "ComBitBtv compressed bitvector (3-level):\n";
     os << "  Original size: " << bit_count_ << " bits\n";
+    os << "  L2 count: " << l2_count_ << " (words)\n";
+    os << "  Use L3: " << (use_l3_ ? "yes" : "no") << "\n";
 
-    os << "  Leading bits: ";
-    for (size_t i = 0; i < leading_bits_count_; i++)
-        os << (is_fill_bit(i) ? '0' : '1');
-    os << " (" << leading_bits_count_ << " entries)\n";
-
-    os << "  Literal words: [";
-    for (size_t i = 0; i < literal_count_; i++) {
-        if (i > 0) os << ", ";
-        uint64_t val = get_literal(i);
-        for (int b = 7; b >= 0; b--)
-            os << ((val >> b) & 1);
+    if (use_l3_) {
+        os << "  L3 count: " << l3_count_ << " bits\n";
+        os << "  L2 literals: " << l2_literal_count_ << " bytes\n";
+    } else {
+        os << "  L2 flat: " << l2_flat_.size() << " bytes\n";
     }
-    os << "]\n";
+    os << "  L1 literals: " << l1_literal_count_ << " bytes\n";
 
     auto sb = size_breakdown();
-    os << "  Size breakdown: meta=" << sb.leading_bits_count
-       << "  literal=" << sb.literal_bits
+    os << "  Size breakdown: L3=" << sb.l3_bits
+       << "  L2_lit=" << sb.l2_literal_bits
+       << "  L1_lit=" << sb.l1_literal_bits
        << "  total=" << sb.total_bits << " bits\n";
     os << "  Compression ratio: " << std::fixed << std::setprecision(2)
        << compression_ratio() << "x\n";
@@ -357,11 +424,12 @@ ComBit::set_bit_positions() const {
 
 ComBit::SizeBreakdown
 ComBit::size_breakdown() const {
-    SizeBreakdown sb{0, 0, 0};
+    SizeBreakdown sb{0, 0, 0, 0};
     for (const auto& seg : segments_) {
         auto ssb = seg.size_breakdown();
-        sb.leading_bits_count += ssb.leading_bits_count;
-        sb.literal_bits += ssb.literal_bits;
+        sb.l3_bits += ssb.l3_bits;
+        sb.l2_literal_bits += ssb.l2_literal_bits;
+        sb.l1_literal_bits += ssb.l1_literal_bits;
         sb.total_bits += ssb.total_bits;
     }
     return sb;
@@ -390,14 +458,16 @@ ComBit::print(std::ostream& os) const {
            << "ComBitBtv"
            << " fill_ones=" << s.fill_ones()
            << " bits=" << s.bit_count()
+           << " use_l3=" << s.use_l3()
            << " fills=" << s.num_fills()
            << " literals=" << s.num_literals()
            << "\n";
     }
 
     auto sb = size_breakdown();
-    os << "  Size breakdown: meta=" << sb.leading_bits_count
-       << "  literal=" << sb.literal_bits
+    os << "  Size breakdown: L3=" << sb.l3_bits
+       << "  L2_lit=" << sb.l2_literal_bits
+       << "  L1_lit=" << sb.l1_literal_bits
        << "  total=" << sb.total_bits << " bits\n";
     os << "  Compression ratio: " << std::fixed << std::setprecision(2)
        << compression_ratio() << "x\n";
@@ -426,22 +496,32 @@ static T read_val(std::istream& is) {
 // ----------------------------------------------------------------
 
 void ComBitBtv::serialize(std::ostream& os) const {
-    write_val<uint8_t>(os, static_cast<uint8_t>(8));
+    write_val<uint8_t>(os, static_cast<uint8_t>(8));  // word size tag
     write_val<uint8_t>(os, fill_ones_ ? 1 : 0);
+    write_val<uint8_t>(os, use_l3_ ? 1 : 0);
     write_val<uint64_t>(os, bit_count_);
-    write_val<uint64_t>(os, leading_bits_count_);
+    write_val<uint64_t>(os, l2_count_);
 
-    uint64_t lb_vec_size = leading_bits_.size();
-    write_val<uint64_t>(os, lb_vec_size);
-    if (lb_vec_size > 0)
-        os.write(reinterpret_cast<const char*>(leading_bits_.data()),
-                 lb_vec_size * sizeof(uint64_t));
+    if (use_l3_) {
+        write_val<uint64_t>(os, l3_count_);
+        uint64_t l3_bytes = l3_bits_.size();
+        write_val<uint64_t>(os, l3_bytes);
+        if (l3_bytes > 0)
+            os.write(reinterpret_cast<const char*>(l3_bits_.data()), l3_bytes);
 
-    write_val<uint64_t>(os, literal_count_);
-    uint64_t lit_data_size = literal_data_.size();
-    write_val<uint64_t>(os, lit_data_size);
-    if (lit_data_size > 0)
-        os.write(reinterpret_cast<const char*>(literal_data_.data()), lit_data_size);
+        write_val<uint64_t>(os, l2_literal_count_);
+        if (l2_literal_count_ > 0)
+            os.write(reinterpret_cast<const char*>(l2_literals_.data()), l2_literal_count_);
+    } else {
+        uint64_t l2f_size = l2_flat_.size();
+        write_val<uint64_t>(os, l2f_size);
+        if (l2f_size > 0)
+            os.write(reinterpret_cast<const char*>(l2_flat_.data()), l2f_size);
+    }
+
+    write_val<uint64_t>(os, l1_literal_count_);
+    if (l1_literal_count_ > 0)
+        os.write(reinterpret_cast<const char*>(l1_literals_.data()), l1_literal_count_);
 }
 
 ComBitBtv ComBitBtv::deserialize(std::istream& is) {
@@ -450,22 +530,35 @@ ComBitBtv ComBitBtv::deserialize(std::istream& is) {
         throw std::runtime_error("ComBitBtv::deserialize: expected word size 8, got " +
                                  std::to_string(ws));
     uint8_t fo = read_val<uint8_t>(is);
+    uint8_t ul3 = read_val<uint8_t>(is);
 
     ComBitBtv btv(fo != 0);
+    btv.use_l3_ = (ul3 != 0);
     btv.bit_count_ = read_val<uint64_t>(is);
-    btv.leading_bits_count_ = read_val<uint64_t>(is);
+    btv.l2_count_ = read_val<uint64_t>(is);
 
-    uint64_t lb_vec_size = read_val<uint64_t>(is);
-    btv.leading_bits_.resize(lb_vec_size);
-    if (lb_vec_size > 0)
-        is.read(reinterpret_cast<char*>(btv.leading_bits_.data()),
-                lb_vec_size * sizeof(uint64_t));
+    if (btv.use_l3_) {
+        btv.l3_count_ = read_val<uint64_t>(is);
+        uint64_t l3_bytes = read_val<uint64_t>(is);
+        btv.l3_bits_.resize(l3_bytes);
+        if (l3_bytes > 0)
+            is.read(reinterpret_cast<char*>(btv.l3_bits_.data()), l3_bytes);
 
-    btv.literal_count_ = read_val<uint64_t>(is);
-    uint64_t lit_data_size = read_val<uint64_t>(is);
-    btv.literal_data_.resize(lit_data_size);
-    if (lit_data_size > 0)
-        is.read(reinterpret_cast<char*>(btv.literal_data_.data()), lit_data_size);
+        btv.l2_literal_count_ = read_val<uint64_t>(is);
+        btv.l2_literals_.resize(btv.l2_literal_count_);
+        if (btv.l2_literal_count_ > 0)
+            is.read(reinterpret_cast<char*>(btv.l2_literals_.data()), btv.l2_literal_count_);
+    } else {
+        uint64_t l2f_size = read_val<uint64_t>(is);
+        btv.l2_flat_.resize(l2f_size);
+        if (l2f_size > 0)
+            is.read(reinterpret_cast<char*>(btv.l2_flat_.data()), l2f_size);
+    }
+
+    btv.l1_literal_count_ = read_val<uint64_t>(is);
+    btv.l1_literals_.resize(btv.l1_literal_count_);
+    if (btv.l1_literal_count_ > 0)
+        is.read(reinterpret_cast<char*>(btv.l1_literals_.data()), btv.l1_literal_count_);
 
     return btv;
 }
