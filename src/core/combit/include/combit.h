@@ -16,27 +16,39 @@
 #endif
 
 ///
-/// ComBitBtv: A fixed-length bitvector segment compressed with
-/// separated leading bits and literal words.  Fill words are virtual and
-/// never stored.
+/// ComBitBtv: A fixed-length bitvector segment compressed with a
+/// three-level structure:
+///
+///   L1 – literal data: 8-bit words of the original bitvector (only
+///         non-fill words are stored).
+///   L2 – leading bitstring for L1: one bit per 8-bit word of the
+///         original bitvector (0 = fill, 1 = literal).  Stored as a
+///         packed byte array; only non-zero bytes are kept when the L3
+///         layer is active.
+///   L3 – leading bitstring for L2: one bit per 8-bit chunk of L2
+///         (i.e. per group of 64 original words = 512 bits).
+///         0 = the L2 byte is all-zero (entire 64-word region is fills),
+///         1 = the L2 byte is a literal and stored in l2_literals_.
+///
+/// When the L2 density is high (≥ 1/64), the L3 layer is bypassed and
+/// L2 is stored flat (use_l3_ == false) for zero overhead.
 ///
 /// Word size is fixed at 8 bits.
 /// fill_ones is a runtime parameter controlling the fill value.
-///
-/// Compressed representation:
-///   - leading bitstring: one bit per word; 0 = fill, 1 = literal
-///   - literal data array: literal word values, stored sequentially
 ///
 class ComBitBtv {
 public:
     static constexpr unsigned word_size = 8;
     static constexpr size_t word_byte_size = 1;
     static constexpr size_t words_per_reg = 64;              // 512 / 8
+    static constexpr size_t l2_bits_per_l3_bit = 8;          // 8 L2 bits per L3 bit
+    static constexpr size_t words_per_l3_bit = 64;           // 8 * 8
     static constexpr size_t default_segment_bits = 1 << 16;  // 65536
 
     struct SizeBreakdown {
-        size_t leading_bits_count;
-        size_t literal_bits;
+        size_t l3_bits;            // L3 leading bits
+        size_t l2_literal_bits;    // L2 stored literal bytes * 8
+        size_t l1_literal_bits;    // L1 stored literal bytes * 8
         size_t total_bits;
     };
 
@@ -87,14 +99,20 @@ public:
     // ----------------------------------------------------------------
 
     bool                          fill_ones()          const { return fill_ones_; }
-    const std::vector<uint64_t>&  leading_bits()       const { return leading_bits_; }
-    size_t                        leading_bits_count() const { return leading_bits_count_; }
-    bool                          is_fill(size_t i)    const { return is_fill_bit(i); }
+    bool                          use_l3()             const { return use_l3_; }
+    size_t                        l2_count()           const { return l2_count_; }
+    size_t                        l3_count()           const { return l3_count_; }
     size_t                        bit_count()          const { return bit_count_; }
-    size_t num_leading_bits_entries() const { return leading_bits_count_; }
     size_t num_fills() const;
-    size_t num_literals()  const { return literal_count_; }
-    const uint8_t* literal_data() const { return literal_data_.data(); }
+    size_t num_literals()  const { return l1_literal_count_; }
+
+    // Raw data access (used by bitwise operators)
+    const uint8_t* l3_data()         const { return l3_bits_.data(); }
+    const uint8_t* l2_flat_data()    const { return l2_flat_.data(); }
+    const uint8_t* l2_literal_data() const { return l2_literals_.data(); }
+    const uint8_t* l1_literal_data() const { return l1_literals_.data(); }
+    size_t         l2_literal_count() const { return l2_literal_count_; }
+
     uint64_t get_literal(size_t idx) const;
 
     // ----------------------------------------------------------------
@@ -112,21 +130,27 @@ public:
 
 private:
     bool                    fill_ones_;
-    std::vector<uint64_t>   leading_bits_;         // packed bits: 0=fill, 1=literal
-    size_t                  leading_bits_count_;   // number of words (leading bits)
-    std::vector<uint8_t>    literal_data_;         // packed literal word bytes
-    size_t                  literal_count_;        // number of literal words
     size_t                  bit_count_;            // original bitvector length
 
-    bool is_fill_bit(size_t i) const {
-        return !((leading_bits_[i / 64] >> (i % 64)) & 1);
-    }
-    void set_literal_bit(size_t i) {
-        leading_bits_[i / 64] |= uint64_t(1) << (i % 64);
-    }
+    // --- L2: leading bitstring for L1 (1 bit per 8-bit word) ---
+    // When use_l3_ == false, l2_flat_ stores the packed L2 bytes directly.
+    // When use_l3_ == true,  L2 is compressed via l3/l2_literals_.
+    bool                    use_l3_;
+    size_t                  l2_count_;             // total L2 bits (= num 8-bit words)
+    std::vector<uint8_t>    l2_flat_;              // flat L2 bytes (used when !use_l3_)
 
-    void push_literal(uint64_t val);
-    void set_literal(size_t idx, uint64_t val);
+    // --- L3: leading bitstring for L2 (1 bit per 8-bit chunk of L2) ---
+    size_t                  l3_count_;             // total L3 bits
+    std::vector<uint8_t>    l3_bits_;              // packed L3 bytes
+    std::vector<uint8_t>    l2_literals_;          // L2 literal bytes (non-zero L2 chunks)
+    size_t                  l2_literal_count_;
+
+    // --- L1: literal data ---
+    std::vector<uint8_t>    l1_literals_;          // L1 literal word bytes
+    size_t                  l1_literal_count_;
+
+    // Rebuild flat L2 from L3 + L2 literals (for decompression / scalar paths)
+    std::vector<uint8_t> expand_l2() const;
 
     static uint64_t read_word_from_bits(const std::vector<bool>& bits,
                                         size_t word_idx);
@@ -151,8 +175,9 @@ public:
     static constexpr size_t default_segment_bits = size_t(1) << 16;
 
     struct SizeBreakdown {
-        size_t leading_bits_count;
-        size_t literal_bits;
+        size_t l3_bits;
+        size_t l2_literal_bits;
+        size_t l1_literal_bits;
         size_t total_bits;
     };
 

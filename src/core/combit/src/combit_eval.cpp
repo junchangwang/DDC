@@ -31,10 +31,7 @@ static void run_correctness_tests() {
         std::cout << "\n";
 
         bool ok = true;
-        ok &= (cb.leading_bits_count() == 6);
-        ok &= (cb.is_fill(0) == true  && cb.is_fill(1) == true  &&
-                cb.is_fill(2) == false && cb.is_fill(3) == true  &&
-                cb.is_fill(4) == true  && cb.is_fill(5) == false);
+        ok &= (cb.l2_count() == 6);
         ok &= (cb.num_literals() == 2 &&
                 cb.get_literal(0) == 0x08 &&
                 cb.get_literal(1) == 0x01);
@@ -300,9 +297,10 @@ static void run_compression_analysis() {
     auto cb = ComBitBtv::compress(bits);
     auto sb = cb.size_breakdown();
     std::cout << "  ComBitBtv:\n"
-              << "    Leading bits: " << std::setw(10) << sb.leading_bits_count  << " bits\n"
-              << "    Literals:   " << std::setw(10) << sb.literal_bits   << " bits\n"
-              << "    Total:      " << std::setw(10) << sb.total_bits     << " bits ("
+              << "    L3 bits:    " << std::setw(10) << sb.l3_bits          << " bits\n"
+              << "    L2 literals:" << std::setw(10) << sb.l2_literal_bits << " bits\n"
+              << "    L1 literals:" << std::setw(10) << sb.l1_literal_bits << " bits\n"
+              << "    Total:      " << std::setw(10) << sb.total_bits      << " bits ("
               << std::fixed << std::setprecision(2)
               << cb.compression_ratio() << "x)\n"
               << "    Fill words: " << cb.num_fills()
