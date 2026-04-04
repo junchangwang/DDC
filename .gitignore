@@ -13,3 +13,4 @@ bitmap/
 
 # Result CSV
 results_*.csv
+debug/

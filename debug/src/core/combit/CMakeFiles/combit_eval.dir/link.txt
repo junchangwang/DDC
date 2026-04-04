@@ -1,1 +1,0 @@
-/usr/bin/c++ -g CMakeFiles/combit_eval.dir/src/combit_eval.cpp.o -o combit_eval  libcombit.a 
