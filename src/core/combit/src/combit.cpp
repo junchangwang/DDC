@@ -3,15 +3,14 @@
 #include <stdexcept>
 
 // ====================================================================
-// ComBitBtv<WordSize> member function definitions
+// ComBitBtv member function definitions
 // ====================================================================
 
 // ----------------------------------------------------------------
 // Constructor
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-ComBitBtv<WordSize>::ComBitBtv(bool fill_ones)
+ComBitBtv::ComBitBtv(bool fill_ones)
     : fill_ones_(fill_ones),
       leading_bits_count_(0), literal_count_(0), bit_count_(0) {}
 
@@ -19,42 +18,32 @@ ComBitBtv<WordSize>::ComBitBtv(bool fill_ones)
 // Private helpers
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-void ComBitBtv<WordSize>::push_literal(uint64_t val) {
-    const size_t old_size = literal_data_.size();
-    literal_data_.resize(old_size + word_byte_size);
-    std::memcpy(literal_data_.data() + old_size, &val, word_byte_size);
+void ComBitBtv::push_literal(uint64_t val) {
+    literal_data_.push_back(static_cast<uint8_t>(val));
     literal_count_++;
 }
 
-template<unsigned WordSize>
-void ComBitBtv<WordSize>::set_literal(size_t idx, uint64_t val) {
-    std::memcpy(literal_data_.data() + idx * word_byte_size, &val, word_byte_size);
+void ComBitBtv::set_literal(size_t idx, uint64_t val) {
+    literal_data_[idx] = static_cast<uint8_t>(val);
 }
 
-template<unsigned WordSize>
-uint64_t ComBitBtv<WordSize>::get_literal(size_t idx) const {
-    uint64_t val = 0;
-    std::memcpy(&val, literal_data_.data() + idx * word_byte_size, word_byte_size);
-    return val;
+uint64_t ComBitBtv::get_literal(size_t idx) const {
+    return literal_data_[idx];
 }
 
-template<unsigned WordSize>
-uint64_t ComBitBtv<WordSize>::read_word_from_bits(const std::vector<bool>& bits,
-                                                size_t word_idx) {
+uint64_t ComBitBtv::read_word_from_bits(const std::vector<bool>& bits,
+                                        size_t word_idx) {
     uint64_t word = 0;
-    size_t start = word_idx * WordSize;
-    for (unsigned i = 0; i < WordSize && start + i < bits.size(); i++) {
+    size_t start = word_idx * 8;
+    for (unsigned i = 0; i < 8 && start + i < bits.size(); i++) {
         if (bits[start + i])
-            word |= uint64_t(1) << (WordSize - 1 - i);
+            word |= uint64_t(1) << (7 - i);
     }
     return word;
 }
 
-template<unsigned WordSize>
-void ComBitBtv<WordSize>::append_word_to_bits(std::vector<bool>& bits,
-                                            uint64_t word) {
-    for (int i = static_cast<int>(WordSize) - 1; i >= 0; i--)
+void ComBitBtv::append_word_to_bits(std::vector<bool>& bits, uint64_t word) {
+    for (int i = 7; i >= 0; i--)
         bits.push_back((word >> i) & 1);
 }
 
@@ -62,20 +51,17 @@ void ComBitBtv<WordSize>::append_word_to_bits(std::vector<bool>& bits,
 // Compression
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-ComBitBtv<WordSize>
-ComBitBtv<WordSize>::compress(const std::vector<bool>& bits, bool fill_ones) {
+ComBitBtv
+ComBitBtv::compress(const std::vector<bool>& bits, bool fill_ones) {
     ComBitBtv result(fill_ones);
     result.bit_count_ = bits.size();
 
-    size_t num_words = (bits.size() + WordSize - 1) / WordSize;
+    size_t num_words = (bits.size() + 7) / 8;
     if (num_words == 0) return result;
 
     result.leading_bits_count_ = num_words;
     result.leading_bits_.assign((num_words + 63) / 64, 0);
-    const uint64_t fill_val = fill_ones
-        ? (WordSize == 64 ? ~uint64_t(0) : (uint64_t(1) << WordSize) - 1)
-        : uint64_t(0);
+    const uint64_t fill_val = fill_ones ? uint64_t(0xFF) : uint64_t(0);
     for (size_t i = 0; i < num_words; i++) {
         uint64_t word = read_word_from_bits(bits, i);
         if (word != fill_val) {
@@ -91,16 +77,15 @@ ComBitBtv<WordSize>::compress(const std::vector<bool>& bits, bool fill_ones) {
 // Decompression
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 std::vector<bool>
-ComBitBtv<WordSize>::decompress() const {
+ComBitBtv::decompress() const {
     std::vector<bool> result;
     result.reserve(bit_count_);
 
     size_t lit_idx = 0;
     for (size_t i = 0; i < leading_bits_count_; i++) {
         if (is_fill_bit(i)) {
-            for (unsigned b = 0; b < WordSize; b++)
+            for (unsigned b = 0; b < 8; b++)
                 result.push_back(fill_ones_);
         } else {
             append_word_to_bits(result, get_literal(lit_idx++));
@@ -115,9 +100,8 @@ ComBitBtv<WordSize>::decompress() const {
 // Convenience constructors
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-ComBitBtv<WordSize>
-ComBitBtv<WordSize>::from_string(const std::string& bitstring, bool fill_ones) {
+ComBitBtv
+ComBitBtv::from_string(const std::string& bitstring, bool fill_ones) {
     std::vector<bool> bits;
     bits.reserve(bitstring.size());
     for (char c : bitstring) {
@@ -127,14 +111,13 @@ ComBitBtv<WordSize>::from_string(const std::string& bitstring, bool fill_ones) {
     return compress(bits, fill_ones);
 }
 
-template<unsigned WordSize>
 std::string
-ComBitBtv<WordSize>::to_string() const {
+ComBitBtv::to_string() const {
     auto bits = decompress();
     std::string s;
-    s.reserve(bits.size() + bits.size() / WordSize);
+    s.reserve(bits.size() + bits.size() / 8);
     for (size_t i = 0; i < bits.size(); i++) {
-        if (i > 0 && i % WordSize == 0) s += ' ';
+        if (i > 0 && i % 8 == 0) s += ' ';
         s += bits[i] ? '1' : '0';
     }
     return s;
@@ -144,9 +127,8 @@ ComBitBtv<WordSize>::to_string() const {
 // operator~
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-ComBitBtv<WordSize>
-ComBitBtv<WordSize>::operator~() const {
+ComBitBtv
+ComBitBtv::operator~() const {
     auto bits = decompress();
     for (size_t i = 0; i < bits.size(); i++)
         bits[i] = !bits[i];
@@ -157,9 +139,8 @@ ComBitBtv<WordSize>::operator~() const {
 // Queries
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 size_t
-ComBitBtv<WordSize>::popcount() const {
+ComBitBtv::popcount() const {
     size_t count = 0;
     size_t bits_seen = 0;
     size_t lit_idx = 0;
@@ -169,30 +150,29 @@ ComBitBtv<WordSize>::popcount() const {
             if (fill_ones_) {
                 size_t remaining = (bits_seen < bit_count_)
                     ? bit_count_ - bits_seen : 0;
-                count += std::min(static_cast<size_t>(WordSize), remaining);
+                count += std::min(size_t(8), remaining);
             }
-            bits_seen += WordSize;
+            bits_seen += 8;
         } else {
             uint64_t w = get_literal(lit_idx++);
             size_t remaining = (bits_seen < bit_count_)
                 ? bit_count_ - bits_seen : 0;
-            if (remaining >= WordSize) {
+            if (remaining >= 8) {
                 count += __builtin_popcountll(w);
             } else {
                 for (size_t b = 0; b < remaining; b++) {
-                    if (w & (uint64_t(1) << (WordSize - 1 - b)))
+                    if (w & (uint64_t(1) << (7 - b)))
                         count++;
                 }
             }
-            bits_seen += WordSize;
+            bits_seen += 8;
         }
     }
     return count;
 }
 
-template<unsigned WordSize>
 std::vector<size_t>
-ComBitBtv<WordSize>::set_bit_positions() const {
+ComBitBtv::set_bit_positions() const {
     auto bits = decompress();
     std::vector<size_t> pos;
     for (size_t i = 0; i < bits.size(); i++) {
@@ -205,19 +185,17 @@ ComBitBtv<WordSize>::set_bit_positions() const {
 // Size / statistics
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
-typename ComBitBtv<WordSize>::SizeBreakdown
-ComBitBtv<WordSize>::size_breakdown() const {
+ComBitBtv::SizeBreakdown
+ComBitBtv::size_breakdown() const {
     SizeBreakdown sb;
     sb.leading_bits_count = leading_bits_count_;
-    sb.literal_bits       = literal_count_ * WordSize;
+    sb.literal_bits       = literal_count_ * 8;
     sb.total_bits         = sb.leading_bits_count + sb.literal_bits;
     return sb;
 }
 
-template<unsigned WordSize>
 double
-ComBitBtv<WordSize>::compression_ratio() const {
+ComBitBtv::compression_ratio() const {
     size_t cb = compressed_size_bits();
     return cb > 0 ? static_cast<double>(bit_count_) / cb : 0.0;
 }
@@ -226,13 +204,11 @@ ComBitBtv<WordSize>::compression_ratio() const {
 // num_fills
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 size_t
-ComBitBtv<WordSize>::num_fills() const {
+ComBitBtv::num_fills() const {
     size_t n = 0;
     for (size_t w = 0; w < leading_bits_.size(); w++)
         n += __builtin_popcountll(leading_bits_[w]);
-    // Set bits are literals; fills are the rest.
     return leading_bits_count_ - n;
 }
 
@@ -240,10 +216,9 @@ ComBitBtv<WordSize>::num_fills() const {
 // Debug printing
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 void
-ComBitBtv<WordSize>::print(std::ostream& os) const {
-    os << "ComBitBtv<" << WordSize << "> compressed bitvector:\n";
+ComBitBtv::print(std::ostream& os) const {
+    os << "ComBitBtv compressed bitvector:\n";
     os << "  Original size: " << bit_count_ << " bits\n";
 
     os << "  Leading bits: ";
@@ -255,7 +230,7 @@ ComBitBtv<WordSize>::print(std::ostream& os) const {
     for (size_t i = 0; i < literal_count_; i++) {
         if (i > 0) os << ", ";
         uint64_t val = get_literal(i);
-        for (int b = static_cast<int>(WordSize) - 1; b >= 0; b--)
+        for (int b = 7; b >= 0; b--)
             os << ((val >> b) & 1);
     }
     os << "]\n";
@@ -269,15 +244,6 @@ ComBitBtv<WordSize>::print(std::ostream& os) const {
 }
 
 // ====================================================================
-// Explicit template instantiations for ComBitBtv
-// ====================================================================
-
-template class ComBitBtv<8>;
-template class ComBitBtv<16>;
-template class ComBitBtv<32>;
-template class ComBitBtv<64>;
-
-// ====================================================================
 // ComBit (segmented) member function definitions
 // ====================================================================
 
@@ -285,7 +251,6 @@ template class ComBitBtv<64>;
 // Compression
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 ComBit
 ComBit::compress(const std::vector<bool>& bits, bool fill_ones,
                  size_t segment_bits) {
@@ -299,7 +264,7 @@ ComBit::compress(const std::vector<bool>& bits, bool fill_ones,
         std::vector<bool> seg_bits(bits.begin() + static_cast<ptrdiff_t>(offset),
                                    bits.begin() + static_cast<ptrdiff_t>(offset + seg_len));
         result.segments_.emplace_back(
-            ComBitBtv<WordSize>::compress(seg_bits, fill_ones));
+            ComBitBtv::compress(seg_bits, fill_ones));
         offset += seg_len;
     }
 
@@ -316,8 +281,7 @@ ComBit::decompress() const {
     result.reserve(bit_count_);
 
     for (const auto& seg : segments_) {
-        auto seg_bits = std::visit(
-            [](const auto& s) { return s.decompress(); }, seg);
+        auto seg_bits = seg.decompress();
         result.insert(result.end(), seg_bits.begin(), seg_bits.end());
     }
 
@@ -328,7 +292,6 @@ ComBit::decompress() const {
 // Convenience constructors
 // ----------------------------------------------------------------
 
-template<unsigned WordSize>
 ComBit
 ComBit::from_string(const std::string& bitstring, bool fill_ones,
                     size_t segment_bits) {
@@ -338,7 +301,7 @@ ComBit::from_string(const std::string& bitstring, bool fill_ones,
         if (c == '0')      bits.push_back(false);
         else if (c == '1') bits.push_back(true);
     }
-    return compress<WordSize>(bits, fill_ones, segment_bits);
+    return compress(bits, fill_ones, segment_bits);
 }
 
 std::string
@@ -361,11 +324,8 @@ ComBit::operator~() const {
     result.bit_count_ = bit_count_;
     result.segment_bits_ = segment_bits_;
 
-    for (const auto& seg : segments_) {
-        auto rseg = std::visit(
-            [](const auto& s) -> ComBitBtvSegment { return ~s; }, seg);
-        result.segments_.push_back(std::move(rseg));
-    }
+    for (const auto& seg : segments_)
+        result.segments_.push_back(~seg);
 
     return result;
 }
@@ -378,8 +338,7 @@ size_t
 ComBit::popcount() const {
     size_t count = 0;
     for (const auto& seg : segments_)
-        count += std::visit(
-            [](const auto& s) { return s.popcount(); }, seg);
+        count += seg.popcount();
     return count;
 }
 
@@ -400,12 +359,10 @@ ComBit::SizeBreakdown
 ComBit::size_breakdown() const {
     SizeBreakdown sb{0, 0, 0};
     for (const auto& seg : segments_) {
-        std::visit([&sb](const auto& s) {
-            auto ssb = s.size_breakdown();
-            sb.leading_bits_count += ssb.leading_bits_count;
-            sb.literal_bits += ssb.literal_bits;
-            sb.total_bits += ssb.total_bits;
-        }, seg);
+        auto ssb = seg.size_breakdown();
+        sb.leading_bits_count += ssb.leading_bits_count;
+        sb.literal_bits += ssb.literal_bits;
+        sb.total_bits += ssb.total_bits;
     }
     return sb;
 }
@@ -428,15 +385,14 @@ ComBit::print(std::ostream& os) const {
     os << "  Num segments:  " << segments_.size() << "\n";
 
     for (size_t i = 0; i < segments_.size(); i++) {
-        os << "  Segment " << i << ": ";
-        std::visit([&os](const auto& s) {
-            os << "ComBitBtv<" << s.word_size << ">"
-               << " fill_ones=" << s.fill_ones()
-               << " bits=" << s.bit_count()
-               << " fills=" << s.num_fills()
-               << " literals=" << s.num_literals();
-        }, segments_[i]);
-        os << "\n";
+        const auto& s = segments_[i];
+        os << "  Segment " << i << ": "
+           << "ComBitBtv"
+           << " fill_ones=" << s.fill_ones()
+           << " bits=" << s.bit_count()
+           << " fills=" << s.num_fills()
+           << " literals=" << s.num_literals()
+           << "\n";
     }
 
     auto sb = size_breakdown();
@@ -446,20 +402,6 @@ ComBit::print(std::ostream& os) const {
     os << "  Compression ratio: " << std::fixed << std::setprecision(2)
        << compression_ratio() << "x\n";
 }
-
-// ====================================================================
-// Explicit template instantiations for ComBit::compress / from_string
-// ====================================================================
-
-template ComBit ComBit::compress<8>(const std::vector<bool>&, bool, size_t);
-template ComBit ComBit::compress<16>(const std::vector<bool>&, bool, size_t);
-template ComBit ComBit::compress<32>(const std::vector<bool>&, bool, size_t);
-template ComBit ComBit::compress<64>(const std::vector<bool>&, bool, size_t);
-
-template ComBit ComBit::from_string<8>(const std::string&, bool, size_t);
-template ComBit ComBit::from_string<16>(const std::string&, bool, size_t);
-template ComBit ComBit::from_string<32>(const std::string&, bool, size_t);
-template ComBit ComBit::from_string<64>(const std::string&, bool, size_t);
 
 // ====================================================================
 // Serialization / Deserialization
@@ -480,12 +422,11 @@ static T read_val(std::istream& is) {
 }
 
 // ----------------------------------------------------------------
-// ComBitBtv<WS>::serialize / deserialize
+// ComBitBtv::serialize / deserialize
 // ----------------------------------------------------------------
 
-template<unsigned WS>
-void ComBitBtv<WS>::serialize(std::ostream& os) const {
-    write_val<uint8_t>(os, static_cast<uint8_t>(WS));
+void ComBitBtv::serialize(std::ostream& os) const {
+    write_val<uint8_t>(os, static_cast<uint8_t>(8));
     write_val<uint8_t>(os, fill_ones_ ? 1 : 0);
     write_val<uint64_t>(os, bit_count_);
     write_val<uint64_t>(os, leading_bits_count_);
@@ -503,12 +444,14 @@ void ComBitBtv<WS>::serialize(std::ostream& os) const {
         os.write(reinterpret_cast<const char*>(literal_data_.data()), lit_data_size);
 }
 
-template<unsigned WS>
-ComBitBtv<WS> ComBitBtv<WS>::deserialize(std::istream& is) {
-    // Note: the word_size tag byte must already be consumed by the caller
+ComBitBtv ComBitBtv::deserialize(std::istream& is) {
+    uint8_t ws = read_val<uint8_t>(is);
+    if (ws != 8)
+        throw std::runtime_error("ComBitBtv::deserialize: expected word size 8, got " +
+                                 std::to_string(ws));
     uint8_t fo = read_val<uint8_t>(is);
 
-    ComBitBtv<WS> btv(fo != 0);
+    ComBitBtv btv(fo != 0);
     btv.bit_count_ = read_val<uint64_t>(is);
     btv.leading_bits_count_ = read_val<uint64_t>(is);
 
@@ -527,17 +470,6 @@ ComBitBtv<WS> ComBitBtv<WS>::deserialize(std::istream& is) {
     return btv;
 }
 
-// Explicit instantiations for serialize/deserialize
-template void ComBitBtv<8>::serialize(std::ostream&) const;
-template void ComBitBtv<16>::serialize(std::ostream&) const;
-template void ComBitBtv<32>::serialize(std::ostream&) const;
-template void ComBitBtv<64>::serialize(std::ostream&) const;
-
-template ComBitBtv<8>  ComBitBtv<8>::deserialize(std::istream&);
-template ComBitBtv<16> ComBitBtv<16>::deserialize(std::istream&);
-template ComBitBtv<32> ComBitBtv<32>::deserialize(std::istream&);
-template ComBitBtv<64> ComBitBtv<64>::deserialize(std::istream&);
-
 // ----------------------------------------------------------------
 // ComBit::serialize / deserialize
 // ----------------------------------------------------------------
@@ -547,9 +479,8 @@ void ComBit::serialize(std::ostream& os) const {
     write_val<uint64_t>(os, segment_bits_);
     write_val<uint64_t>(os, segments_.size());
 
-    for (const auto& seg : segments_) {
-        std::visit([&os](const auto& btv) { btv.serialize(os); }, seg);
-    }
+    for (const auto& seg : segments_)
+        seg.serialize(os);
 }
 
 ComBit ComBit::deserialize(std::istream& is) {
@@ -559,19 +490,8 @@ ComBit ComBit::deserialize(std::istream& is) {
     uint64_t num_segs = read_val<uint64_t>(is);
     cb.segments_.reserve(num_segs);
 
-    for (uint64_t i = 0; i < num_segs; i++) {
-        // Read word_size tag byte, then dispatch to correct deserializer
-        uint8_t ws = read_val<uint8_t>(is);
+    for (uint64_t i = 0; i < num_segs; i++)
+        cb.segments_.push_back(ComBitBtv::deserialize(is));
 
-        switch (ws) {
-            case 8:  cb.segments_.push_back(ComBitBtv<8>::deserialize(is));  break;
-            case 16: cb.segments_.push_back(ComBitBtv<16>::deserialize(is)); break;
-            case 32: cb.segments_.push_back(ComBitBtv<32>::deserialize(is)); break;
-            case 64: cb.segments_.push_back(ComBitBtv<64>::deserialize(is)); break;
-            default:
-                throw std::runtime_error("ComBit::deserialize: invalid word size " +
-                                         std::to_string(ws));
-        }
-    }
     return cb;
 }

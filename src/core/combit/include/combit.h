@@ -10,33 +10,28 @@
 #include <string>
 #include <algorithm>
 #include <chrono>
-#include <variant>
 
 #ifdef __AVX512F__
 #include <immintrin.h>
 #endif
 
 ///
-/// ComBitBtv<WordSize>: A fixed-length bitvector segment compressed with
+/// ComBitBtv: A fixed-length bitvector segment compressed with
 /// separated leading bits and literal words.  Fill words are virtual and
 /// never stored.
 ///
-/// WordSize (8, 16, 32, or 64) controls the granularity (compile-time).
+/// Word size is fixed at 8 bits.
 /// fill_ones is a runtime parameter controlling the fill value.
 ///
 /// Compressed representation:
 ///   - leading bitstring: one bit per word; 0 = fill, 1 = literal
 ///   - literal data array: literal word values, stored sequentially
 ///
-template<unsigned WordSize>
 class ComBitBtv {
-    static_assert(WordSize == 8 || WordSize == 16 || WordSize == 32 || WordSize == 64,
-                  "WordSize must be 8, 16, 32, or 64");
-
 public:
-    static constexpr unsigned word_size = WordSize;
-    static constexpr size_t word_byte_size = WordSize / 8;
-    static constexpr size_t words_per_reg = 512 / WordSize;
+    static constexpr unsigned word_size = 8;
+    static constexpr size_t word_byte_size = 1;
+    static constexpr size_t words_per_reg = 64;              // 512 / 8
     static constexpr size_t default_segment_bits = 1 << 16;  // 65536
 
     struct SizeBreakdown {
@@ -65,17 +60,9 @@ public:
     // Bitwise operations
     // ----------------------------------------------------------------
 
-    /// AVX-512 optimized AND for same word size.
-    /// Result is always ComBitBtv<64> with fill_ones=false.
-    ComBitBtv<64> operator&(const ComBitBtv& other) const;
-
-    /// AVX-512 optimized OR for same word size.
-    /// Result is always ComBitBtv<64> with fill_ones=false.
-    ComBitBtv<64> operator|(const ComBitBtv& other) const;
-
-    /// AVX-512 optimized XOR for same word size.
-    /// Result is always ComBitBtv<64> with fill_ones=false.
-    ComBitBtv<64> operator^(const ComBitBtv& other) const;
+    ComBitBtv operator&(const ComBitBtv& other) const;
+    ComBitBtv operator|(const ComBitBtv& other) const;
+    ComBitBtv operator^(const ComBitBtv& other) const;
     ComBitBtv operator~() const;
 
     // ----------------------------------------------------------------
@@ -114,10 +101,7 @@ public:
     // Serialization
     // ----------------------------------------------------------------
 
-    /// Write compressed representation to binary stream.
     void serialize(std::ostream& os) const;
-
-    /// Read compressed representation from binary stream.
     static ComBitBtv deserialize(std::istream& is);
 
     // ----------------------------------------------------------------
@@ -148,41 +132,8 @@ private:
                                         size_t word_idx);
     static void append_word_to_bits(std::vector<bool>& bits, uint64_t word);
 
-    template<unsigned> friend class ComBitBtv;
-
-    template<unsigned A, unsigned B>
-    friend ComBitBtv<64> cross_and(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
-    template<unsigned A, unsigned B>
-    friend ComBitBtv<64> cross_or(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
-    template<unsigned A, unsigned B>
-    friend ComBitBtv<64> cross_xor(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
     friend class ComBit;
 };
-
-/// Cross-word-size AND for ComBitBtv segments.
-/// Always returns ComBitBtv<64> with fill_ones=false.
-template<unsigned A, unsigned B>
-ComBitBtv<64> cross_and(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
-/// Cross-word-size OR for ComBitBtv segments.
-/// Always returns ComBitBtv<64> with fill_ones=false.
-template<unsigned A, unsigned B>
-ComBitBtv<64> cross_or(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
-/// Cross-word-size XOR for ComBitBtv segments.
-/// Always returns ComBitBtv<64> with fill_ones=false.
-template<unsigned A, unsigned B>
-ComBitBtv<64> cross_xor(const ComBitBtv<A>& a, const ComBitBtv<B>& b);
-
-// ====================================================================
-// ComBitBtv segment variant
-// ====================================================================
-
-using ComBitBtvSegment = std::variant<ComBitBtv<8>, ComBitBtv<16>,
-                                      ComBitBtv<32>, ComBitBtv<64>>;
 
 // ====================================================================
 // ComBit: Segmented bitvector composed of ComBitBtv segments
@@ -193,8 +144,7 @@ using ComBitBtvSegment = std::variant<ComBitBtv<8>, ComBitBtv<16>,
 ///
 /// The bitvector is partitioned into fixed-length segments (default 2^16
 /// bits each), where each segment is independently compressed as a
-/// ComBitBtv.  Different segments may use different word sizes and
-/// fill_ones settings.
+/// ComBitBtv (8-bit word size).
 ///
 class ComBit {
 public:
@@ -212,8 +162,6 @@ public:
     // Compression / Decompression
     // ----------------------------------------------------------------
 
-    /// Compress with a uniform word size and fill_ones for all segments.
-    template<unsigned WordSize = 8>
     static ComBit compress(const std::vector<bool>& bits,
                            bool fill_ones = false,
                            size_t segment_bits = default_segment_bits);
@@ -224,7 +172,6 @@ public:
     // Convenience constructors
     // ----------------------------------------------------------------
 
-    template<unsigned WordSize = 8>
     static ComBit from_string(const std::string& bitstring,
                               bool fill_ones = false,
                               size_t segment_bits = default_segment_bits);
@@ -235,19 +182,9 @@ public:
     // Bitwise operations (segment-wise)
     // ----------------------------------------------------------------
 
-    /// Segment-wise AND.  Each pair of segments is ANDed via cross_and,
-    /// producing ComBitBtv<64> result segments.
     ComBit operator&(const ComBit& other) const;
-
-    /// Segment-wise OR.  Each pair of segments is ORed via cross_or,
-    /// producing ComBitBtv<64> result segments.
     ComBit operator|(const ComBit& other) const;
-
-    /// Segment-wise XOR.  Each pair of segments is XORed via cross_xor,
-    /// producing ComBitBtv<64> result segments.
     ComBit operator^(const ComBit& other) const;
-
-    /// Segment-wise NOT.
     ComBit operator~() const;
 
     // ----------------------------------------------------------------
@@ -275,17 +212,14 @@ public:
     size_t num_segments()  const { return segments_.size(); }
     size_t segment_bits()  const { return segment_bits_; }
 
-    const std::vector<ComBitBtvSegment>& segments() const { return segments_; }
-    const ComBitBtvSegment& segment(size_t i) const { return segments_[i]; }
+    const std::vector<ComBitBtv>& segments() const { return segments_; }
+    const ComBitBtv& segment(size_t i) const { return segments_[i]; }
 
     // ----------------------------------------------------------------
     // Serialization
     // ----------------------------------------------------------------
 
-    /// Write all segments to binary stream.
     void serialize(std::ostream& os) const;
-
-    /// Read back from binary stream.
     static ComBit deserialize(std::istream& is);
 
     // ----------------------------------------------------------------
@@ -295,7 +229,7 @@ public:
     void print(std::ostream& os = std::cout) const;
 
 private:
-    std::vector<ComBitBtvSegment> segments_;
+    std::vector<ComBitBtv> segments_;
     size_t bit_count_ = 0;
     size_t segment_bits_ = default_segment_bits;
 };
