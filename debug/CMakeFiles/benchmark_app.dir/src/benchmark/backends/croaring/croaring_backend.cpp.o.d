@@ -1,8 +1,8 @@
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o: \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.cpp \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.cpp \
  /usr/include/stdc-predef.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/../../bitmap_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/../../bitmap_backend.h \
  /usr/include/c++/11/cstdint \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -154,8 +154,8 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cp
  /usr/include/c++/11/vector /usr/include/c++/11/bits/stl_vector.h \
  /usr/include/c++/11/bits/stl_bvector.h \
  /usr/include/c++/11/bits/vector.tcc \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.hh \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.hh \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h \
  /usr/include/c++/11/stdlib.h /usr/include/malloc.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/x86intrin.h \

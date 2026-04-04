@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/thesis/combit
+CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/lch/combit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lichenhang/Desktop/thesis/combit/debug
+CMAKE_BINARY_DIR = /home/lichenhang/Desktop/lch/combit/debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/verify_bitmap.dir/depend.make
@@ -72,156 +72,156 @@ include CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o: ../util/verify_bitmap.cpp
 CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o -MF CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o.d -o CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o -c /home/lichenhang/Desktop/thesis/combit/util/verify_bitmap.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o -MF CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o.d -o CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.o -c /home/lichenhang/Desktop/lch/combit/util/verify_bitmap.cpp
 
 CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/util/verify_bitmap.cpp > CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/util/verify_bitmap.cpp > CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.i
 
 CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/util/verify_bitmap.cpp -o CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/util/verify_bitmap.cpp -o CMakeFiles/verify_bitmap.dir/util/verify_bitmap.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o: ../src/benchmark/backends/wah/wah_backend.cpp
 CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp
 
 CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp > CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp > CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.cpp -o CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.cpp -o CMakeFiles/verify_bitmap.dir/src/benchmark/backends/wah/wah_backend.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o: ../src/core/fastbit/bitvector.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o: ../src/core/fastbit/bitvector16.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector16.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector16.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector16.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o: ../src/core/fastbit/bitvector8.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector8.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector8.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/bitvector8.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o: ../src/core/fastbit/fileManager.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/fileManager.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o: ../src/core/fastbit/resource.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/resource.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/resource.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/resource.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o: ../src/core/fastbit/util.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/util.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o: ../src/core/fastbit/array_t.cpp
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp > CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.cpp -o CMakeFiles/verify_bitmap.dir/src/core/fastbit/array_t.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.cpp
 CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o -MF CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o.d -o CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp
 
 CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp > CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp > CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.i
 
 CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.cpp -o CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/utils/util.cpp -o CMakeFiles/verify_bitmap.dir/src/core/utils/util.cpp.s
 
 CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o: CMakeFiles/verify_bitmap.dir/flags.make
 CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o: ../src/core/croaring/roaring.c
 CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o: CMakeFiles/verify_bitmap.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o -MF CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o.d -o CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o -c /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o -MF CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o.d -o CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.o -c /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c
 
 CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c > CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c > CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.i
 
 CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.c -o CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.c -o CMakeFiles/verify_bitmap.dir/src/core/croaring/roaring.c.s
 
 # Object files for target verify_bitmap
 verify_bitmap_OBJECTS = \
@@ -255,7 +255,7 @@ verify_bitmap: CMakeFiles/verify_bitmap.dir/build.make
 verify_bitmap: src/core/combit/libcombit.a
 verify_bitmap: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.74.0
 verify_bitmap: CMakeFiles/verify_bitmap.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable verify_bitmap"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable verify_bitmap"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/verify_bitmap.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -267,6 +267,6 @@ CMakeFiles/verify_bitmap.dir/clean:
 .PHONY : CMakeFiles/verify_bitmap.dir/clean
 
 CMakeFiles/verify_bitmap.dir/depend:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/thesis/combit /home/lichenhang/Desktop/thesis/combit /home/lichenhang/Desktop/thesis/combit/debug /home/lichenhang/Desktop/thesis/combit/debug /home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles/verify_bitmap.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/lch/combit /home/lichenhang/Desktop/lch/combit /home/lichenhang/Desktop/lch/combit/debug /home/lichenhang/Desktop/lch/combit/debug /home/lichenhang/Desktop/lch/combit/debug/CMakeFiles/verify_bitmap.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/verify_bitmap.dir/depend
 

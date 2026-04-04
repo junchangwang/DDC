@@ -290,14 +290,7 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
             bits[raw[i]] = true;
 
         // Compress with the selected word size and serialize
-        ComBit cb;
-        switch (word_size) {
-        case  8: cb = ComBit::compress<8>(bits);  break;
-        case 16: cb = ComBit::compress<16>(bits); break;
-        case 32: cb = ComBit::compress<32>(bits); break;
-        case 64: cb = ComBit::compress<64>(bits); break;
-        default: cb = ComBit::compress<8>(bits);  break;
-        }
+        ComBit cb = ComBit::compress(bits);
         std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
         std::ofstream out(out_path, std::ios::binary);
         cb.serialize(out);

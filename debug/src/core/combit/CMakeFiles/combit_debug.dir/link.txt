@@ -1,0 +1,2 @@
+/usr/bin/ar qc libcombit_debug.a CMakeFiles/combit_debug.dir/src/combit.cpp.o CMakeFiles/combit_debug.dir/src/and.cpp.o CMakeFiles/combit_debug.dir/src/or.cpp.o CMakeFiles/combit_debug.dir/src/xor.cpp.o
+/usr/bin/ranlib libcombit_debug.a

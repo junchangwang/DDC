@@ -242,6 +242,476 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/Concise/concise_backend.cpp.
   /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
   /usr/include/c++/11/bits/fstream.tcc
 
+CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset/bitset_backend.cpp.o: ../src/benchmark/backends/bitset/bitset_backend.cpp \
+  /usr/include/stdc-predef.h \
+  ../src/benchmark/backends/bitset/bitset_backend.h \
+  ../src/benchmark/bitmap_backend.h \
+  /usr/include/c++/11/cstdint \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
+  /usr/include/features.h \
+  /usr/include/features-time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
+  /usr/include/c++/11/pstl/pstl_config.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_algobase.h \
+  /usr/include/c++/11/bits/functexcept.h \
+  /usr/include/c++/11/bits/exception_defines.h \
+  /usr/include/c++/11/bits/cpp_type_traits.h \
+  /usr/include/c++/11/ext/type_traits.h \
+  /usr/include/c++/11/ext/numeric_traits.h \
+  /usr/include/c++/11/bits/stl_pair.h \
+  /usr/include/c++/11/bits/move.h \
+  /usr/include/c++/11/type_traits \
+  /usr/include/c++/11/bits/stl_iterator_base_types.h \
+  /usr/include/c++/11/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/11/bits/concept_check.h \
+  /usr/include/c++/11/debug/assertions.h \
+  /usr/include/c++/11/bits/stl_iterator.h \
+  /usr/include/c++/11/bits/ptr_traits.h \
+  /usr/include/c++/11/debug/debug.h \
+  /usr/include/c++/11/bits/predefined_ops.h \
+  /usr/include/c++/11/bits/allocator.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h \
+  /usr/include/c++/11/ext/new_allocator.h \
+  /usr/include/c++/11/new \
+  /usr/include/c++/11/bits/exception.h \
+  /usr/include/c++/11/bits/memoryfwd.h \
+  /usr/include/c++/11/bits/stl_construct.h \
+  /usr/include/c++/11/bits/stl_uninitialized.h \
+  /usr/include/c++/11/ext/alloc_traits.h \
+  /usr/include/c++/11/bits/alloc_traits.h \
+  /usr/include/c++/11/bits/stl_tempbuf.h \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/uses_allocator.h \
+  /usr/include/c++/11/bits/unique_ptr.h \
+  /usr/include/c++/11/utility \
+  /usr/include/c++/11/bits/stl_relops.h \
+  /usr/include/c++/11/initializer_list \
+  /usr/include/c++/11/tuple \
+  /usr/include/c++/11/array \
+  /usr/include/c++/11/bits/range_access.h \
+  /usr/include/c++/11/bits/invoke.h \
+  /usr/include/c++/11/bits/stl_function.h \
+  /usr/include/c++/11/backward/binders.h \
+  /usr/include/c++/11/bits/functional_hash.h \
+  /usr/include/c++/11/bits/hash_bytes.h \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/iosfwd \
+  /usr/include/c++/11/bits/stringfwd.h \
+  /usr/include/c++/11/bits/postypes.h \
+  /usr/include/c++/11/cwchar \
+  /usr/include/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
+  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/typeinfo \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/bits/refwrap.h \
+  /usr/include/c++/11/ext/aligned_buffer.h \
+  /usr/include/c++/11/ext/atomicity.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h \
+  /usr/include/pthread.h \
+  /usr/include/sched.h \
+  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+  /usr/include/x86_64-linux-gnu/bits/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/endianness.h \
+  /usr/include/x86_64-linux-gnu/bits/sched.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
+  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
+  /usr/include/time.h \
+  /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/timex.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
+  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/exception \
+  /usr/include/c++/11/bits/exception_ptr.h \
+  /usr/include/c++/11/bits/cxxabi_init_exception.h \
+  /usr/include/c++/11/bits/nested_exception.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/bits/atomic_base.h \
+  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/c++/11/pstl/execution_defs.h \
+  /usr/include/c++/11/string \
+  /usr/include/c++/11/bits/char_traits.h \
+  /usr/include/c++/11/bits/localefwd.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h \
+  /usr/include/c++/11/clocale \
+  /usr/include/locale.h \
+  /usr/include/x86_64-linux-gnu/bits/locale.h \
+  /usr/include/c++/11/cctype \
+  /usr/include/ctype.h \
+  /usr/include/c++/11/bits/ostream_insert.h \
+  /usr/include/c++/11/bits/cxxabi_forced.h \
+  /usr/include/c++/11/bits/basic_string.h \
+  /usr/include/c++/11/string_view \
+  /usr/include/c++/11/bits/string_view.tcc \
+  /usr/include/c++/11/ext/string_conversions.h \
+  /usr/include/c++/11/cstdlib \
+  /usr/include/stdlib.h \
+  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+  /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/include/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/sys/select.h \
+  /usr/include/x86_64-linux-gnu/bits/select.h \
+  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/alloca.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/c++/11/bits/std_abs.h \
+  /usr/include/c++/11/cstdio \
+  /usr/include/stdio.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+  /usr/include/c++/11/cerrno \
+  /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
+  /usr/include/c++/11/bits/charconv.h \
+  /usr/include/c++/11/bits/basic_string.tcc \
+  /usr/include/c++/11/stdexcept \
+  /usr/include/c++/11/vector \
+  /usr/include/c++/11/bits/stl_vector.h \
+  /usr/include/c++/11/bits/stl_bvector.h \
+  /usr/include/c++/11/bits/vector.tcc \
+  ../src/core/bitset/include/bitset_vector.hpp \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
+  /usr/include/c++/11/ios \
+  /usr/include/c++/11/bits/ios_base.h \
+  /usr/include/c++/11/bits/locale_classes.h \
+  /usr/include/c++/11/bits/locale_classes.tcc \
+  /usr/include/c++/11/system_error \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h \
+  /usr/include/c++/11/streambuf \
+  /usr/include/c++/11/bits/streambuf.tcc \
+  /usr/include/c++/11/bits/basic_ios.h \
+  /usr/include/c++/11/bits/locale_facets.h \
+  /usr/include/c++/11/cwctype \
+  /usr/include/wctype.h \
+  /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h \
+  /usr/include/c++/11/bits/streambuf_iterator.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
+  /usr/include/c++/11/bits/locale_facets.tcc \
+  /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
+  /usr/include/c++/11/bits/ostream.tcc \
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/algorithm \
+  /usr/include/c++/11/bits/stl_algo.h \
+  /usr/include/c++/11/bits/algorithmfwd.h \
+  /usr/include/c++/11/bits/stl_heap.h \
+  /usr/include/c++/11/bits/uniform_int_dist.h \
+  /usr/include/c++/11/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/11/functional \
+  /usr/include/c++/11/bits/std_function.h \
+  /usr/include/c++/11/unordered_map \
+  /usr/include/c++/11/bits/hashtable.h \
+  /usr/include/c++/11/bits/hashtable_policy.h \
+  /usr/include/c++/11/bits/enable_special_members.h \
+  /usr/include/c++/11/bits/node_handle.h \
+  /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/bits/erase_if.h
+
+CMakeFiles/benchmark_app.dir/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp.o: ../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp \
+  /usr/include/stdc-predef.h \
+  ../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.h \
+  ../src/benchmark/bitmap_backend.h \
+  /usr/include/c++/11/cstdint \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
+  /usr/include/features.h \
+  /usr/include/features-time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+  /usr/include/x86_64-linux-gnu/bits/timesize.h \
+  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+  /usr/include/x86_64-linux-gnu/bits/long-double.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
+  /usr/include/c++/11/pstl/pstl_config.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
+  /usr/include/stdint.h \
+  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+  /usr/include/x86_64-linux-gnu/bits/types.h \
+  /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+  /usr/include/x86_64-linux-gnu/bits/time64.h \
+  /usr/include/x86_64-linux-gnu/bits/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/c++/11/memory \
+  /usr/include/c++/11/bits/stl_algobase.h \
+  /usr/include/c++/11/bits/functexcept.h \
+  /usr/include/c++/11/bits/exception_defines.h \
+  /usr/include/c++/11/bits/cpp_type_traits.h \
+  /usr/include/c++/11/ext/type_traits.h \
+  /usr/include/c++/11/ext/numeric_traits.h \
+  /usr/include/c++/11/bits/stl_pair.h \
+  /usr/include/c++/11/bits/move.h \
+  /usr/include/c++/11/type_traits \
+  /usr/include/c++/11/bits/stl_iterator_base_types.h \
+  /usr/include/c++/11/bits/stl_iterator_base_funcs.h \
+  /usr/include/c++/11/bits/concept_check.h \
+  /usr/include/c++/11/debug/assertions.h \
+  /usr/include/c++/11/bits/stl_iterator.h \
+  /usr/include/c++/11/bits/ptr_traits.h \
+  /usr/include/c++/11/debug/debug.h \
+  /usr/include/c++/11/bits/predefined_ops.h \
+  /usr/include/c++/11/bits/allocator.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h \
+  /usr/include/c++/11/ext/new_allocator.h \
+  /usr/include/c++/11/new \
+  /usr/include/c++/11/bits/exception.h \
+  /usr/include/c++/11/bits/memoryfwd.h \
+  /usr/include/c++/11/bits/stl_construct.h \
+  /usr/include/c++/11/bits/stl_uninitialized.h \
+  /usr/include/c++/11/ext/alloc_traits.h \
+  /usr/include/c++/11/bits/alloc_traits.h \
+  /usr/include/c++/11/bits/stl_tempbuf.h \
+  /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+  /usr/include/c++/11/bits/align.h \
+  /usr/include/c++/11/bit \
+  /usr/include/c++/11/bits/uses_allocator.h \
+  /usr/include/c++/11/bits/unique_ptr.h \
+  /usr/include/c++/11/utility \
+  /usr/include/c++/11/bits/stl_relops.h \
+  /usr/include/c++/11/initializer_list \
+  /usr/include/c++/11/tuple \
+  /usr/include/c++/11/array \
+  /usr/include/c++/11/bits/range_access.h \
+  /usr/include/c++/11/bits/invoke.h \
+  /usr/include/c++/11/bits/stl_function.h \
+  /usr/include/c++/11/backward/binders.h \
+  /usr/include/c++/11/bits/functional_hash.h \
+  /usr/include/c++/11/bits/hash_bytes.h \
+  /usr/include/c++/11/bits/shared_ptr.h \
+  /usr/include/c++/11/iosfwd \
+  /usr/include/c++/11/bits/stringfwd.h \
+  /usr/include/c++/11/bits/postypes.h \
+  /usr/include/c++/11/cwchar \
+  /usr/include/wchar.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn.h \
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdarg.h \
+  /usr/include/x86_64-linux-gnu/bits/types/wint_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+  /usr/include/c++/11/bits/shared_ptr_base.h \
+  /usr/include/c++/11/typeinfo \
+  /usr/include/c++/11/bits/allocated_ptr.h \
+  /usr/include/c++/11/bits/refwrap.h \
+  /usr/include/c++/11/ext/aligned_buffer.h \
+  /usr/include/c++/11/ext/atomicity.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/gthr-default.h \
+  /usr/include/pthread.h \
+  /usr/include/sched.h \
+  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h \
+  /usr/include/x86_64-linux-gnu/bits/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/endianness.h \
+  /usr/include/x86_64-linux-gnu/bits/sched.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
+  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
+  /usr/include/time.h \
+  /usr/include/x86_64-linux-gnu/bits/time.h \
+  /usr/include/x86_64-linux-gnu/bits/timex.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
+  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/timer_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
+  /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h \
+  /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h \
+  /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
+  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
+  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/atomic_word.h \
+  /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
+  /usr/include/c++/11/ext/concurrence.h \
+  /usr/include/c++/11/exception \
+  /usr/include/c++/11/bits/exception_ptr.h \
+  /usr/include/c++/11/bits/cxxabi_init_exception.h \
+  /usr/include/c++/11/bits/nested_exception.h \
+  /usr/include/c++/11/bits/shared_ptr_atomic.h \
+  /usr/include/c++/11/bits/atomic_base.h \
+  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
+  /usr/include/c++/11/backward/auto_ptr.h \
+  /usr/include/c++/11/pstl/glue_memory_defs.h \
+  /usr/include/c++/11/pstl/execution_defs.h \
+  /usr/include/c++/11/string \
+  /usr/include/c++/11/bits/char_traits.h \
+  /usr/include/c++/11/bits/localefwd.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h \
+  /usr/include/c++/11/clocale \
+  /usr/include/locale.h \
+  /usr/include/x86_64-linux-gnu/bits/locale.h \
+  /usr/include/c++/11/cctype \
+  /usr/include/ctype.h \
+  /usr/include/c++/11/bits/ostream_insert.h \
+  /usr/include/c++/11/bits/cxxabi_forced.h \
+  /usr/include/c++/11/bits/basic_string.h \
+  /usr/include/c++/11/string_view \
+  /usr/include/c++/11/bits/string_view.tcc \
+  /usr/include/c++/11/ext/string_conversions.h \
+  /usr/include/c++/11/cstdlib \
+  /usr/include/stdlib.h \
+  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
+  /usr/include/x86_64-linux-gnu/sys/types.h \
+  /usr/include/endian.h \
+  /usr/include/x86_64-linux-gnu/bits/byteswap.h \
+  /usr/include/x86_64-linux-gnu/bits/uintn-identity.h \
+  /usr/include/x86_64-linux-gnu/sys/select.h \
+  /usr/include/x86_64-linux-gnu/bits/select.h \
+  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/alloca.h \
+  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+  /usr/include/c++/11/bits/std_abs.h \
+  /usr/include/c++/11/cstdio \
+  /usr/include/stdio.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
+  /usr/include/c++/11/cerrno \
+  /usr/include/errno.h \
+  /usr/include/x86_64-linux-gnu/bits/errno.h \
+  /usr/include/linux/errno.h \
+  /usr/include/x86_64-linux-gnu/asm/errno.h \
+  /usr/include/asm-generic/errno.h \
+  /usr/include/asm-generic/errno-base.h \
+  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
+  /usr/include/c++/11/bits/charconv.h \
+  /usr/include/c++/11/bits/basic_string.tcc \
+  /usr/include/c++/11/stdexcept \
+  /usr/include/c++/11/vector \
+  /usr/include/c++/11/bits/stl_vector.h \
+  /usr/include/c++/11/bits/stl_bvector.h \
+  /usr/include/c++/11/bits/vector.tcc \
+  ../src/core/bitset/include/bitset_vector.hpp \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/c++/11/istream \
+  /usr/include/c++/11/ios \
+  /usr/include/c++/11/bits/ios_base.h \
+  /usr/include/c++/11/bits/locale_classes.h \
+  /usr/include/c++/11/bits/locale_classes.tcc \
+  /usr/include/c++/11/system_error \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h \
+  /usr/include/c++/11/streambuf \
+  /usr/include/c++/11/bits/streambuf.tcc \
+  /usr/include/c++/11/bits/basic_ios.h \
+  /usr/include/c++/11/bits/locale_facets.h \
+  /usr/include/c++/11/cwctype \
+  /usr/include/wctype.h \
+  /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h \
+  /usr/include/c++/11/bits/streambuf_iterator.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
+  /usr/include/c++/11/bits/locale_facets.tcc \
+  /usr/include/c++/11/bits/basic_ios.tcc \
+  /usr/include/c++/11/ostream \
+  /usr/include/c++/11/bits/ostream.tcc \
+  /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/bits/codecvt.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/algorithm \
+  /usr/include/c++/11/bits/stl_algo.h \
+  /usr/include/c++/11/bits/algorithmfwd.h \
+  /usr/include/c++/11/bits/stl_heap.h \
+  /usr/include/c++/11/bits/uniform_int_dist.h \
+  /usr/include/c++/11/pstl/glue_algorithm_defs.h \
+  /usr/include/c++/11/functional \
+  /usr/include/c++/11/bits/std_function.h \
+  /usr/include/c++/11/unordered_map \
+  /usr/include/c++/11/bits/hashtable.h \
+  /usr/include/c++/11/bits/hashtable_policy.h \
+  /usr/include/c++/11/bits/enable_special_members.h \
+  /usr/include/c++/11/bits/node_handle.h \
+  /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/bits/erase_if.h
+
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o: ../src/benchmark/backends/combit/combit_backend.cpp \
   /usr/include/stdc-predef.h \
   ../src/benchmark/backends/combit/combit_backend.h \
@@ -430,13 +900,14 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o:
   /usr/include/c++/11/bits/stl_vector.h \
   /usr/include/c++/11/bits/stl_bvector.h \
   /usr/include/c++/11/bits/vector.tcc \
-  ../src/core/combit/include/bitmap_vector.hpp \
-  ../src/core/combit/include/types.hpp \
-  /usr/include/c++/11/cstddef \
-  ../src/core/combit/include/combit_encoder.hpp \
-  ../src/core/combit/include/combit_decoder.hpp \
-  /usr/include/c++/11/fstream \
-  /usr/include/c++/11/istream \
+  ../src/core/combit/include/combit.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/include/c++/11/iostream \
+  /usr/include/c++/11/ostream \
   /usr/include/c++/11/ios \
   /usr/include/c++/11/bits/ios_base.h \
   /usr/include/c++/11/bits/locale_classes.h \
@@ -455,13 +926,22 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o:
   /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_inline.h \
   /usr/include/c++/11/bits/locale_facets.tcc \
   /usr/include/c++/11/bits/basic_ios.tcc \
-  /usr/include/c++/11/ostream \
   /usr/include/c++/11/bits/ostream.tcc \
+  /usr/include/c++/11/istream \
   /usr/include/c++/11/bits/istream.tcc \
+  /usr/include/c++/11/iomanip \
+  /usr/include/c++/11/locale \
+  /usr/include/c++/11/bits/locale_facets_nonio.h \
+  /usr/include/c++/11/ctime \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+  /usr/include/libintl.h \
   /usr/include/c++/11/bits/codecvt.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
-  /usr/include/c++/11/bits/fstream.tcc \
+  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+  /usr/include/c++/11/bits/locale_conv.h \
+  /usr/include/c++/11/bits/quoted_string.h \
+  /usr/include/c++/11/sstream \
+  /usr/include/c++/11/bits/sstream.tcc \
   /usr/include/c++/11/algorithm \
   /usr/include/c++/11/bits/stl_algo.h \
   /usr/include/c++/11/bits/algorithmfwd.h \
@@ -476,7 +956,100 @@ CMakeFiles/benchmark_app.dir/src/benchmark/backends/combit/combit_backend.cpp.o:
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/node_handle.h \
   /usr/include/c++/11/bits/unordered_map.h \
-  /usr/include/c++/11/bits/erase_if.h
+  /usr/include/c++/11/bits/erase_if.h \
+  /usr/include/c++/11/chrono \
+  /usr/include/c++/11/ratio \
+  /usr/include/c++/11/limits \
+  /usr/include/c++/11/bits/parse_numbers.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/adxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/cetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/enqcmdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/fxsrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/lzcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/lwpintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/movdirintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pconfigintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/popcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pkuintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/rdseedintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/rtmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/serializeintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/sgxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tbmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tsxldtrkintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/waitpkgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/wbnoinvdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
+  /usr/include/c++/11/stdlib.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/smmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/wmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxvnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512pfintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512cdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlbwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124fmapsintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnnivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bitalgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/gfniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/vaesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/vpclmulqdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxtileintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/keylockerintrin.h \
+  /usr/include/c++/11/fstream \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
+  /usr/include/c++/11/bits/fstream.tcc
 
 CMakeFiles/benchmark_app.dir/src/benchmark/backends/croaring/croaring_backend.cpp.o: ../src/benchmark/backends/croaring/croaring_backend.cpp \
   /usr/include/stdc-predef.h \
@@ -2328,6 +2901,97 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   /usr/include/c++/11/bits/stl_multimap.h \
   ../src/benchmark/bitmap_backend.h \
   ../src/benchmark/backends/combit/combit_backend.h \
+  ../src/core/combit/include/combit.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
+  /usr/include/c++/11/cstring \
+  /usr/include/string.h \
+  /usr/include/strings.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/adxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/cetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/enqcmdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/fxsrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/lzcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/lwpintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/movdirintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pconfigintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/popcntintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pkuintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/rdseedintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/rtmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/serializeintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/sgxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tbmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tsxldtrkintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/waitpkgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/wbnoinvdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveoptintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
+  /usr/include/c++/11/stdlib.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/smmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/wmmintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxvnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512pfintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512cdintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlbwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmiintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124fmapsintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnnivlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bitalgintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectvlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/gfniintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/vaesintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/vpclmulqdqintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16vlintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxtileintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxint8intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/keylockerintrin.h \
   ../src/benchmark/backends/wah/wah_backend.h \
   ../src/core/fastbit/bitvector.h \
   /usr/include/boost/array.hpp \
@@ -2357,7 +3021,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   /usr/include/c++/11/iterator \
   /usr/include/c++/11/bits/stream_iterator.h \
   /usr/include/boost/assert.hpp \
-  /usr/include/assert.h \
   /usr/include/boost/static_assert.hpp \
   /usr/include/boost/swap.hpp \
   /usr/include/boost/core/swap.hpp \
@@ -2371,8 +3034,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   ../src/core/fastbit/fileManager.h \
   ../src/core/fastbit/util.h \
   ../src/core/fastbit/const.h \
-  /usr/include/string.h \
-  /usr/include/strings.h \
   ../src/core/fastbit/fastbit-config.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
@@ -2383,8 +3044,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
   /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
   /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
-  /usr/include/c++/11/stdlib.h \
-  /usr/include/c++/11/cstring \
   /usr/include/x86_64-linux-gnu/sys/stat.h \
   /usr/include/x86_64-linux-gnu/bits/stat.h \
   /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
@@ -2488,7 +3147,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   /usr/include/boost/function/detail/maybe_include.hpp \
   /usr/include/boost/function/function_template.hpp \
   /usr/include/boost/function/detail/prologue.hpp \
-  /usr/include/c++/11/cassert \
   /usr/include/boost/config/no_tr1/functional.hpp \
   /usr/include/boost/function/function_base.hpp \
   /usr/include/boost/integer.hpp \
@@ -3067,90 +3725,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h \
   /usr/include/malloc.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/x86intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/adxintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmiintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/bmi2intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/cetintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/enqcmdintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/fxsrintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/lzcntintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/lwpintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/movdirintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitxintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/pconfigintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/popcntintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/pkuintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/rdseedintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/rtmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/serializeintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/sgxintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/tbmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/tsxldtrkintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/waitpkgintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/wbnoinvdintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveoptintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavesintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/smmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/wmmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avxvnniintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx2intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512pfintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512cdintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlbwintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmaintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmiintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124fmapsintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2vlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnniintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnnivlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqvlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bitalgintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectvlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/gfniintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/vaesintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/vpclmulqdqintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16vlintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxtileintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxint8intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/keylockerintrin.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/mm3dnow.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/fma4intrin.h \
   /usr/lib/gcc/x86_64-linux-gnu/11/include/ammintrin.h \
@@ -3175,7 +3749,14 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: ../src/benchmar
   ../src/core/ewah/ewah.h \
   ../src/benchmark/backends/Concise/concise_backend.h \
   ../src/core/Concise/concise.h \
-  ../src/core/Concise/conciseutil.h
+  ../src/core/Concise/conciseutil.h \
+  ../src/benchmark/backends/bitset/bitset_backend.h \
+  ../src/core/bitset/include/bitset_vector.hpp \
+  ../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.h \
+  ../src/core/bitset/include/bitset_simd.hpp \
+  /usr/lib/gcc/x86_64-linux-gnu/11/include/cpuid.h \
+  ../src/core/bitset/include/segmented_bitset.hpp \
+  ../src/core/bitset/include/bitset_vector.hpp
 
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: ../src/benchmark/uti.cpp \
   /usr/include/stdc-predef.h \
@@ -8816,25 +9397,21 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 ../src/core/croaring/roaring.c:
 
+../src/core/bitset/include/segmented_bitset.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/cpuid.h:
+
 ../src/benchmark/uti.h:
 
 /usr/include/c++/11/bits/fs_ops.h:
 
 /usr/include/c++/11/codecvt:
 
-/usr/include/c++/11/bits/quoted_string.h:
+/usr/include/c++/11/bits/fs_fwd.h:
 
-/usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp:
+../src/core/fastbit/bitvector16.h:
 
-/usr/include/boost/mpl/vector/aux_/item.hpp:
-
-/usr/include/boost/type_traits/is_arithmetic.hpp:
-
-/usr/include/c++/11/bits/unordered_map.h:
-
-/usr/include/boost/type_traits/is_pod.hpp:
-
-/usr/include/boost/type_traits/intrinsics.hpp:
+/usr/include/c++/11/filesystem:
 
 /usr/include/boost/function/detail/prologue.hpp:
 
@@ -8936,6 +9513,8 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/x86_64-linux-gnu/asm/types.h:
 
+../src/benchmark/backends/bitset/bitset_backend.h:
+
 /usr/include/x86_64-linux-gnu/bits/waitstatus.h:
 
 ../src/core/fastbit/const.h:
@@ -8952,19 +9531,13 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/type_traits/is_volatile.hpp:
 
-/usr/include/boost/assert.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
-
 /usr/include/boost/config/helper_macros.hpp:
 
-/usr/include/boost/config/platform/linux.hpp:
+/usr/include/boost/function/function_base.hpp:
 
-/usr/include/boost/smart_ptr/detail/sp_convertible.hpp:
+/usr/include/c++/11/iterator:
 
-/usr/include/linux/close_range.h:
+/usr/include/boost/preprocessor/arithmetic/add.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/unistd_ext.h:
 
@@ -8973,8 +9546,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/bits/getopt_core.h:
 
 /usr/include/c++/11/bits/functexcept.h:
-
-/usr/include/boost/mpl/aux_/config/typeof.hpp:
 
 /usr/include/boost/mpl/apply.hpp:
 
@@ -8985,8 +9556,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/mpl/aux_/iter_fold_impl.hpp:
 
 ../src/core/ewah/ewahutil.h:
-
-/usr/include/c++/11/sstream:
 
 ../src/benchmark/backends/ewah/ewah_backend.cpp:
 
@@ -9020,19 +9589,31 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/lambda_fwd.hpp:
 
-/usr/include/boost/integer.hpp:
-
-../src/core/fastbit/bitvector_base.h:
-
-/usr/include/c++/11/limits:
-
-/usr/include/strings.h:
-
 /usr/include/byteswap.h:
 
 /usr/include/c++/11/string:
 
 /usr/include/boost/range/detail/sfinae.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+
+/usr/include/boost/mpl/aux_/lambda_arity_param.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h:
+
+/usr/include/boost/mpl/aux_/preprocessed/gcc/times.hpp:
+
+../src/benchmark/backends/croaring/croaring_backend.h:
+
+/usr/include/boost/core/addressof.hpp:
+
+/usr/include/boost/predef/make.h:
+
+/usr/include/linux/close_range.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h:
 
@@ -9055,6 +9636,12 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp:
+
+/usr/include/malloc.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h:
 
@@ -9082,8 +9669,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/smart_ptr/shared_ptr.hpp:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h:
-
 /usr/include/boost/preprocessor/seq/elem.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h:
@@ -9094,14 +9679,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/numeric/conversion/sign_mixture_enum.hpp:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h:
-
-/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h:
-
-/usr/include/boost/mpl/aux_/preprocessed/gcc/times.hpp:
-
 /usr/include/c++/11/bits/allocated_ptr.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h:
@@ -9110,9 +9687,9 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/clear_fwd.hpp:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h:
+/usr/include/c++/11/bits/fs_path.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h:
+/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h:
 
 /usr/include/boost/mpl/list/aux_/pop_front.hpp:
 
@@ -9126,6 +9703,10 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/preprocessor/array/data.hpp:
 
+/usr/include/boost/config/no_tr1/functional.hpp:
+
+/usr/include/c++/11/stdlib.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
 
 /usr/include/boost/mpl/has_xxx.hpp:
@@ -9133,14 +9714,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/mpl/at_fwd.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h:
-
-/usr/include/c++/11/cxxabi.h:
-
-/usr/include/boost/mpl/aux_/arity_spec.hpp:
-
-../src/core/ewah/boolarray.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:
 
 /usr/include/boost/type_traits/is_float.hpp:
 
@@ -9228,21 +9801,11 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/vector/aux_/O1_size.hpp:
 
-/usr/include/boost/type_traits/is_void.hpp:
-
-/usr/include/boost/array.hpp:
-
 /usr/include/boost/core/enable_if.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h:
-
-/usr/include/boost/type_traits/add_pointer.hpp:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h:
 
@@ -9267,6 +9830,52 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
 /usr/include/boost/mpl/list/aux_/include_preprocessed.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/fcntl.h:
+
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
+/usr/include/boost/config/no_tr1/complex.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h:
+
+/usr/include/boost/lexical_cast/detail/widest_char.hpp:
+
+/usr/include/boost/type_traits/is_constructible.hpp:
+
+/usr/include/boost/type_traits/alignment_of.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h:
+
+/usr/include/boost/type_traits/add_pointer.hpp:
+
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h:
+
+/usr/include/c++/11/bits/parse_numbers.h:
+
+/usr/include/boost/integer.hpp:
+
+../src/core/fastbit/bitvector_base.h:
+
+/usr/include/c++/11/limits:
+
+/usr/include/c++/11/ratio:
+
+/usr/include/c++/11/sstream:
+
+/usr/include/c++/11/bits/quoted_string.h:
+
+/usr/include/boost/config/platform/linux.hpp:
+
+/usr/include/boost/smart_ptr/detail/sp_convertible.hpp:
+
+/usr/include/c++/11/bits/locale_conv.h:
+
+/usr/include/c++/11/bits/locale_facets_nonio.tcc:
+
+/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h:
 
@@ -9298,9 +9907,15 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/program_options/cmdline.hpp:
 
+../src/benchmark/backends/croaring/croaring_backend.cpp:
+
+/usr/include/time.h:
+
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h:
 
 /usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
+
+../src/benchmark/backends/bitset/bitset_backend.cpp:
 
 /usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
@@ -9308,19 +9923,13 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/pthread.h:
 
-/usr/include/malloc.h:
+/usr/include/strings.h:
 
 /usr/include/c++/11/bits/refwrap.h:
 
 /usr/include/c++/11/bits/specfun.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/include/boost/type_traits/is_member_pointer.hpp:
-
-/usr/include/boost/type_traits/has_right_shift.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
 /usr/include/c++/11/ext/new_allocator.h:
 
@@ -9338,18 +9947,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/negate.hpp:
 
-/usr/include/boost/function/function_base.hpp:
-
-/usr/include/c++/11/iterator:
-
-/usr/include/boost/preprocessor/arithmetic/add.hpp:
-
-../src/core/combit/include/bitmap_vector.hpp:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h:
-
-/usr/include/boost/shared_ptr.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
 /usr/include/features-time64.h:
@@ -9359,10 +9956,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/mpl/aux_/preprocessed/gcc/list.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
-
-/usr/include/boost/type_traits/is_enum.hpp:
-
-/usr/include/boost/type_traits/detail/config.hpp:
 
 /usr/include/c++/11/bits/vector.tcc:
 
@@ -9374,7 +9967,17 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/linux/falloc.h:
 
+../src/core/croaring/roaring.hh:
+
+/usr/include/boost/mpl/aux_/template_arity_fwd.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h:
+
+/usr/include/boost/mpl/size.hpp:
 
 /usr/include/locale.h:
 
@@ -9486,6 +10089,8 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/concept_check.hpp:
 
+/usr/include/x86_64-linux-gnu/sys/file.h:
+
 /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h:
@@ -9504,27 +10109,15 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/streambuf:
 
-/usr/include/x86_64-linux-gnu/bits/fcntl.h:
-
-/usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/include/boost/config/no_tr1/complex.hpp:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h:
-
-/usr/include/boost/lexical_cast/detail/widest_char.hpp:
-
-/usr/include/boost/type_traits/is_constructible.hpp:
-
 /usr/include/c++/11/tr1/beta_function.tcc:
 
 /usr/include/c++/11/tr1/poly_laguerre.tcc:
 
 /usr/include/c++/11/array:
 
-/usr/include/boost/mpl/aux_/value_wknd.hpp:
-
 /usr/include/c++/11/climits:
+
+/usr/include/boost/mpl/aux_/value_wknd.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h:
 
@@ -9546,19 +10139,7 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/include/c++/11/bits/exception_ptr.h:
-
-/usr/include/c++/11/bits/charconv.h:
-
-/usr/include/c++/11/cstring:
+/usr/include/c++/11/ctime:
 
 /usr/include/c++/11/bits/stl_tempbuf.h:
 
@@ -9575,8 +10156,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
 
 /usr/include/boost/numeric/conversion/detail/numeric_cast_traits.hpp:
-
-../src/benchmark/backends/croaring/croaring_backend.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
 
@@ -9600,6 +10179,12 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
 
+/usr/include/c++/11/chrono:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h:
+
+/usr/include/boost/mpl/protect.hpp:
+
 /usr/include/x86_64-linux-gnu/sys/times.h:
 
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
@@ -9607,6 +10192,10 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp:
+
+../src/core/bitset/include/bitset_vector.hpp:
+
+/usr/include/c++/11/bits/stl_raw_storage_iter.h:
 
 /usr/include/c++/11/debug/assertions.h:
 
@@ -9630,6 +10219,10 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h:
 
+/usr/include/c++/11/bits/unordered_map.h:
+
+/usr/include/boost/type_traits/is_arithmetic.hpp:
+
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h:
 
 /usr/include/boost/mpl/limits/list.hpp:
@@ -9639,8 +10232,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/c++/11/bits/concept_check.h:
 
 /usr/include/c++/11/cstdint:
-
-/usr/include/boost/type_traits/is_pointer.hpp:
 
 /usr/include/boost/mpl/aux_/arity.hpp:
 
@@ -9704,6 +10295,10 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
+/usr/include/c++/11/tr1/riemann_zeta.tcc:
+
+/usr/include/limits.h:
+
 /usr/include/boost/type_traits/remove_cv.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h:
@@ -9718,8 +10313,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/ostream:
 
-/usr/include/c++/11/bits/stl_raw_storage_iter.h:
-
 /usr/include/boost/core/use_default.hpp:
 
 /usr/include/c++/11/memory:
@@ -9732,13 +10325,23 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/bits/predefined_ops.h:
 
+/usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
+
+/usr/include/c++/11/bits/exception_ptr.h:
+
+/usr/include/c++/11/bits/charconv.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h:
+
+/usr/include/math.h:
+
 /usr/include/boost/static_assert.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
 ../src/core/ewah/runninglengthword.h:
-
-/usr/include/boost/mpl/aux_/integral_wrapper.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
@@ -9754,25 +10357,11 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/bits/cxxabi_forced.h:
 
-/usr/include/x86_64-linux-gnu/sys/time.h:
-
-/usr/include/boost/limits.hpp:
-
-/usr/include/boost/range/detail/common.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
 /usr/include/boost/mpl/begin_end_fwd.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/boost/core/addressof.hpp:
-
-/usr/include/time.h:
-
-../src/benchmark/backends/croaring/croaring_backend.cpp:
-
-/usr/include/boost/predef/make.h:
 
 /usr/include/c++/11/bits/stream_iterator.h:
 
@@ -9796,6 +10385,12 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h:
 
+/usr/include/boost/assert.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/__FILE.h:
+
 /usr/include/c++/11/typeinfo:
 
 /usr/include/boost/mpl/aux_/traits_lambda_spec.hpp:
@@ -9814,13 +10409,17 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/queue:
 
-/usr/include/c++/11/iomanip:
+/usr/include/c++/11/bits/atomic_lockfree_defines.h:
+
+/usr/include/boost/type_traits/is_pod.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h:
 
 /usr/include/c++/11/bits/shared_ptr_atomic.h:
 
-/usr/include/c++/11/bits/atomic_lockfree_defines.h:
+/usr/include/c++/11/iomanip:
 
-/usr/include/string.h:
+/usr/include/boost/shared_ptr.hpp:
 
 /usr/include/boost/type_traits/remove_bounds.hpp:
 
@@ -9833,6 +10432,10 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/c++/11/bits/c++locale.h:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/quote.hpp:
+
+/usr/include/boost/preprocessor/arithmetic/mod.hpp:
+
+/usr/include/c++/11/functional:
 
 /usr/include/c++/11/bits/localefwd.h:
 
@@ -9851,6 +10454,8 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/range/algorithm/equal.hpp:
 
 /usr/include/c++/11/unordered_map:
+
+/usr/include/c++/11/locale:
 
 /usr/include/ctype.h:
 
@@ -9873,10 +10478,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
 /usr/include/c++/11/ext/aligned_buffer.h:
-
-/usr/include/c++/11/bits/cxxabi_init_exception.h:
-
-/usr/include/c++/11/bits/locale_classes.tcc:
 
 ../src/benchmark/backends/Concise/concise_backend.h:
 
@@ -9914,11 +10515,13 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/ctype_base.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h:
+/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
 
-/usr/include/boost/preprocessor/logical/bitand.hpp:
+../src/core/croaring/roaring.h:
 
-/usr/include/boost/mpl/pair.hpp:
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
 
 /usr/include/boost/program_options.hpp:
 
@@ -9930,11 +10533,11 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/range/end.hpp:
 
+/usr/include/c++/11/cstddef:
+
 /usr/include/c++/11/backward/binders.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xopintrin.h:
-
-/usr/include/c++/11/cstddef:
 
 /usr/include/c++/11/bits/stl_vector.h:
 
@@ -9968,8 +10571,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/bits/locale_classes.h:
 
-/usr/include/boost/type_traits/is_integral.hpp:
-
 /usr/include/boost/config/detail/suffix.hpp:
 
 /usr/include/boost/mpl/list/aux_/iterator.hpp:
@@ -9979,10 +10580,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/function_equal.hpp:
 
 /usr/include/c++/11/utility:
-
-/usr/include/boost/type_traits/is_member_function_pointer.hpp:
-
-/usr/include/c++/11/bits/uniform_int_dist.h:
 
 /usr/include/boost/range/size.hpp:
 
@@ -9999,14 +10596,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/c++/11/bits/streambuf.tcc:
 
 /usr/include/boost/mpl/O1_size.hpp:
-
-/usr/include/x86_64-linux-gnu/sys/file.h:
-
-../src/core/combit/include/combit_decoder.hpp:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h:
-
-/usr/include/boost/numeric/conversion/udt_builtin_mixture_enum.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h:
 
@@ -10056,6 +10645,12 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp:
 
+/usr/include/c++/11/bits/cxxabi_init_exception.h:
+
+/usr/include/c++/11/bits/locale_classes.tcc:
+
+../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.h:
+
 /usr/include/boost/range/reverse_iterator.hpp:
 
 /usr/include/c++/11/bits/std_abs.h:
@@ -10086,21 +10681,17 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/c++/11/bits/stl_deque.h:
 
+/usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h:
+
+/usr/include/boost/numeric/conversion/udt_builtin_mixture_enum.hpp:
+
 /usr/include/c++/11/cinttypes:
 
 /usr/include/asm-generic/posix_types.h:
 
-/usr/include/boost/type_traits/is_floating_point.hpp:
+/usr/include/c++/11/cstring:
 
-/usr/include/c++/11/bits/fstream.tcc:
-
-/usr/include/limits.h:
-
-/usr/include/c++/11/tr1/riemann_zeta.tcc:
-
-/usr/include/boost/type_traits/alignment_of.hpp:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h:
+/usr/include/string.h:
 
 /usr/include/c++/11/bits/ptr_traits.h:
 
@@ -10112,27 +10703,77 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/predef/os/ios.h:
 
-/usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+../src/core/combit/include/combit.h:
 
-../src/core/croaring/roaring.hh:
+/usr/include/boost/utility.hpp:
 
-/usr/include/boost/mpl/aux_/template_arity_fwd.hpp:
+/usr/include/boost/mpl/numeric_cast.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+/usr/include/boost/mpl/iterator_tags.hpp:
 
-/usr/include/asm-generic/errno.h:
+/usr/include/boost/program_options/parsers.hpp:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
+/usr/include/c++/11/bits/locale_facets_nonio.h:
 
-../src/core/croaring/roaring.h:
+/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
 
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
+/usr/include/boost/mpl/list/aux_/preprocessed/plain/list20.hpp:
 
-/usr/include/boost/mpl/aux_/lambda_arity_param.hpp:
+/usr/include/boost/type_traits/detail/yes_no_type.hpp:
 
-/usr/include/boost/config/no_tr1/functional.hpp:
+/usr/include/c++/11/cxxabi.h:
 
-/usr/include/c++/11/stdlib.h:
+/usr/include/boost/mpl/aux_/arity_spec.hpp:
+
+../src/core/ewah/boolarray.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h:
+
+/usr/include/x86_64-linux-gnu/sys/time.h:
+
+/usr/include/boost/limits.hpp:
+
+/usr/include/boost/range/detail/common.hpp:
+
+/usr/include/boost/mpl/aux_/config/typeof.hpp:
+
+/usr/include/boost/type_traits/intrinsics.hpp:
+
+/usr/include/boost/array.hpp:
+
+/usr/include/boost/type_traits/is_void.hpp:
+
+/usr/include/boost/mpl/aux_/integral_wrapper.hpp:
+
+/usr/include/boost/type_traits/is_integral.hpp:
+
+/usr/include/c++/11/bits/fstream.tcc:
+
+/usr/include/boost/type_traits/is_floating_point.hpp:
+
+/usr/include/boost/mpl/vector/aux_/item.hpp:
+
+/usr/include/boost/type_traits/detail/config.hpp:
+
+/usr/include/boost/type_traits/is_enum.hpp:
+
+/usr/include/boost/type_traits/is_pointer.hpp:
+
+/usr/include/boost/type_traits/is_member_pointer.hpp:
+
+/usr/include/boost/type_traits/has_right_shift.hpp:
+
+/usr/include/c++/11/bits/uniform_int_dist.h:
+
+/usr/include/boost/type_traits/is_member_function_pointer.hpp:
+
+/usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h:
+
+/usr/include/boost/preprocessor/logical/bitand.hpp:
+
+/usr/include/boost/mpl/pair.hpp:
+
+/usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp:
 
 /usr/include/boost/type_traits/is_copy_constructible.hpp:
 
@@ -10140,21 +10781,15 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/type_traits/add_rvalue_reference.hpp:
 
-/usr/include/boost/mpl/list/aux_/preprocessed/plain/list20.hpp:
-
-/usr/include/boost/type_traits/detail/yes_no_type.hpp:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h:
-
 /usr/include/boost/type_traits/is_default_constructible.hpp:
 
 /usr/include/boost/type_traits/has_trivial_destructor.hpp:
 
 /usr/include/boost/type_traits/composite_traits.hpp:
 
-/usr/include/boost/numeric/conversion/converter_policies.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/confname.h:
+
+/usr/include/boost/numeric/conversion/converter_policies.hpp:
 
 /usr/include/boost/type_traits/is_union.hpp:
 
@@ -10185,8 +10820,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/move/detail/std_ns_begin.hpp:
 
 /usr/include/boost/preprocessor/repetition/enum.hpp:
-
-/usr/include/c++/11/bits/fs_fwd.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h:
 
@@ -10470,12 +11103,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/aux_/common_name_wknd.hpp:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h:
-
-/usr/include/boost/mpl/protect.hpp:
-
-/usr/include/c++/11/chrono:
-
 /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp:
@@ -10536,8 +11163,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/vector/aux_/empty.hpp:
 
-../src/core/combit/include/combit_encoder.hpp:
-
 /usr/include/boost/smart_ptr/detail/spinlock_pool.hpp:
 
 /usr/include/boost/concept/detail/has_constraints.hpp:
@@ -10576,14 +11201,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/range/detail/has_member_size.hpp:
 
-/usr/include/boost/utility.hpp:
-
-/usr/include/boost/mpl/numeric_cast.hpp:
-
-/usr/include/boost/mpl/iterator_tags.hpp:
-
-/usr/include/boost/program_options/parsers.hpp:
-
 /usr/include/boost/utility/base_from_member.hpp:
 
 /usr/include/boost/preprocessor/repetition/enum_binary_params.hpp:
@@ -10593,12 +11210,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/preprocessor/control/deduce_d.hpp:
 
 /usr/include/boost/preprocessor/seq/cat.hpp:
-
-/usr/include/c++/11/functional:
-
-/usr/include/boost/preprocessor/arithmetic/mod.hpp:
-
-/usr/include/c++/11/bits/locale_conv.h:
 
 /usr/include/boost/preprocessor/logical/not.hpp:
 
@@ -10631,6 +11242,8 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/lexical_cast/bad_lexical_cast.hpp:
 
 /usr/include/boost/lexical_cast/try_lexical_convert.hpp:
+
+../src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp:
 
 /usr/include/boost/type_traits/type_identity.hpp:
 
@@ -10738,14 +11351,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/container/detail/std_fwd.hpp:
 
-/usr/include/c++/11/locale:
-
-/usr/include/c++/11/bits/locale_facets_nonio.h:
-
-/usr/include/c++/11/ctime:
-
-/usr/include/c++/11/bits/locale_facets_nonio.tcc:
-
 /usr/include/boost/noncopyable.hpp:
 
 /usr/include/c++/11/complex:
@@ -10832,9 +11437,9 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/empty_fwd.hpp:
 
-/usr/include/c++/11/string_view:
-
 /usr/include/c++/11/cstdlib:
+
+/usr/include/c++/11/string_view:
 
 /usr/include/boost/mpl/list/aux_/begin_end.hpp:
 
@@ -10863,6 +11468,8 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/c++/11/bits/move.h:
 
 /usr/include/boost/mpl/aux_/fold_impl.hpp:
+
+../src/core/bitset/include/bitset_simd.hpp:
 
 /usr/include/boost/mpl/aux_/preprocessed/gcc/fold_impl.hpp:
 
@@ -10914,10 +11521,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/mpl/vector/aux_/vector0.hpp:
 
-../src/core/fastbit/bitvector16.h:
-
-/usr/include/c++/11/filesystem:
-
 /usr/include/boost/mpl/aux_/preprocessed/gcc/plus.hpp:
 
 /usr/include/endian.h:
@@ -10958,8 +11561,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 
 /usr/include/boost/program_options/detail/parsers.hpp:
 
-/usr/include/boost/mpl/size.hpp:
-
 ../src/benchmark/uti.cpp:
 
 /usr/include/boost/mpl/distance.hpp:
@@ -10981,8 +11582,6 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/mpl/greater_equal.hpp:
 
 /usr/include/boost/preprocessor/iteration/detail/bounds/upper1.hpp:
-
-../src/core/combit/include/types.hpp:
 
 /usr/include/boost/predef/other/endian.h:
 
@@ -11065,11 +11664,3 @@ CMakeFiles/benchmark_app.dir/src/core/utils/util.cpp.o: ../src/core/utils/util.c
 /usr/include/boost/program_options/variables_map.hpp:
 
 /usr/include/c++/11/unordered_set:
-
-/usr/include/c++/11/ratio:
-
-/usr/include/c++/11/bits/parse_numbers.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h:
-
-/usr/include/c++/11/bits/fs_path.h:

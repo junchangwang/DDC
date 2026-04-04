@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/thesis/combit
+CMAKE_SOURCE_DIR = /home/lichenhang/Desktop/lch/combit
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lichenhang/Desktop/thesis/combit/debug
+CMAKE_BINARY_DIR = /home/lichenhang/Desktop/lch/combit/debug
 
 # Include any dependencies generated for this target.
 include src/core/combit/CMakeFiles/combit.dir/depend.make
@@ -69,91 +69,91 @@ include src/core/combit/CMakeFiles/combit.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/core/combit/CMakeFiles/combit.dir/flags.make
 
-src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
-src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o: ../src/core/combit/src/types.cpp
-src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o -MF CMakeFiles/combit.dir/src/types.cpp.o.d -o CMakeFiles/combit.dir/src/types.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/types.cpp
+src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
+src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o: ../src/core/combit/src/combit.cpp
+src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o -MF CMakeFiles/combit.dir/src/combit.cpp.o.d -o CMakeFiles/combit.dir/src/combit.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/combit/src/combit.cpp
 
-src/core/combit/CMakeFiles/combit.dir/src/types.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/types.cpp.i"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/types.cpp > CMakeFiles/combit.dir/src/types.cpp.i
+src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/combit.cpp.i"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/combit/src/combit.cpp > CMakeFiles/combit.dir/src/combit.cpp.i
 
-src/core/combit/CMakeFiles/combit.dir/src/types.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/types.cpp.s"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/types.cpp -o CMakeFiles/combit.dir/src/types.cpp.s
+src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/combit.cpp.s"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/combit/src/combit.cpp -o CMakeFiles/combit.dir/src/combit.cpp.s
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
-src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o: ../src/core/combit/src/combit_encoder.cpp
-src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o -MF CMakeFiles/combit.dir/src/combit_encoder.cpp.o.d -o CMakeFiles/combit.dir/src/combit_encoder.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_encoder.cpp
+src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
+src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o: ../src/core/combit/src/and.cpp
+src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o -MF CMakeFiles/combit.dir/src/and.cpp.o.d -o CMakeFiles/combit.dir/src/and.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/combit/src/and.cpp
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/combit_encoder.cpp.i"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_encoder.cpp > CMakeFiles/combit.dir/src/combit_encoder.cpp.i
+src/core/combit/CMakeFiles/combit.dir/src/and.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/and.cpp.i"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/combit/src/and.cpp > CMakeFiles/combit.dir/src/and.cpp.i
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/combit_encoder.cpp.s"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_encoder.cpp -o CMakeFiles/combit.dir/src/combit_encoder.cpp.s
+src/core/combit/CMakeFiles/combit.dir/src/and.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/and.cpp.s"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/combit/src/and.cpp -o CMakeFiles/combit.dir/src/and.cpp.s
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
-src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o: ../src/core/combit/src/combit_decoder.cpp
-src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o -MF CMakeFiles/combit.dir/src/combit_decoder.cpp.o.d -o CMakeFiles/combit.dir/src/combit_decoder.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_decoder.cpp
+src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
+src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o: ../src/core/combit/src/or.cpp
+src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o -MF CMakeFiles/combit.dir/src/or.cpp.o.d -o CMakeFiles/combit.dir/src/or.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/combit/src/or.cpp
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/combit_decoder.cpp.i"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_decoder.cpp > CMakeFiles/combit.dir/src/combit_decoder.cpp.i
+src/core/combit/CMakeFiles/combit.dir/src/or.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/or.cpp.i"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/combit/src/or.cpp > CMakeFiles/combit.dir/src/or.cpp.i
 
-src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/combit_decoder.cpp.s"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/combit_decoder.cpp -o CMakeFiles/combit.dir/src/combit_decoder.cpp.s
+src/core/combit/CMakeFiles/combit.dir/src/or.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/or.cpp.s"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/combit/src/or.cpp -o CMakeFiles/combit.dir/src/or.cpp.s
 
-src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
-src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o: ../src/core/combit/src/bitmap_vector.cpp
-src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o -MF CMakeFiles/combit.dir/src/bitmap_vector.cpp.o.d -o CMakeFiles/combit.dir/src/bitmap_vector.cpp.o -c /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/bitmap_vector.cpp
+src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o: src/core/combit/CMakeFiles/combit.dir/flags.make
+src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o: ../src/core/combit/src/xor.cpp
+src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o: src/core/combit/CMakeFiles/combit.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o -MF CMakeFiles/combit.dir/src/xor.cpp.o.d -o CMakeFiles/combit.dir/src/xor.cpp.o -c /home/lichenhang/Desktop/lch/combit/src/core/combit/src/xor.cpp
 
-src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/bitmap_vector.cpp.i"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/bitmap_vector.cpp > CMakeFiles/combit.dir/src/bitmap_vector.cpp.i
+src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/combit.dir/src/xor.cpp.i"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lichenhang/Desktop/lch/combit/src/core/combit/src/xor.cpp > CMakeFiles/combit.dir/src/xor.cpp.i
 
-src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/bitmap_vector.cpp.s"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/thesis/combit/src/core/combit/src/bitmap_vector.cpp -o CMakeFiles/combit.dir/src/bitmap_vector.cpp.s
+src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/combit.dir/src/xor.cpp.s"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lichenhang/Desktop/lch/combit/src/core/combit/src/xor.cpp -o CMakeFiles/combit.dir/src/xor.cpp.s
 
 # Object files for target combit
 combit_OBJECTS = \
-"CMakeFiles/combit.dir/src/types.cpp.o" \
-"CMakeFiles/combit.dir/src/combit_encoder.cpp.o" \
-"CMakeFiles/combit.dir/src/combit_decoder.cpp.o" \
-"CMakeFiles/combit.dir/src/bitmap_vector.cpp.o"
+"CMakeFiles/combit.dir/src/combit.cpp.o" \
+"CMakeFiles/combit.dir/src/and.cpp.o" \
+"CMakeFiles/combit.dir/src/or.cpp.o" \
+"CMakeFiles/combit.dir/src/xor.cpp.o"
 
 # External object files for target combit
 combit_EXTERNAL_OBJECTS =
 
-src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/types.cpp.o
-src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/combit_encoder.cpp.o
-src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/combit_decoder.cpp.o
-src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/bitmap_vector.cpp.o
+src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/combit.cpp.o
+src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/and.cpp.o
+src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/or.cpp.o
+src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/src/xor.cpp.o
 src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/build.make
 src/core/combit/libcombit.a: src/core/combit/CMakeFiles/combit.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/thesis/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libcombit.a"
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && $(CMAKE_COMMAND) -P CMakeFiles/combit.dir/cmake_clean_target.cmake
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/combit.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lichenhang/Desktop/lch/combit/debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libcombit.a"
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && $(CMAKE_COMMAND) -P CMakeFiles/combit.dir/cmake_clean_target.cmake
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/combit.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 src/core/combit/CMakeFiles/combit.dir/build: src/core/combit/libcombit.a
 .PHONY : src/core/combit/CMakeFiles/combit.dir/build
 
 src/core/combit/CMakeFiles/combit.dir/clean:
-	cd /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit && $(CMAKE_COMMAND) -P CMakeFiles/combit.dir/cmake_clean.cmake
+	cd /home/lichenhang/Desktop/lch/combit/debug/src/core/combit && $(CMAKE_COMMAND) -P CMakeFiles/combit.dir/cmake_clean.cmake
 .PHONY : src/core/combit/CMakeFiles/combit.dir/clean
 
 src/core/combit/CMakeFiles/combit.dir/depend:
-	cd /home/lichenhang/Desktop/thesis/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/thesis/combit /home/lichenhang/Desktop/thesis/combit/src/core/combit /home/lichenhang/Desktop/thesis/combit/debug /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit /home/lichenhang/Desktop/thesis/combit/debug/src/core/combit/CMakeFiles/combit.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/lichenhang/Desktop/lch/combit/debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lichenhang/Desktop/lch/combit /home/lichenhang/Desktop/lch/combit/src/core/combit /home/lichenhang/Desktop/lch/combit/debug /home/lichenhang/Desktop/lch/combit/debug/src/core/combit /home/lichenhang/Desktop/lch/combit/debug/src/core/combit/CMakeFiles/combit.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : src/core/combit/CMakeFiles/combit.dir/depend
 

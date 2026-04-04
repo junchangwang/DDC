@@ -1,5 +1,5 @@
 CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/benchmark_main.cpp \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/benchmark_main.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -197,14 +197,102 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/c++/11/bits/node_handle.h \
  /usr/include/c++/11/bits/unordered_map.h \
  /usr/include/c++/11/bits/erase_if.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.h \
  /usr/include/c++/11/map /usr/include/c++/11/bits/stl_tree.h \
  /usr/include/c++/11/bits/stl_map.h \
  /usr/include/c++/11/bits/stl_multimap.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/bitmap_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/combit/combit_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/wah/wah_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/bitmap_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/combit/combit_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/combit/include/combit.h \
+ /usr/include/c++/11/cassert /usr/include/assert.h \
+ /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/adxintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/bmiintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/bmi2intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/cetintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/enqcmdintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/fxsrintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/lzcntintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/lwpintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/movdirintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitxintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/pconfigintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/popcntintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/pkuintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/rdseedintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/rtmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/serializeintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/sgxintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/tbmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/tsxldtrkintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/waitpkgintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/wbnoinvdintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveoptintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavesintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
+ /usr/include/c++/11/stdlib.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/smmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/wmmintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avxintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avxvnniintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx2intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512pfintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512cdintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlbwintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmaintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmiintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124fmapsintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2vlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnniintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnnivlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqvlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bitalgintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectvlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/gfniintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/vaesintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/vpclmulqdqintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16vlintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/amxtileintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/amxint8intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/keylockerintrin.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/wah/wah_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector.h \
  /usr/include/boost/array.hpp /usr/include/boost/detail/workaround.hpp \
  /usr/include/boost/config/workaround.hpp /usr/include/boost/config.hpp \
  /usr/include/boost/config/user.hpp \
@@ -226,19 +314,17 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/boost/config/detail/suffix.hpp \
  /usr/include/boost/config/helper_macros.hpp /usr/include/c++/11/iterator \
  /usr/include/c++/11/bits/stream_iterator.h /usr/include/boost/assert.hpp \
- /usr/include/assert.h /usr/include/boost/static_assert.hpp \
- /usr/include/boost/swap.hpp /usr/include/boost/core/swap.hpp \
- /usr/include/boost/core/enable_if.hpp \
+ /usr/include/boost/static_assert.hpp /usr/include/boost/swap.hpp \
+ /usr/include/boost/core/swap.hpp /usr/include/boost/core/enable_if.hpp \
  /usr/include/boost/throw_exception.hpp \
  /usr/include/boost/assert/source_location.hpp \
  /usr/include/boost/current_function.hpp /usr/include/boost/cstdint.hpp \
  /usr/include/boost/exception/exception.hpp \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/array_t.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fileManager.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/util.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/const.h \
- /usr/include/string.h /usr/include/strings.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/fastbit-config.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/array_t.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fileManager.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/util.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/const.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/fastbit-config.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/limits.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/syslimits.h \
  /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
@@ -247,7 +333,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
- /usr/include/c++/11/stdlib.h /usr/include/c++/11/cstring \
  /usr/include/x86_64-linux-gnu/sys/stat.h \
  /usr/include/x86_64-linux-gnu/bits/stat.h \
  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
@@ -293,13 +378,13 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/x86_64-linux-gnu/sys/file.h /usr/include/c++/11/set \
  /usr/include/c++/11/bits/stl_set.h \
  /usr/include/c++/11/bits/stl_multiset.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/horometer.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/horometer.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/include/x86_64-linux-gnu/sys/times.h \
  /usr/include/x86_64-linux-gnu/sys/resource.h \
  /usr/include/x86_64-linux-gnu/bits/resource.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_rusage.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/utils/util.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/utils/util.h \
  /usr/include/c++/11/numeric /usr/include/c++/11/bits/stl_numeric.h \
  /usr/include/c++/11/pstl/glue_numeric_defs.h \
  /usr/include/boost/program_options.hpp \
@@ -339,7 +424,6 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/boost/function/detail/maybe_include.hpp \
  /usr/include/boost/function/function_template.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
- /usr/include/c++/11/cassert \
  /usr/include/boost/config/no_tr1/functional.hpp \
  /usr/include/boost/function/function_base.hpp \
  /usr/include/boost/integer.hpp /usr/include/boost/integer_fwd.hpp \
@@ -877,96 +961,12 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/boost/program_options/version.hpp \
  /usr/include/c++/11/unordered_set \
  /usr/include/c++/11/bits/unordered_set.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/fastbit/bitvector_base.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/croaring/croaring_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.hh \
- /home/lichenhang/Desktop/thesis/combit/src/core/croaring/roaring.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/fastbit/bitvector_base.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/croaring/croaring_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.hh \
+ /home/lichenhang/Desktop/lch/combit/src/core/croaring/roaring.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdbool.h /usr/include/malloc.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/x86intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/x86gprintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/ia32intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/adxintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/bmiintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/bmi2intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/cetintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/cldemoteintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/clflushoptintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/clwbintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/clzerointrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/enqcmdintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/fxsrintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/lzcntintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/lwpintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/movdirintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mwaitxintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/pconfigintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/popcntintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/pkuintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/rdseedintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/rtmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/serializeintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/sgxintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/tbmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/tsxldtrkintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/uintrintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/waitpkgintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/wbnoinvdintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavecintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xsaveoptintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xsavesintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xtestintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/hresetintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/immintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/pmmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/tmmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/smmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/wmmintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avxintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avxvnniintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx2intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512fintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512erintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512pfintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512cdintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bwintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512dqintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vlbwintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vldqintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmaintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512ifmavlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmiintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmivlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124fmapsintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx5124vnniwintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vbmi2vlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnniintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vnnivlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vpopcntdqvlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bitalgintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512vp2intersectvlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/shaintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/fmaintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/f16cintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/gfniintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/vaesintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/vpclmulqdqintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16vlintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/avx512bf16intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/amxtileintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/amxint8intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/amxbf16intrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/prfchwintrin.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/keylockerintrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm3dnow.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/fma4intrin.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/ammintrin.h \
@@ -976,16 +976,21 @@ CMakeFiles/benchmark_app.dir/src/benchmark/benchmark_main.cpp.o: \
  /usr/include/inttypes.h /usr/include/c++/11/queue \
  /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
  /usr/include/c++/11/bits/deque.tcc /usr/include/c++/11/bits/stl_queue.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/ewah/ewah_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/boolarray.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/ewah/ewah_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/boolarray.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/iso646.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewahutil.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/runninglengthword.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah-inl.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/ewah/ewah.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/Concise/concise_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/Concise/concise.h \
- /home/lichenhang/Desktop/thesis/combit/src/core/Concise/conciseutil.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset/bitset_backend.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.h
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewahutil.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/runninglengthword.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah-inl.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/ewah/ewah.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/Concise/concise_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/Concise/concise.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/Concise/conciseutil.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset/bitset_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/bitset/include/bitset_vector.hpp \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/backends/bitset_avx512/bitset_avx512_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/bitset/include/bitset_simd.hpp \
+ /usr/lib/gcc/x86_64-linux-gnu/11/include/cpuid.h \
+ /home/lichenhang/Desktop/lch/combit/src/core/bitset/include/segmented_bitset.hpp \
+ /home/lichenhang/Desktop/lch/combit/src/core/bitset/include/bitset_vector.hpp

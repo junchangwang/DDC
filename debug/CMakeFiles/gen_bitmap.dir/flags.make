@@ -3,15 +3,15 @@
 
 # compile C with /usr/bin/cc
 # compile CXX with /usr/bin/c++
-C_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DCOMBIT_COMPILER_SUPPORTS_AVX512=1
+C_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK
 
-C_INCLUDES = -I/home/lichenhang/Desktop/thesis/combit/src/core -I/home/lichenhang/Desktop/thesis/combit/src/core/combit/include -I/home/lichenhang/Desktop/thesis/combit/util
+C_INCLUDES = -I/home/lichenhang/Desktop/lch/combit/src/core -I/home/lichenhang/Desktop/lch/combit/src/core/combit/include -I/home/lichenhang/Desktop/lch/combit/util
 
-C_FLAGS = -O0 -ggdb -g
+C_FLAGS = -g
 
-CXX_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DCOMBIT_COMPILER_SUPPORTS_AVX512=1
+CXX_DEFINES = -DBOOST_ALL_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK
 
-CXX_INCLUDES = -I/home/lichenhang/Desktop/thesis/combit/src/core -I/home/lichenhang/Desktop/thesis/combit/src/core/combit/include -I/home/lichenhang/Desktop/thesis/combit/util
+CXX_INCLUDES = -I/home/lichenhang/Desktop/lch/combit/src/core -I/home/lichenhang/Desktop/lch/combit/src/core/combit/include -I/home/lichenhang/Desktop/lch/combit/util
 
-CXX_FLAGS = -O0 -ggdb -g -std=gnu++17
+CXX_FLAGS = -g -std=gnu++17
 

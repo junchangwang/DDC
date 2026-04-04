@@ -1,1 +1,0 @@
-/usr/bin/c++ -O0 -ggdb -g CMakeFiles/combit_backend_tests.dir/tests/test_backend_ops.cpp.o CMakeFiles/combit_backend_tests.dir/src/benchmark/backends/combit/combit_backend.cpp.o -o combit_backend_tests  src/core/combit/libcombit.a lib/libgtest_main.a lib/libgtest.a 

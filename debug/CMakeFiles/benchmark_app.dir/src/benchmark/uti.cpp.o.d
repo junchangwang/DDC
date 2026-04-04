@@ -1,7 +1,7 @@
 CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.cpp \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.cpp \
  /usr/include/stdc-predef.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/uti.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/uti.h \
  /usr/include/c++/11/string \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -183,7 +183,7 @@ CMakeFiles/benchmark_app.dir/src/benchmark/uti.cpp.o: \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /usr/include/c++/11/pstl/execution_defs.h \
- /home/lichenhang/Desktop/thesis/combit/src/benchmark/bitmap_backend.h \
+ /home/lichenhang/Desktop/lch/combit/src/benchmark/bitmap_backend.h \
  /usr/include/c++/11/iostream /usr/include/c++/11/algorithm \
  /usr/include/c++/11/bits/stl_algo.h \
  /usr/include/c++/11/bits/algorithmfwd.h \

@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/lichenhang/Desktop/thesis/combit/src/main.cpp" "CMakeFiles/combit_demo.dir/src/main.cpp.o" "gcc" "CMakeFiles/combit_demo.dir/src/main.cpp.o.d"
+  "/home/lichenhang/Desktop/lch/combit/src/main.cpp" "CMakeFiles/combit_demo.dir/src/main.cpp.o" "gcc" "CMakeFiles/combit_demo.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/lichenhang/Desktop/thesis/combit/debug/src/core/combit/CMakeFiles/combit.dir/DependInfo.cmake"
+  "/home/lichenhang/Desktop/lch/combit/debug/src/core/combit/CMakeFiles/combit.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
