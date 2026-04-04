@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcombit.a CMakeFiles/combit.dir/src/combit.cpp.o CMakeFiles/combit.dir/src/and.cpp.o CMakeFiles/combit.dir/src/or.cpp.o CMakeFiles/combit.dir/src/xor.cpp.o
-/usr/bin/ranlib libcombit.a
