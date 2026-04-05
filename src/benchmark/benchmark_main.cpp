@@ -35,7 +35,7 @@ static double croaring_to_bitset_if_needed(const roaring::Roaring& r,
     Timer conv_timer;
     conv_timer.reset();
     roaring::api::bitset_t* bs = roaring::api::bitset_create_with_capacity(
-        (logical_size + 63) / 64);
+        logical_size);
     roaring::api::roaring_bitmap_to_bitset(&r.roaring, bs);
     roaring::api::bitset_free(bs);
     return conv_timer.elapsed_ms();
