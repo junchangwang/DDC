@@ -36,14 +36,21 @@ static double croaring_to_bitset(const roaring::Roaring& r,
     return conv_timer.elapsed_ms();
 }
 
-// Print container breakdown for a CRoaring result
+// Print container breakdown for a CRoaring result (counts + byte sizes)
 static void croaring_print_containers(const std::string& label,
                                       const roaring::Roaring& r) {
     roaring::api::roaring_statistics_t s;
     roaring::api::roaring_bitmap_statistics(&r.roaring, &s);
-    std::cout << "  [" << label << " containers] array=" << s.n_array_containers
-              << " bitset=" << s.n_bitset_containers
-              << " run=" << s.n_run_containers << "\n";
+    double arr_mb = s.n_bytes_array_containers / (1024.0 * 1024.0);
+    double bs_mb  = s.n_bytes_bitset_containers / (1024.0 * 1024.0);
+    double run_mb = s.n_bytes_run_containers / (1024.0 * 1024.0);
+    size_t total  = s.n_bytes_array_containers + s.n_bytes_bitset_containers
+                  + s.n_bytes_run_containers;
+    std::cout << "  [" << label << " containers]"
+              << " array=" << s.n_array_containers << " (" << arr_mb << " MB)"
+              << " bitset=" << s.n_bitset_containers << " (" << bs_mb << " MB)"
+              << " run=" << s.n_run_containers << " (" << run_mb << " MB)"
+              << " total_bytes=" << total << "\n";
 }
 
 // ==========================================
@@ -338,12 +345,37 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         total_cb  += sb.total_bits;
                     }
                 }
-                std::cout << "[ComBit Storage] leading bits: " << total_lb
-                          << " bits (" << total_lb / 8.0 / 1024.0 << " KB)"
-                          << " | literal words: " << total_lit
-                          << " bits (" << total_lit / 8.0 / 1024.0 << " KB)"
-                          << " | total: " << total_cb
-                          << " bits (" << total_cb / 8.0 / 1024.0 << " KB)\n";
+                std::cout << "[ComBit Storage] leading_bytes: "
+                          << total_lb / 8.0 / 1024.0 / 1024.0 << " MB"
+                          << " | literal_bytes: "
+                          << total_lit / 8.0 / 1024.0 / 1024.0 << " MB"
+                          << " | total_bytes: "
+                          << total_cb / 8.0 / 1024.0 / 1024.0 << " MB\n";
+            }
+
+            // CRoaring aggregate container stats
+            if (backend_name == "CRoaring") {
+                size_t tot_arr = 0, tot_bs = 0, tot_run = 0;
+                size_t bytes_arr = 0, bytes_bs = 0, bytes_run = 0;
+                for (auto& bm : bitmaps) {
+                    auto* ch = dynamic_cast<CroaringHandle*>(bm.get());
+                    if (ch) {
+                        roaring::api::roaring_statistics_t s;
+                        roaring::api::roaring_bitmap_statistics(&ch->bitmap.roaring, &s);
+                        tot_arr  += s.n_array_containers;
+                        tot_bs   += s.n_bitset_containers;
+                        tot_run  += s.n_run_containers;
+                        bytes_arr += s.n_bytes_array_containers;
+                        bytes_bs  += s.n_bytes_bitset_containers;
+                        bytes_run += s.n_bytes_run_containers;
+                    }
+                }
+                size_t total_bytes = bytes_arr + bytes_bs + bytes_run;
+                std::cout << "[CRoaring Storage]"
+                          << " array=" << tot_arr << " (" << bytes_arr / (1024.0*1024.0) << " MB)"
+                          << " | run=" << tot_run << " (" << bytes_run / (1024.0*1024.0) << " MB)"
+                          << " | bitset=" << tot_bs << " (" << bytes_bs / (1024.0*1024.0) << " MB)"
+                          << " | total_bytes=" << total_bytes << "\n";
             }
         }
 
