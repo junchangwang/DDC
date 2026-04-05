@@ -335,20 +335,23 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
 
             // ComBit size breakdown: leading bits + literal words
             if (backend_name.find("ComBIT") != std::string::npos) {
-                size_t total_lb = 0, total_lit = 0, total_cb = 0;
+                size_t total_l3 = 0, total_l2 = 0, total_l1 = 0, total_cb = 0;
                 for (auto& bm : bitmaps) {
                     auto* ch = dynamic_cast<CombitHandle*>(bm.get());
                     if (ch) {
                         auto sb = ch->compressed.size_breakdown();
-                        total_lb  += sb.l3_bits;
-                        total_lit += sb.l1_literal_bits;
-                        total_cb  += sb.total_bits;
+                        total_l3 += sb.l3_bits;
+                        total_l2 += sb.l2_literal_bits;
+                        total_l1 += sb.l1_literal_bits;
+                        total_cb += sb.total_bits;
                     }
                 }
-                std::cout << "[ComBit Storage] leading_bytes: "
-                          << total_lb / 8.0 / 1024.0 / 1024.0 << " MB"
-                          << " | literal_bytes: "
-                          << total_lit / 8.0 / 1024.0 / 1024.0 << " MB"
+                std::cout << "[ComBit Storage] l3_bytes: "
+                          << total_l3 / 8.0 / 1024.0 / 1024.0 << " MB"
+                          << " | l2_bytes: "
+                          << total_l2 / 8.0 / 1024.0 / 1024.0 << " MB"
+                          << " | l1_bytes: "
+                          << total_l1 / 8.0 / 1024.0 / 1024.0 << " MB"
                           << " | total_bytes: "
                           << total_cb / 8.0 / 1024.0 / 1024.0 << " MB\n";
             }
