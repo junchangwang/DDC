@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <cstdint>
 #include <cstdlib>
@@ -305,6 +306,73 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
 }
 
 // ==================================================================
+//  gen_combit_tile: compress small bitmap once, tile T× via byte concat
+// ==================================================================
+//
+// For high-cardinality benchmarks (card >= 2000) the per-bitmap compress
+// over n=100M bits is the bottleneck.  Tile mode generates a small
+// bitmap (size = small_n = n/tile) with default segment_bits=65536 (so
+// the per-segment metadata layout matches vanilla gen on a real n-bit
+// dataset), then byte-concatenates the segment payload `tile` times and
+// rewrites the 24-byte header.  All resulting segments stay 65536-bit
+// aligned to give the same op-side performance as vanilla gen.
+
+bool gen_combit_tile(const std::vector<std::vector<uint32_t>>& buckets,
+                     const std::string& output_dir,
+                     uint64_t small_n, int cardinality, int tile_factor) {
+    fs::create_directories(output_dir);
+
+    for (int v = 1; v <= cardinality; v++) {
+        // Build the small (small_n-bit) bit vector.
+        std::vector<bool> bits(small_n, false);
+        for (uint32_t idx : buckets[v])
+            if (idx < small_n) bits[idx] = true;
+
+        // Compress with the DEFAULT segment_bits (65536) — same per-segment
+        // layout as vanilla gen, so the tiled bitmap behaves like a real
+        // n-bit ComBit at op time.
+        ComBit small_cb = ComBit::compress(bits);
+
+        // Serialize to memory so we can manipulate the 24-byte header.
+        std::stringstream ss;
+        small_cb.serialize(ss);
+        std::string buf = ss.str();
+        if (buf.size() < 24) {
+            std::cerr << "[gen_combit_tile] Error: bad serialize size\n";
+            return false;
+        }
+
+        uint64_t bit_count, seg_bits, num_segs;
+        std::memcpy(&bit_count, buf.data() +  0, 8);
+        std::memcpy(&seg_bits,  buf.data() +  8, 8);
+        std::memcpy(&num_segs,  buf.data() + 16, 8);
+
+        uint64_t new_bit_count = bit_count * tile_factor;
+        uint64_t new_num_segs  = num_segs  * tile_factor;
+
+        std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
+        std::ofstream out(out_path, std::ios::binary);
+        out.write(reinterpret_cast<const char*>(&new_bit_count), 8);
+        out.write(reinterpret_cast<const char*>(&seg_bits),      8);
+        out.write(reinterpret_cast<const char*>(&new_num_segs),  8);
+
+        const char* payload = buf.data() + 24;
+        size_t payload_size = buf.size() - 24;
+        for (int i = 0; i < tile_factor; i++)
+            out.write(payload, payload_size);
+
+        if (v % 100 == 0 || v == cardinality) {
+            std::cout << "[gen_combit_tile] Written " << v << "/" << cardinality
+                      << " (small_n=" << small_n << ", tile=" << tile_factor
+                      << " → n=" << new_bit_count << ")\n";
+        }
+    }
+    std::cout << "[gen_combit_tile] All " << cardinality
+              << " ComBit bitmaps written (tile mode) to " << output_dir << "\n";
+    return true;
+}
+
+// ==================================================================
 //  Path helpers
 // ==================================================================
 
@@ -352,10 +420,11 @@ static bool dataset_exists_in_index(const std::string& base_dir, int n, int c) {
     std::ifstream f(index_path);
     if (!f.is_open()) return false;
 
-    std::string target = "n=" + std::to_string(n) + " c=" + std::to_string(c);
+    // Match the WHOLE "n=N c=C " token, so c=2 doesn't match c=2000.
+    std::string target = "n=" + std::to_string(n) + " c=" + std::to_string(c) + " ";
     std::string line;
     while (std::getline(f, line)) {
-        if (line.find(target) != std::string::npos) return true;
+        if (line.compare(0, target.size(), target) == 0) return true;
     }
     return false;
 }
@@ -404,6 +473,7 @@ int main(int argc, char* argv[]) {
     int c = -1;
     int z = 1;
     int w = 8;
+    int tile = 1;
     std::string algorithm;
     std::string base_dir = ".";
 
@@ -418,6 +488,8 @@ int main(int argc, char* argv[]) {
             z = std::stoi(argv[++i]);
         } else if (arg == "-w" && i + 1 < argc) {
             w = std::stoi(argv[++i]);
+        } else if (arg == "-T" && i + 1 < argc) {
+            tile = std::stoi(argv[++i]);
         } else if (arg == "-d" && i + 1 < argc) {
             base_dir = argv[++i];
         } else if (arg[0] != '-') {
@@ -429,14 +501,25 @@ int main(int argc, char* argv[]) {
     }
 
     if (n <= 0 || c <= 0 || algorithm.empty()) {
-        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [-d <base_dir>] [-z <zip_length>] [-w <word_size>]\n"
-                  << "  -n <n>        : number of rows\n"
+        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [options]\n"
+                  << "  -n <n>        : number of rows (final size)\n"
                   << "  -c <c>        : cardinality\n"
                   << "  <algorithm>   : compression algorithm (bitset, wah, roaring, ewah, concise, combit)\n"
                   << "  -d <base_dir> : base directory (default: .)\n"
                   << "  -z <z>        : zip length for bitset mode (default: 1)\n"
-                  << "  -w <w>        : ComBit word size: 8, 16, 32, or 64 (default: 8)\n";
+                  << "  -w <w>        : ComBit word size: 8, 16, 32, or 64 (default: 8)\n"
+                  << "  -T <T>        : tile factor (combit only).  Generate small dataset of\n"
+                  << "                  size n/T with segment_bits = n/T, compress once, then\n"
+                  << "                  byte-concat T copies.  Saves the n-scale compress pass.\n"
+                  << "                  Requires n % T == 0.\n";
         return 1;
+    }
+
+    if (tile > 1) {
+        if (n % tile != 0) {
+            std::cerr << "Error: -n (" << n << ") must be divisible by -T (" << tile << ")\n";
+            return 1;
+        }
     }
 
     std::string algo_lower = algorithm;
@@ -468,17 +551,24 @@ int main(int argc, char* argv[]) {
         comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
     }
 
+    // Tile mode: small_n = n / tile.  Generate small dataset only,
+    // compress small bitmaps once, then byte-concat T copies.
+    int gen_n = (tile > 1) ? (n / tile) : n;
+
     std::cout << "[gen_bitmap] n=" << n << " c=" << c
               << " algorithm=" << algorithm
+              << (tile > 1 ? (" tile=" + std::to_string(tile)
+                              + " small_n=" + std::to_string(gen_n))
+                           : "")
               << " base_dir=" << base_dir << std::endl;
 
-    // Step 1: Ensure dataset exists
-    std::string ds_file = dataset_path(base_dir, n, c);
+    // Step 1: Ensure dataset (small or full) exists
+    std::string ds_file = dataset_path(base_dir, gen_n, c);
     if (fs::exists(ds_file)) {
         std::cout << "[gen_bitmap] Dataset file exists: " << ds_file << std::endl;
-    } else if (!dataset_exists_in_index(base_dir, n, c)) {
+    } else if (!dataset_exists_in_index(base_dir, gen_n, c)) {
         std::cout << "[gen_bitmap] Dataset not found. Generating..." << std::endl;
-        if (!call_gen_dataset(base_dir, n, c)) {
+        if (!call_gen_dataset(base_dir, gen_n, c)) {
             std::cerr << "[gen_bitmap] Error: gen_dataset.sh failed." << std::endl;
             return 1;
         }
@@ -503,10 +593,51 @@ int main(int argc, char* argv[]) {
     }
 
     std::cout << "[gen_bitmap] Reading dataset into buckets..." << std::endl;
-    auto buckets = read_dataset_buckets(ds_file, static_cast<uint64_t>(n), c);
+    auto buckets = read_dataset_buckets(ds_file, static_cast<uint64_t>(gen_n), c);
     if (buckets.empty()) return 1;
 
-    // Generate raw bitmaps if not already present
+    // Tile mode bypasses the raw-bitmap step (raw at full n would defeat the
+    // purpose).  For combit: byte-level segment concat (gen_combit_tile).
+    // For other algos: expand the small buckets to full-n positions, then
+    // call the existing gen_X — works for all formats whose compress is
+    // O(set_bits) (Roaring/EWAH/Concise/Bitset) and acceptable for WAH
+    // when each per-value bitmap stays sparse.
+    if (tile > 1) {
+        bool ok;
+        if (algo_lower == "combit") {
+            ok = gen_combit_tile(buckets, comp_dir,
+                                 static_cast<uint64_t>(gen_n), c, tile);
+        } else {
+            std::cout << "[gen_bitmap] Tile mode: expanding small buckets to "
+                      << "full n (" << n << ") for "
+                      << algorithm << "..." << std::endl;
+            std::vector<std::vector<uint32_t>> tiled_buckets(c + 1);
+            for (int v = 1; v <= c; v++) {
+                tiled_buckets[v].reserve(buckets[v].size() * tile);
+                for (int t = 0; t < tile; t++) {
+                    uint32_t off = static_cast<uint32_t>(gen_n) * t;
+                    for (uint32_t pos : buckets[v])
+                        tiled_buckets[v].push_back(off + pos);
+                }
+            }
+            ok = generate_compressed(algorithm, tiled_buckets, comp_dir,
+                                     static_cast<uint64_t>(n), c, z, w);
+        }
+        if (!ok) {
+            std::cerr << "[gen_bitmap] Error: tile compression failed." << std::endl;
+            return 1;
+        }
+        std::ofstream done(compressed_done_path(comp_dir));
+        done << "algorithm=" << algorithm << "\n"
+             << "n=" << n << "\n"
+             << "c=" << c << "\n"
+             << "tile=" << tile << "\n"
+             << "small_n=" << gen_n << "\n";
+        std::cout << "[gen_bitmap] Tile compression completed: " << comp_dir << std::endl;
+        return 0;
+    }
+
+    // Generate raw bitmaps if not already present (vanilla mode only)
     std::string raw_dir = raw_dir_path(base_dir, n, c);
     std::string raw_done = raw_dir + "/done.txt";
     if (!fs::exists(raw_done)) {

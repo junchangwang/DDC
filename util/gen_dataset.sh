@@ -44,7 +44,7 @@ index_file="${base_dir}/index.txt"
 
 # Check index.txt: skip if dataset already exists
 if [ -f "$index_file" ]; then
-	if grep -q "n=${n} c=${c}" "$index_file"; then
+	if grep -q "^n=${n} c=${c} " "$index_file"; then
 		echo "Dataset already exists for n=${n}, c=${c}"
 		echo "Dataset file: $dataset_file"
 		echo "Skipping generation."

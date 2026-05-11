@@ -333,20 +333,27 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                       << " bytes (" << total_compressed / 1024.0 << " KB)"
                       << " | Ratio: " << ratio << "x\n";
 
-            // ComBit size breakdown: leading bits + literal words
+            // ComBit size breakdown: per-layer literal storage.
+            // Note: SizeBreakdown::l3_bits / l4_bits are *logical* counts
+            // (l3_count_ / l4_count_, ~bitmap_bits / 64).  The actual
+            // on-disk size lives in l*_literal_bits.  We report the
+            // literal sizes as the per-layer storage cost.
             if (backend_name.find("ComBIT") != std::string::npos) {
-                size_t total_l3 = 0, total_l2 = 0, total_l1 = 0, total_cb = 0;
+                size_t total_l4 = 0, total_l3 = 0, total_l2 = 0, total_l1 = 0, total_cb = 0;
                 for (auto& bm : bitmaps) {
                     auto* ch = dynamic_cast<CombitHandle*>(bm.get());
                     if (ch) {
                         auto sb = ch->compressed.size_breakdown();
-                        total_l3 += sb.l3_bits;
+                        total_l4 += sb.l4_bits;
+                        total_l3 += sb.l3_literal_bits;
                         total_l2 += sb.l2_literal_bits;
                         total_l1 += sb.l1_literal_bits;
                         total_cb += sb.total_bits;
                     }
                 }
-                std::cout << "[ComBit Storage] l3_bytes: "
+                std::cout << "[ComBit Storage] l4_bytes: "
+                          << total_l4 / 8.0 / 1024.0 / 1024.0 << " MB"
+                          << " | l3_bytes: "
                           << total_l3 / 8.0 / 1024.0 / 1024.0 << " MB"
                           << " | l2_bytes: "
                           << total_l2 / 8.0 / 1024.0 / 1024.0 << " MB"
@@ -573,23 +580,46 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                 auto* hb = dynamic_cast<CroaringHandle*>(bm1.get());
                 if (ha && hb) {
                     uint32_t logical_sz = std::max(ha->current_size, hb->current_size);
+                    constexpr int N_ITER = 5;
+                    auto median = [](std::vector<double>& v) {
+                        std::sort(v.begin(), v.end());
+                        return v[v.size() / 2];
+                    };
+
                     // Warm up
                     { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
+                    { roaring::Roaring w = ha->bitmap | hb->bitmap; (void)w; }
+                    { roaring::Roaring w = ha->bitmap ^ hb->bitmap; (void)w; }
 
-                    timer.reset();
+                    std::vector<double> and_t, or_t, xor_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        roaring::Roaring r = ha->bitmap & hb->bitmap;
+                        double t = timer.elapsed_ms();
+                        t += croaring_to_bitset(r, logical_sz);
+                        and_t.push_back(t);
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        roaring::Roaring r = ha->bitmap | hb->bitmap;
+                        double t = timer.elapsed_ms();
+                        t += croaring_to_bitset(r, logical_sz);
+                        or_t.push_back(t);
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        roaring::Roaring r = ha->bitmap ^ hb->bitmap;
+                        double t = timer.elapsed_ms();
+                        t += croaring_to_bitset(r, logical_sz);
+                        xor_t.push_back(t);
+                    }
+                    double and_pure = median(and_t);
+                    double or_pure  = median(or_t);
+                    double xor_pure = median(xor_t);
+
                     roaring::Roaring and_r = ha->bitmap & hb->bitmap;
-                    double and_pure = timer.elapsed_ms();
-                    and_pure += croaring_to_bitset(and_r, logical_sz);
-
-                    timer.reset();
-                    roaring::Roaring or_r = ha->bitmap | hb->bitmap;
-                    double or_pure = timer.elapsed_ms();
-                    or_pure += croaring_to_bitset(or_r, logical_sz);
-
-                    timer.reset();
+                    roaring::Roaring or_r  = ha->bitmap | hb->bitmap;
                     roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
-                    double xor_pure = timer.elapsed_ms();
-                    xor_pure += croaring_to_bitset(xor_r, logical_sz);
 
                     roaring::Roaring a_copy = ha->bitmap;
                     timer.reset();
@@ -607,6 +637,10 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     croaring_print_containers("XOR result", xor_r);
                     croaring_print_containers("Input A", ha->bitmap);
                     croaring_print_containers("Input B", hb->bitmap);
+
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, or_r.cardinality(),  1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, and_r.cardinality(), 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, xor_r.cardinality(), 1);
                 }
             }
 
@@ -615,25 +649,178 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                 auto* ha = dynamic_cast<CombitHandle*>(bm0.get());
                 auto* hb = dynamic_cast<CombitHandle*>(bm1.get());
                 if (ha && hb) {
+                    constexpr int N_ITER = 5;
+                    auto median = [](std::vector<double>& v) {
+                        std::sort(v.begin(), v.end());
+                        return v[v.size() / 2];
+                    };
+
                     // Warm up
                     { ComBit w = ha->compressed & hb->compressed; (void)w; }
+                    { ComBit w = ha->compressed | hb->compressed; (void)w; }
+                    { ComBit w = ha->compressed ^ hb->compressed; (void)w; }
 
-                    timer.reset();
+                    std::vector<double> and_t, or_t, xor_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ComBit and_r = ha->compressed & hb->compressed;
+                        and_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ComBit or_r = ha->compressed | hb->compressed;
+                        or_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ComBit xor_r = ha->compressed ^ hb->compressed;
+                        xor_t.push_back(timer.elapsed_ms());
+                    }
+                    double and_pure = median(and_t);
+                    double or_pure  = median(or_t);
+                    double xor_pure = median(xor_t);
+
                     ComBit and_r = ha->compressed & hb->compressed;
-                    double and_pure = timer.elapsed_ms();
-
-                    timer.reset();
-                    ComBit or_r = ha->compressed | hb->compressed;
-                    double or_pure = timer.elapsed_ms();
-
-                    timer.reset();
+                    ComBit or_r  = ha->compressed | hb->compressed;
                     ComBit xor_r = ha->compressed ^ hb->compressed;
-                    double xor_pure = timer.elapsed_ms();
 
                     std::cout << "\n[Pure Ops] ComBIT operation-only timing:\n";
                     std::cout << "  AND: " << and_pure << " ms (card: " << and_r.popcount() << ")\n";
                     std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.popcount() << ")\n";
                     std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.popcount() << ")\n";
+
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, or_r.popcount(),  1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, and_r.popcount(), 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, xor_r.popcount(), 1);
+                }
+            }
+
+            // --- WAH (FastBit) pure ops ---
+            if (backend_name.find("WAH") != std::string::npos) {
+                auto* ha = dynamic_cast<WahHandle*>(bm0.get());
+                auto* hb = dynamic_cast<WahHandle*>(bm1.get());
+                if (ha && hb) {
+                    constexpr int N_ITER = 5;
+                    auto median = [](std::vector<double>& v) {
+                        std::sort(v.begin(), v.end());
+                        return v[v.size() / 2];
+                    };
+                    { ibis::bitvector w; w.copy(ha->btv); w |= hb->btv; (void)w; }
+                    { ibis::bitvector w; w.copy(ha->btv); w &= hb->btv; (void)w; }
+                    { ibis::bitvector w; w.copy(ha->btv); w ^= hb->btv; (void)w; }
+
+                    std::vector<double> and_t, or_t, xor_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ibis::bitvector r; r.copy(ha->btv); r |= hb->btv;
+                        or_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ibis::bitvector r; r.copy(ha->btv); r &= hb->btv;
+                        and_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ibis::bitvector r; r.copy(ha->btv); r ^= hb->btv;
+                        xor_t.push_back(timer.elapsed_ms());
+                    }
+                    double or_pure  = median(or_t);
+                    double and_pure = median(and_t);
+                    double xor_pure = median(xor_t);
+                    std::cout << "\n[Pure Ops] WAH (FastBit) operation-only:\n";
+                    std::cout << "  AND: " << and_pure << " ms\n";
+                    std::cout << "  OR:  " << or_pure  << " ms\n";
+                    std::cout << "  XOR: " << xor_pure << " ms\n";
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
+                }
+            }
+
+            // --- EWAH pure ops ---
+            if (backend_name == "EWAH") {
+                auto* ha = dynamic_cast<EwahHandle*>(bm0.get());
+                auto* hb = dynamic_cast<EwahHandle*>(bm1.get());
+                if (ha && hb) {
+                    constexpr int N_ITER = 5;
+                    auto median = [](std::vector<double>& v) {
+                        std::sort(v.begin(), v.end());
+                        return v[v.size() / 2];
+                    };
+                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalor(hb->btv, r); (void)r; }
+                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(hb->btv, r); (void)r; }
+                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalxor(hb->btv, r); (void)r; }
+
+                    std::vector<double> and_t, or_t, xor_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalor(hb->btv, r);
+                        or_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(hb->btv, r);
+                        and_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalxor(hb->btv, r);
+                        xor_t.push_back(timer.elapsed_ms());
+                    }
+                    double or_pure  = median(or_t);
+                    double and_pure = median(and_t);
+                    double xor_pure = median(xor_t);
+                    std::cout << "\n[Pure Ops] EWAH operation-only:\n";
+                    std::cout << "  AND: " << and_pure << " ms\n";
+                    std::cout << "  OR:  " << or_pure  << " ms\n";
+                    std::cout << "  XOR: " << xor_pure << " ms\n";
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
+                }
+            }
+
+            // --- Concise pure ops ---
+            if (backend_name == "Concise") {
+                auto* ha = dynamic_cast<ConciseHandle*>(bm0.get());
+                auto* hb = dynamic_cast<ConciseHandle*>(bm1.get());
+                if (ha && hb) {
+                    constexpr int N_ITER = 5;
+                    auto median = [](std::vector<double>& v) {
+                        std::sort(v.begin(), v.end());
+                        return v[v.size() / 2];
+                    };
+                    { ConciseSet<false> w = ha->btv | hb->btv; (void)w; }
+                    { ConciseSet<false> w = ha->btv & hb->btv; (void)w; }
+                    { ConciseSet<false> w = ha->btv ^ hb->btv; (void)w; }
+
+                    std::vector<double> and_t, or_t, xor_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ConciseSet<false> r = ha->btv | hb->btv;
+                        or_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ConciseSet<false> r = ha->btv & hb->btv;
+                        and_t.push_back(timer.elapsed_ms());
+                    }
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ConciseSet<false> r = ha->btv ^ hb->btv;
+                        xor_t.push_back(timer.elapsed_ms());
+                    }
+                    double or_pure  = median(or_t);
+                    double and_pure = median(and_t);
+                    double xor_pure = median(xor_t);
+                    std::cout << "\n[Pure Ops] Concise operation-only:\n";
+                    std::cout << "  AND: " << and_pure << " ms\n";
+                    std::cout << "  OR:  " << or_pure  << " ms\n";
+                    std::cout << "  XOR: " << xor_pure << " ms\n";
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
                 }
             }
         }
