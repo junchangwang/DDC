@@ -22,6 +22,13 @@ inline const CombitHandle& getHandle(const BitmapHandle& h) {
     return static_cast<const CombitHandle&>(h);
 }
 
+// Ensure compression is done before accessing .compressed field
+static void ensureCompressed(const BitmapHandle& h) {
+    if (auto* ah = dynamic_cast<CombitAppendHandle*>(const_cast<BitmapHandle*>(&h))) {
+        ah->ensure_compressed();
+    }
+}
+
 std::unique_ptr<BitmapHandle> CombitBackend::Create() {
     return std::make_unique<CombitAppendHandle>();
 }
@@ -32,17 +39,12 @@ void CombitBackend::Append(BitmapHandle& handle, bool bit) {
 }
 
 uint64_t CombitBackend::Cardinality(const BitmapHandle& handle) {
-    // If it's an append handle, ensure compressed first
-    if (auto* ah = dynamic_cast<CombitAppendHandle*>(const_cast<BitmapHandle*>(&handle))) {
-        ah->ensure_compressed();
-    }
+    ensureCompressed(handle);
     return getHandle(handle).compressed.popcount();
 }
 
 std::vector<uint32_t> CombitBackend::Decode(const BitmapHandle& handle) {
-    if (auto* ah = dynamic_cast<CombitAppendHandle*>(const_cast<BitmapHandle*>(&handle))) {
-        ah->ensure_compressed();
-    }
+    ensureCompressed(handle);
     auto positions = getHandle(handle).compressed.set_bit_positions();
     std::vector<uint32_t> result;
     result.reserve(positions.size());
@@ -56,18 +58,24 @@ std::vector<uint32_t> CombitBackend::Decode(const BitmapHandle& handle) {
 // ==============================================================
 
 std::unique_ptr<BitmapHandle> CombitBackend::bitOr(const BitmapHandle& a, const BitmapHandle& b, uint32_t range) {
+    ensureCompressed(a);
+    ensureCompressed(b);
     auto res = std::make_unique<CombitHandle>();
     res->compressed = getHandle(a).compressed | getHandle(b).compressed;
     return res;
 }
 
 std::unique_ptr<BitmapHandle> CombitBackend::bitAnd(const BitmapHandle& a, const BitmapHandle& b) {
+    ensureCompressed(a);
+    ensureCompressed(b);
     auto res = std::make_unique<CombitHandle>();
     res->compressed = getHandle(a).compressed & getHandle(b).compressed;
     return res;
 }
 
 std::unique_ptr<BitmapHandle> CombitBackend::bitXor(const BitmapHandle& a, const BitmapHandle& b) {
+    ensureCompressed(a);
+    ensureCompressed(b);
     auto res = std::make_unique<CombitHandle>();
     res->compressed = getHandle(a).compressed ^ getHandle(b).compressed;
     return res;
@@ -78,9 +86,7 @@ std::unique_ptr<BitmapHandle> CombitBackend::bitXor(const BitmapHandle& a, const
 // ==============================================================
 
 void CombitBackend::Serialize(const BitmapHandle& handle, const std::string& path) {
-    if (auto* ah = dynamic_cast<CombitAppendHandle*>(const_cast<BitmapHandle*>(&handle))) {
-        ah->ensure_compressed();
-    }
+    ensureCompressed(handle);
     const auto& h = getHandle(handle);
     std::ofstream out(path, std::ios::binary);
     if (!out) return;

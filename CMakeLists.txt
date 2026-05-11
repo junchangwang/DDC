@@ -171,3 +171,90 @@ target_include_directories(verify_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/util
 )
 target_link_libraries(verify_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# TPC-H Q6 Benchmark: ComBit vs WAH
+# ==========================================
+set(TPCH_Q6_SOURCES
+    src/benchmark/tpch_q6_benchmark.cpp
+    src/benchmark/uti.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/combit/combit_backend.cpp
+)
+
+add_executable(tpch_q6_benchmark ${TPCH_Q6_SOURCES} ${FASTBIT_SOURCES})
+target_include_directories(tpch_q6_benchmark PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+)
+target_compile_options(tpch_q6_benchmark PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(tpch_q6_benchmark PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# Compress TPC-H Q6 bitmaps: raw → ComBit + WAH
+# ==========================================
+set(COMPRESS_Q6_SOURCES
+    src/benchmark/compress_tpch_q6.cpp
+    src/benchmark/uti.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/croaring/croaring_backend.cpp
+    src/benchmark/backends/ewah/ewah_backend.cpp
+    src/core/croaring/roaring.c
+)
+
+add_executable(compress_tpch_q6 ${COMPRESS_Q6_SOURCES} ${FASTBIT_SOURCES})
+target_include_directories(compress_tpch_q6 PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+)
+target_compile_options(compress_tpch_q6 PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(compress_tpch_q6 PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# Compress TPC-H Q1 bitmaps: raw → ComBit + WAH + CRoaring + EWAH
+# ==========================================
+set(COMPRESS_Q1_SOURCES
+    src/benchmark/compress_tpch_q1.cpp
+    src/benchmark/uti.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/croaring/croaring_backend.cpp
+    src/benchmark/backends/ewah/ewah_backend.cpp
+    src/core/croaring/roaring.c
+)
+
+add_executable(compress_tpch_q1 ${COMPRESS_Q1_SOURCES} ${FASTBIT_SOURCES})
+target_include_directories(compress_tpch_q1 PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+)
+target_compile_options(compress_tpch_q1 PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(compress_tpch_q1 PRIVATE combit Threads::Threads atomic Boost::program_options)
+
+# ==========================================
+# Generic raw .bm → 4-format compressor (walks any subdir layout).
+# Used by queries whose bitmap layout doesn't fit Q1/Q6's hardcoded
+# returnflag/linestatus/shipdate (e.g. Q3's join_result/0.bm).
+# ==========================================
+add_executable(compress_any
+    util/compress_any.cpp
+    src/core/croaring/roaring.c
+    ${FASTBIT_SOURCES}
+)
+target_include_directories(compress_any PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+    ${CMAKE_SOURCE_DIR}/src/core/croaring
+    ${CMAKE_SOURCE_DIR}/src/core/ewah
+)
+target_compile_options(compress_any PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(compress_any PRIVATE combit Threads::Threads atomic Boost::program_options)
