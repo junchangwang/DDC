@@ -479,6 +479,12 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
     {
         auto bm0 = backend->Load(selected[0]);
         auto bm1 = backend->Load(selected[1]);
+        // bm2 is loaded LAZILY inside each backend's COMP_op block — NOT
+        // upfront here.  Loading a third 12 MB ComBit at c=2 pollutes L3
+        // cache and roughly TRIPLED AND_op timing (4.47 ms vs 1.71 ms).
+        // The Load is moved to AFTER the AND_op/OR_op/XOR_op/NOT_op timing
+        // loops so per-op measurements are not affected.
+        decltype(bm0) bm2;  // null; populated inside COMP_op blocks
         if (bm0 && bm1) {
             // --- Bitset (Plain) pure ops ---
             if (backend_name.find("Plain") != std::string::npos) {
@@ -486,35 +492,95 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                 auto* hb = dynamic_cast<BitsetHandle*>(bm1.get());
                 if (ha && hb) {
                     size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
-                    bitset::BitsetVector result_buf;
-                    result_buf.allocate_nozero(n);
 
-                    // Warm up
-                    bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    // Warm-up only (timed runs each alloc their own dst, see
+                    // SIGMOD-fairness note below).
+                    {
+                        bitset::BitsetVector wb; wb.allocate_nozero(n);
+                        bitset::simd::words_and_scalar(ha->btv.words(), ha->btv.words(), wb.words_mut(), n);
+                    }
 
+                    // SIGMOD fairness: alloc must be inside timing for AND/OR/
+                    // XOR/NOT so Bitset matches ComBit/CRoaring/WAH/EWAH/Concise
+                    // (which all alloc-per-op).  Otherwise Bitset's "pre-alloc'd"
+                    // timing hides the 12.5 MB output buffer cost — unfair to
+                    // compressed backends whose output is much smaller.
                     timer.reset();
-                    bitset::simd::words_and_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector and_buf;
+                    and_buf.allocate_nozero(n);
+                    bitset::simd::words_and_scalar(ha->btv.words(), ha->btv.words(), and_buf.words_mut(), n);
                     double and_pre = timer.elapsed_ms();
 
                     timer.reset();
-                    bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector or_buf;
+                    or_buf.allocate_nozero(n);
+                    bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), or_buf.words_mut(), n);
                     double or_pre = timer.elapsed_ms();
 
                     timer.reset();
-                    bitset::simd::words_xor_scalar(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector xor_buf;
+                    xor_buf.allocate_nozero(n);
+                    bitset::simd::words_xor_scalar(ha->btv.words(), hb->btv.words(), xor_buf.words_mut(), n);
                     double xor_pre = timer.elapsed_ms();
 
-                    // In-place AND (a[i] &= b[i])
+                    // In-place AND (a[i] &= b[i]) — self-AND to match
+                    // the out-of-place AND pattern above.  In-place avoids
+                    // the dst-alloc by construction, so timing is just SIMD.
                     bitset::BitsetVector a_copy = ha->btv;
                     timer.reset();
-                    bitset::simd::words_and_inplace_scalar(a_copy.words_mut(), hb->btv.words(), n);
+                    bitset::simd::words_and_inplace_scalar(a_copy.words_mut(), ha->btv.words(), n);
                     double and_inplace = timer.elapsed_ms();
+
+                    // --- NOT (Plain): scalar word-by-word XOR with -1.  Alloc
+                    // inside timing for the same fairness reason as AND/OR/XOR.
+                    {
+                        bitset::BitsetVector wb; wb.allocate_nozero(n);
+                        bitset::simd::words_not_scalar(ha->btv.words(), wb.words_mut(), n);  // warmup
+                    }
+                    timer.reset();
+                    bitset::BitsetVector not_buf;
+                    not_buf.allocate_nozero(n);
+                    bitset::simd::words_not_scalar(ha->btv.words(), not_buf.words_mut(), n);
+                    double not_pre = timer.elapsed_ms();
 
                     std::cout << "\n[Pure Ops] Bitset (Plain) operation-only (no allocation):\n";
                     std::cout << "  AND (pre-alloc):  " << and_pre << " ms\n";
                     std::cout << "  OR  (pre-alloc):  " << or_pre  << " ms\n";
                     std::cout << "  XOR (pre-alloc):  " << xor_pre << " ms\n";
+                    std::cout << "  NOT (pre-alloc):  " << not_pre << " ms\n";
                     std::cout << "  AND (in-place):   " << and_inplace << " ms\n";
+
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pre,  0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pre, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pre, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pre, 0, 0, 0, 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C)) — 派 2
+                    // 3 pre-allocated buffers, kernel-only timing matches the
+                    // OR_op/AND_op/NOT_op convention for the Bitset backend.
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<BitsetHandle*>(bm2.get());
+                        if (hc) {
+                            bitset::BitsetVector t1, t2, t3;
+                            t1.allocate_nozero(n); t2.allocate_nozero(n); t3.allocate_nozero(n);
+                            // warm up
+                            bitset::simd::words_or_scalar(ha->btv.words(), hb->btv.words(), t1.words_mut(), n);
+                            bitset::simd::words_or_scalar(hb->btv.words(), hc->btv.words(), t2.words_mut(), n);
+                            bitset::simd::words_and_scalar(t1.words(), t2.words(), t3.words_mut(), n);
+                            bitset::simd::words_not_scalar(t3.words(), t1.words_mut(), n);
+                            timer.reset();
+                            bitset::simd::words_or_scalar (ha->btv.words(), hb->btv.words(), t1.words_mut(), n);
+                            bitset::simd::words_or_scalar (hb->btv.words(), hc->btv.words(), t2.words_mut(), n);
+                            bitset::simd::words_and_scalar(t1.words(),       t2.words(),       t3.words_mut(), n);
+                            bitset::simd::words_not_scalar(t3.words(),       t1.words_mut(),                   n);
+                            double comp_t = timer.elapsed_ms();
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_t << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_t, 0, 0, 0, 1);
+                        }
+                    }
 
                     // --- Segmented Bitset (8KB segments) ---
                     bitset::SegmentedBitset seg_a, seg_b;
@@ -544,33 +610,86 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                 auto* hb = dynamic_cast<BitsetAVX512Handle*>(bm1.get());
                 if (ha && hb) {
                     size_t n = std::min(ha->btv.words_cnt(), hb->btv.words_cnt());
-                    bitset::BitsetVector result_buf;
-                    result_buf.allocate_nozero(n);
 
-                    bitset::simd::words_and_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    // Warm-up only (each timed run alloc its own dst — see
+                    // SIGMOD-fairness note in Bitset (Plain) block above).
+                    {
+                        bitset::BitsetVector wb; wb.allocate_nozero(n);
+                        bitset::simd::words_and_simd(ha->btv.words(), ha->btv.words(), wb.words_mut(), n);
+                    }
 
+                    // Alloc inside timing (派 1) for fair comparison with the
+                    // compressed backends.  See header note in Bitset (Plain).
                     timer.reset();
-                    bitset::simd::words_and_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector and_buf;
+                    and_buf.allocate_nozero(n);
+                    bitset::simd::words_and_simd(ha->btv.words(), ha->btv.words(), and_buf.words_mut(), n);
                     double and_pre = timer.elapsed_ms();
 
                     timer.reset();
-                    bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector or_buf;
+                    or_buf.allocate_nozero(n);
+                    bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), or_buf.words_mut(), n);
                     double or_pre = timer.elapsed_ms();
 
                     timer.reset();
-                    bitset::simd::words_xor_simd(ha->btv.words(), hb->btv.words(), result_buf.words_mut(), n);
+                    bitset::BitsetVector xor_buf;
+                    xor_buf.allocate_nozero(n);
+                    bitset::simd::words_xor_simd(ha->btv.words(), hb->btv.words(), xor_buf.words_mut(), n);
                     double xor_pre = timer.elapsed_ms();
 
                     bitset::BitsetVector a_copy = ha->btv;
                     timer.reset();
-                    bitset::simd::words_and_inplace_simd(a_copy.words_mut(), hb->btv.words(), n);
+                    bitset::simd::words_and_inplace_simd(a_copy.words_mut(), ha->btv.words(), n);
                     double and_inplace = timer.elapsed_ms();
 
-                    std::cout << "\n[Pure Ops] Bitset (AVX512) operation-only (no allocation):\n";
-                    std::cout << "  AND (pre-alloc):  " << and_pre << " ms\n";
-                    std::cout << "  OR  (pre-alloc):  " << or_pre  << " ms\n";
-                    std::cout << "  XOR (pre-alloc):  " << xor_pre << " ms\n";
+                    // --- NOT (AVX-512): vectorised word XOR with -1.  Alloc
+                    // inside timing for the same fairness reason as AND/OR/XOR.
+                    {
+                        bitset::BitsetVector wb; wb.allocate_nozero(n);
+                        bitset::simd::words_not_simd(ha->btv.words(), wb.words_mut(), n);  // warmup
+                    }
+                    timer.reset();
+                    bitset::BitsetVector not_buf;
+                    not_buf.allocate_nozero(n);
+                    bitset::simd::words_not_simd(ha->btv.words(), not_buf.words_mut(), n);
+                    double not_pre = timer.elapsed_ms();
+
+                    std::cout << "\n[Pure Ops] Bitset (AVX512) operation+alloc:\n";
+                    std::cout << "  AND (with alloc): " << and_pre << " ms\n";
+                    std::cout << "  OR  (with alloc): " << or_pre  << " ms\n";
+                    std::cout << "  XOR (with alloc): " << xor_pre << " ms\n";
+                    std::cout << "  NOT (with alloc): " << not_pre << " ms\n";
                     std::cout << "  AND (in-place):   " << and_inplace << " ms\n";
+
+                    csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pre,  0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "AND_op", and_pre, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pre, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pre, 0, 0, 0, 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C)) — AVX-512, 派 2
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<BitsetAVX512Handle*>(bm2.get());
+                        if (hc) {
+                            bitset::BitsetVector t1, t2, t3;
+                            t1.allocate_nozero(n); t2.allocate_nozero(n); t3.allocate_nozero(n);
+                            bitset::simd::words_or_simd(ha->btv.words(), hb->btv.words(), t1.words_mut(), n);
+                            bitset::simd::words_or_simd(hb->btv.words(), hc->btv.words(), t2.words_mut(), n);
+                            bitset::simd::words_and_simd(t1.words(), t2.words(), t3.words_mut(), n);
+                            bitset::simd::words_not_simd(t3.words(), t1.words_mut(), n);
+                            timer.reset();
+                            bitset::simd::words_or_simd (ha->btv.words(), hb->btv.words(), t1.words_mut(), n);
+                            bitset::simd::words_or_simd (hb->btv.words(), hc->btv.words(), t2.words_mut(), n);
+                            bitset::simd::words_and_simd(t1.words(),       t2.words(),       t3.words_mut(), n);
+                            bitset::simd::words_not_simd(t3.words(),       t1.words_mut(),                   n);
+                            double comp_t = timer.elapsed_ms();
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_t << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_t, 0, 0, 0, 1);
+                        }
+                    }
                 }
             }
 
@@ -586,18 +705,32 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         return v[v.size() / 2];
                     };
 
-                    // Warm up
-                    { roaring::Roaring w = ha->bitmap & hb->bitmap; (void)w; }
+                    // Warm up.  Self-AND (ha & ha) instead of (ha & hb): on
+                    // a partitioning column the AND of two distinct category
+                    // bitmaps is mutually exclusive → all-zero output, hiding
+                    // optimization paths.  OR/XOR/NOT keep cross-bitmap inputs.
+                    { roaring::Roaring w = ha->bitmap & ha->bitmap; (void)w; }
                     { roaring::Roaring w = ha->bitmap | hb->bitmap; (void)w; }
                     { roaring::Roaring w = ha->bitmap ^ hb->bitmap; (void)w; }
 
                     std::vector<double> and_t, or_t, xor_t;
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
-                        roaring::Roaring r = ha->bitmap & hb->bitmap;
+                        roaring::Roaring r = ha->bitmap & ha->bitmap;
                         double t = timer.elapsed_ms();
                         t += croaring_to_bitset(r, logical_sz);
                         and_t.push_back(t);
+                    }
+                    // ALSO time the OR without the to-bitset conversion so
+                    // we can attribute container-conversion cost separately
+                    // from CR's internal container-OR cost.
+                    std::vector<double> or_nc_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        roaring::Roaring r = ha->bitmap | hb->bitmap;
+                        double t = timer.elapsed_ms();
+                        or_nc_t.push_back(t);
+                        (void)r;
                     }
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
@@ -613,13 +746,32 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         t += croaring_to_bitset(r, logical_sz);
                         xor_t.push_back(t);
                     }
-                    double and_pure = median(and_t);
-                    double or_pure  = median(or_t);
-                    double xor_pure = median(xor_t);
+                    // --- NOT (CRoaring): r = a.clone(); r.flip(0, logical_sz).
+                    // CRoaring has no out-of-place NOT, so the copy is part of the
+                    // operation (same as the user-facing semantics for OR which
+                    // also allocates a new result).  Includes to-bitset conversion
+                    // for parity with OR/AND/XOR timing in this block.
+                    { roaring::Roaring w = ha->bitmap; w.flip(0, logical_sz); (void)w; }
+                    std::vector<double> not_t;
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        roaring::Roaring r = ha->bitmap;
+                        r.flip(0, logical_sz);
+                        double t = timer.elapsed_ms();
+                        t += croaring_to_bitset(r, logical_sz);
+                        not_t.push_back(t);
+                    }
+                    double not_pure = median(not_t);
 
-                    roaring::Roaring and_r = ha->bitmap & hb->bitmap;
+                    double and_pure   = median(and_t);
+                    double or_pure    = median(or_t);
+                    double or_no_conv = median(or_nc_t);
+                    double xor_pure   = median(xor_t);
+
+                    roaring::Roaring and_r = ha->bitmap & ha->bitmap;
                     roaring::Roaring or_r  = ha->bitmap | hb->bitmap;
                     roaring::Roaring xor_r = ha->bitmap ^ hb->bitmap;
+                    roaring::Roaring not_r = ha->bitmap; not_r.flip(0, logical_sz);
 
                     roaring::Roaring a_copy = ha->bitmap;
                     timer.reset();
@@ -630,17 +782,53 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     std::cout << "\n[Pure Ops] CRoaring operation-only (+ to-btv conversion):\n";
                     std::cout << "  AND: " << and_pure << " ms (card: " << and_r.cardinality() << ")\n";
                     std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.cardinality() << ")\n";
+                    std::cout << "  OR (CR internal only, no to-btv): " << or_no_conv << " ms\n";
                     std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.cardinality() << ")\n";
+                    std::cout << "  NOT: " << not_pure << " ms (card: " << not_r.cardinality() << ")\n";
                     std::cout << "  AND (in-place): " << and_inplace << " ms\n";
                     croaring_print_containers("AND result", and_r);
                     croaring_print_containers("OR  result", or_r);
                     croaring_print_containers("XOR result", xor_r);
+                    croaring_print_containers("NOT result", not_r);
                     croaring_print_containers("Input A", ha->bitmap);
                     croaring_print_containers("Input B", hb->bitmap);
 
                     csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, or_r.cardinality(),  1);
                     csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, and_r.cardinality(), 1);
                     csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, xor_r.cardinality(), 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pure, 0, 0, not_r.cardinality(), 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C))
+                    // Same convention as the per-op blocks above — allocs are
+                    // inside the timer (CRoaring's user-facing semantics),
+                    // includes the final to-bitset conversion for parity.
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<CroaringHandle*>(bm2.get());
+                        if (hc) {
+                            uint32_t lsz3 = std::max(logical_sz, hc->current_size);
+                            { roaring::Roaring t1 = ha->bitmap | hb->bitmap;
+                              roaring::Roaring t2 = hb->bitmap | hc->bitmap;
+                              roaring::Roaring t3 = t1 & t2; t3.flip(0, lsz3); (void)t3; }
+                            std::vector<double> comp_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                roaring::Roaring t1 = ha->bitmap | hb->bitmap;
+                                roaring::Roaring t2 = hb->bitmap | hc->bitmap;
+                                roaring::Roaring t3 = t1 & t2;
+                                t3.flip(0, lsz3);
+                                double t = timer.elapsed_ms();
+                                t += croaring_to_bitset(t3, lsz3);
+                                comp_t.push_back(t);
+                            }
+                            double comp_pure = median(comp_t);
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+
+                        }
+                    }
                 }
             }
 
@@ -655,15 +843,20 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         return v[v.size() / 2];
                     };
 
-                    // Warm up
-                    { ComBit w = ha->compressed & hb->compressed; (void)w; }
+                    // Warm up — AND uses and_no_bypass (micro-bench fast path,
+                    // see combit.h / and.cpp doc).  Self-AND (ha & ha) instead
+                    // of (ha & hb) because mutually-exclusive category bitmaps
+                    // produce all-zero AND output, hiding optimization paths.
+                    // OR/XOR/NOT keep cross-bitmap inputs.
+                    { ComBit w = ha->compressed.and_no_bypass(ha->compressed); (void)w; }
                     { ComBit w = ha->compressed | hb->compressed; (void)w; }
                     { ComBit w = ha->compressed ^ hb->compressed; (void)w; }
+                    { ComBit w = ~ha->compressed;                 (void)w; }
 
-                    std::vector<double> and_t, or_t, xor_t;
+                    std::vector<double> and_t, or_t, xor_t, not_t;
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
-                        ComBit and_r = ha->compressed & hb->compressed;
+                        ComBit and_r = ha->compressed.and_no_bypass(ha->compressed);
                         and_t.push_back(timer.elapsed_ms());
                     }
                     for (int i = 0; i < N_ITER; i++) {
@@ -676,22 +869,83 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         ComBit xor_r = ha->compressed ^ hb->compressed;
                         xor_t.push_back(timer.elapsed_ms());
                     }
+                    // NOT: out-of-place via operator~ (which internally
+                    // copies + negate_inplace, matching OR/AND/XOR's
+                    // out-of-place semantics — alloc + AVX-512 XOR of L1
+                    // literal stream only, markers preserved).
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ComBit not_r = ~ha->compressed;
+                        not_t.push_back(timer.elapsed_ms());
+                    }
                     double and_pure = median(and_t);
                     double or_pure  = median(or_t);
                     double xor_pure = median(xor_t);
+                    double not_pure = median(not_t);
 
-                    ComBit and_r = ha->compressed & hb->compressed;
+                    // [DEBUG-MIRROR] Identical loop using std::chrono directly
+                    {
+                        std::vector<double> mirror_or;
+                        for (int i = 0; i < N_ITER; i++) {
+                            auto t0 = std::chrono::high_resolution_clock::now();
+                            ComBit or_r = ha->compressed | hb->compressed;
+                            auto t1 = std::chrono::high_resolution_clock::now();
+                            mirror_or.push_back(std::chrono::duration<double, std::milli>(t1 - t0).count());
+                        }
+                        std::sort(mirror_or.begin(), mirror_or.end());
+                        std::cout << "  [MIRROR-IN-PROC] OR raw: ";
+                        for (double x : mirror_or) std::cout << x << " ";
+                        std::cout << " median=" << mirror_or[N_ITER/2] << "\n";
+                    }
+
+                    ComBit and_r = ha->compressed.and_no_bypass(ha->compressed);
                     ComBit or_r  = ha->compressed | hb->compressed;
                     ComBit xor_r = ha->compressed ^ hb->compressed;
+                    ComBit not_r = ~ha->compressed;
 
                     std::cout << "\n[Pure Ops] ComBIT operation-only timing:\n";
                     std::cout << "  AND: " << and_pure << " ms (card: " << and_r.popcount() << ")\n";
                     std::cout << "  OR:  " << or_pure  << " ms (card: " << or_r.popcount() << ")\n";
                     std::cout << "  XOR: " << xor_pure << " ms (card: " << xor_r.popcount() << ")\n";
+                    std::cout << "  NOT: " << not_pure << " ms (card: " << not_r.popcount() << ")\n";
 
                     csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, or_r.popcount(),  1);
                     csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, and_r.popcount(), 1);
                     csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, xor_r.popcount(), 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pure, 0, 0, not_r.popcount(), 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C))
+                    // Out-of-place chain — every op allocates a new ComBit,
+                    // matching the per-op convention.  Segment-level pruning
+                    // compounds across the 4 ops, which is where ComBit's
+                    // segmented design is structurally meant to win over
+                    // flat backends (WAH/EWAH/Concise) at non-trivial sparse.
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<CombitHandle*>(bm2.get());
+                        if (hc) {
+                            { ComBit t1 = ha->compressed | hb->compressed;
+                              ComBit t2 = hb->compressed | hc->compressed;
+                              ComBit t3 = t1.and_no_bypass(t2);
+                              ComBit r  = ~t3; (void)r; }
+                            std::vector<double> comp_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ComBit t1 = ha->compressed | hb->compressed;
+                                ComBit t2 = hb->compressed | hc->compressed;
+                                ComBit t3 = t1.and_no_bypass(t2);
+                                ComBit r  = ~t3;
+                                comp_t.push_back(timer.elapsed_ms());
+                            }
+                            double comp_pure = median(comp_t);
+                            ComBit final_r = ~((ha->compressed | hb->compressed).and_no_bypass(hb->compressed | hc->compressed));
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure
+                                      << " ms (card: " << final_r.popcount() << ")\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, final_r.popcount(), 1);
+                        }
+                    }
                 }
             }
 
@@ -706,10 +960,12 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         return v[v.size() / 2];
                     };
                     { ibis::bitvector w; w.copy(ha->btv); w |= hb->btv; (void)w; }
-                    { ibis::bitvector w; w.copy(ha->btv); w &= hb->btv; (void)w; }
+                    // Self-AND (see ComBit/CRoaring blocks for rationale).
+                    { ibis::bitvector w; w.copy(ha->btv); w &= ha->btv; (void)w; }
                     { ibis::bitvector w; w.copy(ha->btv); w ^= hb->btv; (void)w; }
+                    { ibis::bitvector w; w.copy(ha->btv); w.flip();    (void)w; }
 
-                    std::vector<double> and_t, or_t, xor_t;
+                    std::vector<double> and_t, or_t, xor_t, not_t;
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
                         ibis::bitvector r; r.copy(ha->btv); r |= hb->btv;
@@ -717,7 +973,7 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     }
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
-                        ibis::bitvector r; r.copy(ha->btv); r &= hb->btv;
+                        ibis::bitvector r; r.copy(ha->btv); r &= ha->btv;
                         and_t.push_back(timer.elapsed_ms());
                     }
                     for (int i = 0; i < N_ITER; i++) {
@@ -725,16 +981,55 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         ibis::bitvector r; r.copy(ha->btv); r ^= hb->btv;
                         xor_t.push_back(timer.elapsed_ms());
                     }
+                    // NOT: WAH has in-place flip().  Out-of-place semantics
+                    // (copy + flip) match OR/AND/XOR's "result = a OP b" pattern.
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ibis::bitvector r; r.copy(ha->btv); r.flip();
+                        not_t.push_back(timer.elapsed_ms());
+                    }
                     double or_pure  = median(or_t);
                     double and_pure = median(and_t);
                     double xor_pure = median(xor_t);
+                    double not_pure = median(not_t);
                     std::cout << "\n[Pure Ops] WAH (FastBit) operation-only:\n";
                     std::cout << "  AND: " << and_pure << " ms\n";
                     std::cout << "  OR:  " << or_pure  << " ms\n";
                     std::cout << "  XOR: " << xor_pure << " ms\n";
+                    std::cout << "  NOT: " << not_pure << " ms\n";
                     csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pure, 0, 0, 0, 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C))
+                    // WAH style: each op needs `r.copy(src); r OP= other;`
+                    // out-of-place semantics matching the per-op convention.
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<WahHandle*>(bm2.get());
+                        if (hc) {
+                            { ibis::bitvector t1; t1.copy(ha->btv); t1 |= hb->btv;
+                              ibis::bitvector t2; t2.copy(hb->btv); t2 |= hc->btv;
+                              ibis::bitvector t3; t3.copy(t1);      t3 &= t2;
+                              ibis::bitvector r;  r.copy(t3);       r.flip(); (void)r; }
+                            std::vector<double> comp_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ibis::bitvector t1; t1.copy(ha->btv); t1 |= hb->btv;
+                                ibis::bitvector t2; t2.copy(hb->btv); t2 |= hc->btv;
+                                ibis::bitvector t3; t3.copy(t1);      t3 &= t2;
+                                ibis::bitvector r;  r.copy(t3);       r.flip();
+                                comp_t.push_back(timer.elapsed_ms());
+                            }
+                            double comp_pure = median(comp_t);
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+
+                        }
+                    }
                 }
             }
 
@@ -749,10 +1044,12 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         return v[v.size() / 2];
                     };
                     { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalor(hb->btv, r); (void)r; }
-                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(hb->btv, r); (void)r; }
+                    // Self-AND (see ComBit/CRoaring blocks for rationale).
+                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(ha->btv, r); (void)r; }
                     { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalxor(hb->btv, r); (void)r; }
+                    { ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalnot(r);          (void)r; }
 
-                    std::vector<double> and_t, or_t, xor_t;
+                    std::vector<double> and_t, or_t, xor_t, not_t;
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
                         ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalor(hb->btv, r);
@@ -760,7 +1057,7 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     }
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
-                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(hb->btv, r);
+                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicaland(ha->btv, r);
                         and_t.push_back(timer.elapsed_ms());
                     }
                     for (int i = 0; i < N_ITER; i++) {
@@ -768,16 +1065,53 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalxor(hb->btv, r);
                         xor_t.push_back(timer.elapsed_ms());
                     }
+                    // NOT: out-of-place logicalnot, matching OR/AND/XOR's
+                    // logicalX(dst) pattern (alloc + emit).
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ewah::EWAHBoolArray<uint64_t> r; ha->btv.logicalnot(r);
+                        not_t.push_back(timer.elapsed_ms());
+                    }
                     double or_pure  = median(or_t);
                     double and_pure = median(and_t);
                     double xor_pure = median(xor_t);
+                    double not_pure = median(not_t);
                     std::cout << "\n[Pure Ops] EWAH operation-only:\n";
                     std::cout << "  AND: " << and_pure << " ms\n";
                     std::cout << "  OR:  " << or_pure  << " ms\n";
                     std::cout << "  XOR: " << xor_pure << " ms\n";
+                    std::cout << "  NOT: " << not_pure << " ms\n";
                     csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pure, 0, 0, 0, 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C))
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<EwahHandle*>(bm2.get());
+                        if (hc) {
+                            { ewah::EWAHBoolArray<uint64_t> t1; ha->btv.logicalor(hb->btv, t1);
+                              ewah::EWAHBoolArray<uint64_t> t2; hb->btv.logicalor(hc->btv, t2);
+                              ewah::EWAHBoolArray<uint64_t> t3; t1.logicaland(t2, t3);
+                              ewah::EWAHBoolArray<uint64_t> r;  t3.logicalnot(r); (void)r; }
+                            std::vector<double> comp_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ewah::EWAHBoolArray<uint64_t> t1; ha->btv.logicalor(hb->btv, t1);
+                                ewah::EWAHBoolArray<uint64_t> t2; hb->btv.logicalor(hc->btv, t2);
+                                ewah::EWAHBoolArray<uint64_t> t3; t1.logicaland(t2, t3);
+                                ewah::EWAHBoolArray<uint64_t> r;  t3.logicalnot(r);
+                                comp_t.push_back(timer.elapsed_ms());
+                            }
+                            double comp_pure = median(comp_t);
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+
+                        }
+                    }
                 }
             }
 
@@ -791,11 +1125,25 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         std::sort(v.begin(), v.end());
                         return v[v.size() / 2];
                     };
+                    // Concise has no native NOT.  Express it as XOR against a
+                    // cached "all-ones up to current_bits" ConciseSet — built
+                    // ONCE outside the timed region (logical NOT semantics:
+                    // ones for positions [0, current_bits), zeros beyond).
+                    // This is the canonical way to compute complement on a
+                    // backend without a flip primitive; we time the XOR only.
+                    ConciseSet<false> all_ones;
+                    {
+                        uint64_t n = std::max(ha->current_bits, hb->current_bits);
+                        for (uint32_t i = 0; i < static_cast<uint32_t>(n); i++)
+                            all_ones.append(i);
+                    }
                     { ConciseSet<false> w = ha->btv | hb->btv; (void)w; }
-                    { ConciseSet<false> w = ha->btv & hb->btv; (void)w; }
+                    // Self-AND (see ComBit/CRoaring blocks for rationale).
+                    { ConciseSet<false> w = ha->btv & ha->btv; (void)w; }
                     { ConciseSet<false> w = ha->btv ^ hb->btv; (void)w; }
+                    { ConciseSet<false> w = ha->btv ^ all_ones; (void)w; }
 
-                    std::vector<double> and_t, or_t, xor_t;
+                    std::vector<double> and_t, or_t, xor_t, not_t;
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
                         ConciseSet<false> r = ha->btv | hb->btv;
@@ -803,7 +1151,7 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     }
                     for (int i = 0; i < N_ITER; i++) {
                         timer.reset();
-                        ConciseSet<false> r = ha->btv & hb->btv;
+                        ConciseSet<false> r = ha->btv & ha->btv;
                         and_t.push_back(timer.elapsed_ms());
                     }
                     for (int i = 0; i < N_ITER; i++) {
@@ -811,16 +1159,52 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         ConciseSet<false> r = ha->btv ^ hb->btv;
                         xor_t.push_back(timer.elapsed_ms());
                     }
+                    // NOT via XOR with cached all-ones (Concise has no flip).
+                    for (int i = 0; i < N_ITER; i++) {
+                        timer.reset();
+                        ConciseSet<false> r = ha->btv ^ all_ones;
+                        not_t.push_back(timer.elapsed_ms());
+                    }
                     double or_pure  = median(or_t);
                     double and_pure = median(and_t);
                     double xor_pure = median(xor_t);
+                    double not_pure = median(not_t);
                     std::cout << "\n[Pure Ops] Concise operation-only:\n";
                     std::cout << "  AND: " << and_pure << " ms\n";
                     std::cout << "  OR:  " << or_pure  << " ms\n";
                     std::cout << "  XOR: " << xor_pure << " ms\n";
+                    std::cout << "  NOT: " << not_pure << " ms (XOR with all-ones)\n";
                     csv_row(backend_name, num_rows, cardinality, "OR_op",  or_pure,  0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "AND_op", and_pure, 0, 0, 0, 1);
                     csv_row(backend_name, num_rows, cardinality, "XOR_op", xor_pure, 0, 0, 0, 1);
+                    csv_row(backend_name, num_rows, cardinality, "NOT_op", not_pure, 0, 0, 0, 1);
+
+                    // Comprehensive predicate: ~((A | B) & (B | C))
+                    // NOT expressed as `result ^ all_ones` (same as NOT_op).
+                    if (!bm2) bm2 = (selected.size() >= 3)
+                                    ? backend->Load(selected[2])
+                                    : backend->Load(selected[0]);
+                    if (bm2) {
+                        auto* hc = dynamic_cast<ConciseHandle*>(bm2.get());
+                        if (hc) {
+                            { ConciseSet<false> t1 = ha->btv | hb->btv;
+                              ConciseSet<false> t2 = hb->btv | hc->btv;
+                              ConciseSet<false> t3 = t1 & t2;
+                              ConciseSet<false> r  = t3 ^ all_ones; (void)r; }
+                            std::vector<double> comp_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ConciseSet<false> t1 = ha->btv | hb->btv;
+                                ConciseSet<false> t2 = hb->btv | hc->btv;
+                                ConciseSet<false> t3 = t1 & t2;
+                                ConciseSet<false> r  = t3 ^ all_ones;
+                                comp_t.push_back(timer.elapsed_ms());
+                            }
+                            double comp_pure = median(comp_t);
+                            std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+                        }
+                    }
                 }
             }
         }
@@ -1091,6 +1475,10 @@ int main(int argc, char** argv) {
         } else if (arg == "--iterations" && i + 1 < argc) {
             iterations = std::stoull(argv[++i]);
             if (iterations == 0) iterations = 1;
+        } else if (arg == "--compress-results") {
+            // Toggle ComBit's global compress flag: when true, operator&|^ return
+            // a Compressed result instead of the default Decompressed form.
+            combit_compress_results = true;
         } else if (arg == "--help" || arg == "-h") {
             print_usage(argv[0]);
             return 0;
@@ -1119,12 +1507,17 @@ int main(int argc, char** argv) {
     BitsetBackend bitset;
     BitsetAVX512Backend bitset_avx512;
 
-    // Build list of (backend_ptr, name) to run
+    // Build list of (backend_ptr, name) to run.  When --compress-results
+    // is set, label the ComBIT row distinctly so OR/AND plots can pick
+    // decompress vs compress output from the same CSV.
     struct BackendEntry { IBitmapBackend* ptr; std::string name; std::string key; };
+    const char* combit_label = combit_compress_results
+                                 ? "ComBIT (compress)"
+                                 : "ComBIT (New)";
     std::vector<BackendEntry> backends = {
         {&wah,            "WAH (FastBit)",       "wah"},
         {&croaring,       "CRoaring",            "croaring"},
-        {&combit,         "ComBIT (New)",         "combit"},
+        {&combit,          combit_label,         "combit"},
         {&ewah,           "EWAH",                "ewah"},
         {&concise,        "Concise",             "concise"},
         {&bitset,         "Bitset (Plain)",      "bitset"},

@@ -17252,31 +17252,65 @@ bool run_bitset_container_intersect(const run_container_t *src_1,
     return false;
 }
 
-/*
- * Compute the intersection between src_1 and src_2 and write the result
- * to *dst. If the return function is true, the result is a bitset_container_t
- * otherwise is a array_container_t.
- */
+/* ============================================================
+ * 【场景 2 — AND 触发 bitset → array 转换】
+ *
+ * 输入:
+ *   src_1 (A) : 一个 bitset container (8 KB 平铺位图, 覆盖 65536 个位置)
+ *   src_2 (B) : 另一个 bitset container (8 KB 平铺位图)
+ *   dst       : 二级指针, 函数内部分配新 container 后写到 *dst
+ *
+ * 操作:
+ *   result = A AND B  (按位与, 只保留 A 和 B 都为 1 的位置)
+ *
+ * 关键决策点 — 阈值 DEFAULT_MAX_SIZE = 4096:
+ *   若 |result| > 4096 →  结果仍为 bitset container (8 KB)
+ *   若 |result| ≤ 4096 →  必须把 bitset 转成 array container (每个
+ *                          set-bit 用 2 字节 uint16_t 存位置, 总共
+ *                          2 × newCardinality 字节)
+ *
+ * 返回值: true  表示 *dst 指向 bitset_container_t
+ *         false 表示 *dst 指向 array_container_t (发生了 bitset→array 转换!)
+ *
+ * 为什么 bitset→array 慢:
+ *   1) 先扫一遍 src_1.words[i] & src_2.words[i] 算 cardinality   (一次完整 8KB AND)
+ *   2) 若结果稀疏(≤4096), 还要再扫一遍提取 set bit 位置写进 array  (第二次完整 8KB 扫描)
+ *   总共 ~16 KB 内存读写 + malloc + uint16 数组填充 — 对 1024 个 segment
+ *   累积起来 ≈ 12 ms (这就是 Scenario 2 里 CR 比 ComBit 慢 8.7× 的原因)
+ *
+ * ComBit 没有这一步: 它的 4 层 fill 结构是 fill-polarity-adaptive,
+ * 不需要在 "array 容器"和"bitset 容器"之间切换数据布局.
+ * ============================================================ */
 bool bitset_bitset_container_intersection(const bitset_container_t *src_1,
                                           const bitset_container_t *src_2,
                                           container_t **dst) {
+    // 第一遍扫描: 先只算 A∧B 的 cardinality, 不写结果数据
+    // (POPCNT(A[i] & B[i]) 累加, 一次完整 1024 word × 64 bit 扫描)
     const int newCardinality = bitset_container_and_justcard(src_1, src_2);
+
+    // 走 bitset 分支: 结果 set bits 多 (> 4096), 不需要转换, 直接分配新 bitset
     if (newCardinality > DEFAULT_MAX_SIZE) {
-        *dst = bitset_container_create();
+        *dst = bitset_container_create();   // 分配 8 KB bitset
         if (*dst != NULL) {
+            // 第二遍扫描: 真正写入 A[i] & B[i] 到结果 (1024 个 64-bit AND)
             bitset_container_and_nocard(src_1, src_2, CAST_bitset(*dst));
             CAST_bitset(*dst)->cardinality = newCardinality;
         }
-        return true;  // it is a bitset
+        return true;  // 结果是 bitset, 没有发生类型转换
     }
-    *dst = array_container_create_given_capacity(newCardinality);
+
+    // 走 array 分支: 结果 set bits 少 (≤ 4096), 必须从 bitset 转成 array container
+    // ← 这就是 Scenario 2 里 CR 比 ComBit 慢的关键转换点
+    *dst = array_container_create_given_capacity(newCardinality);   // 分配 array (2 × newCard 字节)
     if (*dst != NULL) {
         CAST_array(*dst)->cardinality = newCardinality;
+        // 第二遍扫描: 把 A∧B 结果的 set-bit 位置以 uint16_t 形式提取到 array
+        // (遍历 1024 word, 对每个 word 的 AND 结果找出 set bit 的 index, 写入数组)
         bitset_extract_intersection_setbits_uint16(
             src_1->words, src_2->words, BITSET_CONTAINER_SIZE_IN_WORDS,
             CAST_array(*dst)->array, 0);
     }
-    return false;  // not a bitset
+    return false;  // 结果是 array, 发生了 bitset→array 转换!
 }
 
 bool bitset_bitset_container_intersection_inplace(
@@ -17958,35 +17992,79 @@ void array_run_container_inplace_union(const array_container_t *src_1,
     }
 }
 
+/* ============================================================
+ * 【场景 1 — OR 触发 array → bitset 转换】
+ *
+ * 输入:
+ *   src_1 (A) : 一个 array container (uint16_t 数组, 存所有 set-bit 位置)
+ *   src_2 (B) : 另一个 array container
+ *   dst       : 二级指针, 函数内部分配新 container 后写到 *dst
+ *
+ * 操作:
+ *   result = A OR B  (按位或, A 或 B 任一为 1 的位置都为 1)
+ *
+ * 关键决策点 — 阈值 DEFAULT_MAX_SIZE = 4096:
+ *   若 |A|+|B| ≤ 4096        →  结果可能仍是 array (实际并集还可能更少)
+ *   若 |A|+|B| > 4096         →  保守分配 bitset, 跑 OR, 最后再检查实际并集大小
+ *                                若实际并集仍 ≤ 4096 (说明 A B 重合很多), 回头转换成 array
+ *
+ * 返回值: true  表示 *dst 指向 bitset_container_t
+ *         false 表示 *dst 指向 array_container_t
+ *
+ * 为什么 array→bitset 慢:
+ *   1) malloc 一个 8 KB bitset (calloc 1024 个 0 word)
+ *   2) bitset_set_list: 遍历 A 的 |A| 个 uint16, 对每个位置 set bit 到 bitset
+ *      (per-bit ~5 ns 因为 hash 到 word + or-mask)
+ *   3) bitset_set_list_withcard: 再对 B 的 |B| 个 uint16 做相同操作, 并算 cardinality
+ *   4) 万一最终 cardinality ≤ 4096, 还要再分配 array 把 bitset 解析回来
+ *   单 segment ~3 μs, 对 1024 segment 累积 ≈ 4 ms (Scenario 1 里 CR 3.92 ms 的来源)
+ *
+ * ComBit 的对比: 4 层 fill 结构是 self-describing 的, OR 直接 byte-OR 两个 L1
+ * literal stream (AVX-512 ZMM 一次 64 字节), 不需要 "看 cardinality 决定容器类型"
+ * 的额外开销, 所以只要 1.17 ms (快 3.3×).
+ * ============================================================ */
 bool array_array_container_union(const array_container_t *src_1,
                                  const array_container_t *src_2,
                                  container_t **dst) {
+    // |A| + |B| 是 OR 结果 cardinality 的上界 (实际可能更小因为去重)
     int totalCardinality = src_1->cardinality + src_2->cardinality;
+
+    // 走 array 分支: 总和不超过阈值, 直接保持 array 形态 (没有类型转换)
     if (totalCardinality <= DEFAULT_MAX_SIZE) {
-        *dst = array_container_create_given_capacity(totalCardinality);
+        *dst = array_container_create_given_capacity(totalCardinality);   // 分配 array
         if (*dst != NULL) {
+            // 双指针归并两个有序 uint16 数组, 写到结果 array
             array_container_union(src_1, src_2, CAST_array(*dst));
         } else {
-            return true;  // otherwise failure won't be caught
+            return true;  // 分配失败兜底返回 bitset, 调用方好判断
         }
-        return false;  // not a bitset
+        return false;  // 结果是 array, 没有发生类型转换
     }
-    *dst = bitset_container_create();
-    bool returnval = true;  // expect a bitset
+
+    // 走 bitset 分支: |A|+|B| > 4096, 保守地先转成 bitset 做 OR
+    // ← 这就是 Scenario 1 里 CR 比 ComBit 慢的关键转换点
+    *dst = bitset_container_create();   // 分配 8 KB bitset (calloc 1024 个 0 word)
+    bool returnval = true;  // 默认预期返回 bitset
     if (*dst != NULL) {
         bitset_container_t *ourbitset = CAST_bitset(*dst);
+        // 把 A 的所有 set-bit (uint16 数组) 标到 bitset 里 (per-bit: word_idx + or_mask)
         bitset_set_list(ourbitset->words, src_1->array, src_1->cardinality);
+        // 把 B 的所有 set-bit 也标进去, 同时算出 cardinality (顺便去重计数)
         ourbitset->cardinality = (int32_t)bitset_set_list_withcard(
             ourbitset->words, src_1->cardinality, src_2->array,
             src_2->cardinality);
+        // 再次决策: 如果 A B 重合度很高, 真正的 cardinality 可能反而 ≤ 4096,
+        // 此时 bitset 是浪费, 必须再转回 array
         if (ourbitset->cardinality <= DEFAULT_MAX_SIZE) {
-            // need to convert!
+            // 需要转换! (相当于做了一遍多余的 bitset 化, 然后又拆回 array)
+            // array_container_from_bitset: 扫一遍 bitset 的 1024 个 word,
+            // 找出每个 word 的 set-bit 位置, 写入新分配的 array container
             *dst = array_container_from_bitset(ourbitset);
-            bitset_container_free(ourbitset);
-            returnval = false;  // not going to be a bitset
+            bitset_container_free(ourbitset);    // 释放刚才分配的 8 KB bitset
+            returnval = false;  // 最终结果是 array, 没有保持 bitset
         }
     }
-    return returnval;
+    return returnval;   // true=结果是 bitset (新分配了 8 KB);  false=结果是 array
 }
 
 bool array_array_container_inplace_union(array_container_t *src_1,

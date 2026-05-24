@@ -62,6 +62,22 @@ target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
 
 target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
 
+# ----------------------------------------------------------------
+# transition_bench — CR container conversion vs ComBit headline benchmark
+# ----------------------------------------------------------------
+add_executable(transition_bench
+    src/benchmark/transition_bench.cpp
+    ${FASTBIT_SOURCES}
+    src/core/croaring/roaring.c
+)
+target_include_directories(transition_bench PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_compile_options(transition_bench PRIVATE -O3 -g -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(transition_bench PRIVATE combit Threads::Threads atomic Boost::program_options)
+
 # ==========================================
 # Testing (Google Test) — disable with -DBUILD_TESTS=OFF
 # ==========================================
