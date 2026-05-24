@@ -104,66 +104,120 @@ int main(int argc, char** argv) {
             base += v.size();
         }
 
-        // Reference results (raw bit-vector ops) — matches the
-        // motivation-chart methodology: AND uses SELF (ba & ba) so the
-        // output is non-trivial; OR / XOR use cross (ba vs bb) because
-        // ha | ha = ha would be a degenerate copy.
-        auto rA = ref_and(ba, ba);   // self-AND
+        // Reference results (raw bit-vector ops).  AND = self (ha & ha);
+        // OR / XOR = cross (ha vs hb).  Matches motivation chart.
+        auto rA = ref_and(ba, ba);
         auto rO = ref_or (ba, bb);
         auto rX = ref_xor(ba, bb);
 
         // For each depth, compress + measure + time + validate.
         for (int depth : {2, 3, 4, 5}) {
-            ComBitN cA = combit_n_compress(ba, depth);
-            ComBitN cB = combit_n_compress(bb, depth);
+            // -------- LOAD inputs at this depth ----------------------
+            ComBitN cA, cB;
+            // L4 uses production AVX-512 code path; A and B are reused
+            // from the existing ComBit objects loaded above.  L2/L3/L5
+            // use the scalar ComBitN reference (AVX-512 versions TBD).
+            if (depth != 4) {
+                cA = combit_n_compress(ba, depth);
+                cB = combit_n_compress(bb, depth);
+            }
 
-            // Round-trip check on A (decompress(compress(bits)) == bits).
-            auto rt = combit_n_decompress(cA);
-            bool rt_ok = (rt == ba);
+            // Round-trip check (only meaningful for ComBitN depths).
+            bool rt_ok = true;
+            if (depth != 4) rt_ok = (combit_n_decompress(cA) == ba);
 
-            // Per-bitmap compressed size of cA (cA and cB are within ~1%
-            // of each other at the same density).
-            size_t total = combit_n_total_bytes(cA);
+            // Compressed size at this depth.  For L4 use production
+            // ComBit's total compressed bytes; for the others use
+            // combit_n_total_bytes on the recompressed input.
+            size_t total = 0;
+            if (depth == 4) {
+                for (const auto& seg : A.segments())
+                    total += seg.size_breakdown().total_bits / 8;
+            } else {
+                total = combit_n_total_bytes(cA);
+            }
 
-            // Op-only timing — output is the raw decompressed L1 byte
-            // stream (no recompression in the timed window).  AND is
-            // self (cA & cA); OR / XOR are cross (cA vs cB) — same as
-            // the production motivation-chart benchmark.
+            // -------- OP TIMING -------------------------------------
+            // L4 path uses the PRODUCTION AVX-512 ComBit ops:
+            //   AND: and_no_bypass (explicit no-bypass — matches the
+            //        motivation-chart fast path)
+            //   OR:  operator| (default, WITH bypass)
+            //   XOR: operator^ (default)
+            // All three run with combit_compress_results=false (op-only
+            // decompressed output).  See and.cpp / or.cpp / xor.cpp for
+            // the production AVX-512 inner loops.
             std::vector<double> tA, tO, tX;
-            { auto w = combit_n_and_dec(cA, cA); (void)w; }  // warm
-            for (int i = 0; i < N_ITER; i++) {
-                auto t0 = clk::now();
-                auto r = combit_n_and_dec(cA, cA);
-                auto t1 = clk::now();
-                tA.push_back(ms(t0, t1));
-                (void)r;
+            bool and_ok = true, or_ok = true, xor_ok = true;
+            if (depth == 4) {
+                // Warm-ups
+                { ComBit w = A.and_no_bypass(A); (void)w; }
+                { ComBit w = A | B; (void)w; }
+                { ComBit w = A ^ B; (void)w; }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    ComBit r = A.and_no_bypass(A);
+                    auto t1 = clk::now();
+                    tA.push_back(ms(t0, t1));
+                    (void)r;
+                }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    ComBit r = A | B;
+                    auto t1 = clk::now();
+                    tO.push_back(ms(t0, t1));
+                    (void)r;
+                }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    ComBit r = A ^ B;
+                    auto t1 = clk::now();
+                    tX.push_back(ms(t0, t1));
+                    (void)r;
+                }
+                // Correctness: decompress each result and compare to raw.
+                auto cb_to_bits = [&](const ComBit& cb) {
+                    std::vector<bool> out(cb.bit_count(), false);
+                    size_t off = 0;
+                    for (size_t s = 0; s < cb.num_segments(); s++) {
+                        auto v = cb.segment(s).decompress();
+                        for (size_t i = 0; i < v.size() && off + i < out.size(); i++)
+                            out[off + i] = v[i];
+                        off += v.size();
+                    }
+                    return out;
+                };
+                and_ok = (cb_to_bits(A.and_no_bypass(A)) == rA);
+                or_ok  = (cb_to_bits(A | B) == rO);
+                xor_ok = (cb_to_bits(A ^ B) == rX);
+            } else {
+                // Scalar combit_n for L2/L3/L5 (AVX-512 TBD).
+                { auto w = combit_n_and_dec_avx(cA, cA); (void)w; }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    auto r = combit_n_and_dec_avx(cA, cA);
+                    auto t1 = clk::now();
+                    tA.push_back(ms(t0, t1)); (void)r;
+                }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    auto r = combit_n_or_dec_avx(cA, cB);
+                    auto t1 = clk::now();
+                    tO.push_back(ms(t0, t1)); (void)r;
+                }
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    auto r = combit_n_xor_dec_avx(cA, cB);
+                    auto t1 = clk::now();
+                    tX.push_back(ms(t0, t1)); (void)r;
+                }
+                auto chk = [&](const std::vector<uint8_t>& r,
+                               const std::vector<bool>& ref) {
+                    return bytes_to_bits(r, ref.size()) == ref;
+                };
+                and_ok = chk(combit_n_and_dec_avx(cA, cA), rA);
+                or_ok  = chk(combit_n_or_dec (cA, cB), rO);
+                xor_ok = chk(combit_n_xor_dec_avx(cA, cB), rX);
             }
-            for (int i = 0; i < N_ITER; i++) {
-                auto t0 = clk::now();
-                auto r = combit_n_or_dec(cA, cB);
-                auto t1 = clk::now();
-                tO.push_back(ms(t0, t1));
-                (void)r;
-            }
-            for (int i = 0; i < N_ITER; i++) {
-                auto t0 = clk::now();
-                auto r = combit_n_xor_dec(cA, cB);
-                auto t1 = clk::now();
-                tX.push_back(ms(t0, t1));
-                (void)r;
-            }
-
-            // Validate: run op once more, compare to raw ref.  The
-            // decompressed byte stream is converted to bits and trimmed
-            // to bit_count for the equality check.
-            auto chk = [&](const std::vector<uint8_t>& r,
-                           const std::vector<bool>& ref) {
-                auto rb = bytes_to_bits(r, ref.size());
-                return rb == ref;
-            };
-            bool and_ok = chk(combit_n_and_dec(cA, cA), rA);
-            bool or_ok  = chk(combit_n_or_dec (cA, cB), rO);
-            bool xor_ok = chk(combit_n_xor_dec(cA, cB), rX);
 
             out << c << ",L" << depth << ","
                 << total << "," << double(total) / (1024.0 * 1024.0) << ","
