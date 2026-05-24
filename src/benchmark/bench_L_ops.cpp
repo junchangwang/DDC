@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
                     return bytes_to_bits(r, ref.size()) == ref;
                 };
                 and_ok = chk(combit_n_and_dec_avx(cA, cA), rA);
-                or_ok  = chk(combit_n_or_dec (cA, cB), rO);
+                or_ok  = chk(combit_n_or_dec_avx (cA, cB), rO);
                 xor_ok = chk(combit_n_xor_dec_avx(cA, cB), rX);
             }
 
