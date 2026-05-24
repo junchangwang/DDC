@@ -86,7 +86,10 @@ std::map<std::string, std::string> read_metadata(const std::string& path) {
 CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
     CompressedDirInfo info;
     std::string name = fs::path(dir_path).filename().string();
-    // Expected: bm_{rows}_c{card}_{algo}
+    // Expected: bm_{rows}_c{card}_{algo}   (standard cardinality sweep)
+    //       or  bm_{rows}_t{count_a}_{algo}  (transition mode: independent
+    //                                         random bitmaps for CR's
+    //                                         bitset→array stress test)
     if (name.substr(0, 3) != "bm_") return info;
 
     size_t pos = 3;
@@ -102,12 +105,30 @@ CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
         info.rows = std::stoull(rows_str);
 
     pos = u1 + 1;
-    if (pos >= name.size() || name[pos] != 'c') return info;
+    if (pos >= name.size()) return info;
+    char tag = name[pos];
+    if (tag != 'c' && tag != 't' && tag != 'o' && tag != 'A') return info;
+    // For `t` (transition: independent random A,B), `o` (overlap: A and B
+    // share 95% of A's bits + 5% fresh), and `A` (asymmetric disjoint:
+    // A=<a> bits, B=<b> bits, A∩B=∅) we set is_transition so callers can
+    // distinguish synthetic vs. standard cardinality-sweep dirs.
+    info.is_transition = (tag == 't' || tag == 'o' || tag == 'A');
     pos++;
     size_t u2 = name.find('_', pos);
     if (u2 == std::string::npos) return info;
+    // For transition / overlap dirs, this field holds count_a (bits per
+    // 65 536-segment).  For asymmetric `A<a>_B<b>` dirs, also count_a (the
+    // larger side) — the rest of the name parses through to find algo.
     info.cardinality = std::stoull(name.substr(pos, u2 - pos));
-    info.algo = name.substr(u2 + 1);
+    std::string rest = name.substr(u2 + 1);
+    if (tag == 'A' && !rest.empty() && rest[0] == 'B') {
+        // Asymmetric: rest looks like "B<count_b>_<algo>" — skip past the
+        // count_b token to reach the algo.
+        size_t u3 = rest.find('_');
+        if (u3 != std::string::npos) info.algo = rest.substr(u3 + 1);
+    } else {
+        info.algo = rest;
+    }
     return info;
 }
 

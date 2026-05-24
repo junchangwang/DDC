@@ -146,6 +146,19 @@ inline void words_andnot_avx512(const uint64_t* __restrict__ a,
     for (; i < n; ++i) dst[i] = a[i] & ~b[i];
 }
 
+__attribute__((target("avx512f")))
+inline void words_not_avx512(const uint64_t* __restrict__ src,
+                             uint64_t* __restrict__ dst, size_t n)
+{
+    const __m512i ones = _mm512_set1_epi64(static_cast<long long>(-1));
+    size_t i = 0;
+    for (; i + 8 <= n; i += 8) {
+        __m512i v = _mm512_loadu_si512(src + i);
+        _mm512_storeu_si512(dst + i, _mm512_xor_si512(v, ones));
+    }
+    for (; i < n; ++i) dst[i] = ~src[i];
+}
+
 __attribute__((target("avx512f,avx512vpopcntdq")))
 inline uint64_t words_popcount_avx512(const uint64_t* data, size_t n)
 {
@@ -207,6 +220,13 @@ inline void words_andnot_scalar(const uint64_t* __restrict__ a,
                                 uint64_t* __restrict__ dst, size_t n)
 {
     for (size_t i = 0; i < n; ++i) dst[i] = a[i] & ~b[i];
+}
+
+__attribute__((optimize("no-tree-vectorize")))
+inline void words_not_scalar(const uint64_t* __restrict__ src,
+                             uint64_t* __restrict__ dst, size_t n)
+{
+    for (size_t i = 0; i < n; ++i) dst[i] = ~src[i];
 }
 
 __attribute__((optimize("no-tree-vectorize")))
@@ -274,6 +294,15 @@ inline uint64_t words_popcount_simd(const uint64_t* data, size_t n)
     if (hw & BITSET_AVX512_VPOPCNTDQ) { return words_popcount_avx512(data, n); }
 #endif
     return words_popcount_scalar(data, n);
+}
+
+inline void words_not_simd(const uint64_t* src, uint64_t* dst, size_t n)
+{
+#if BITSET_IS_X64
+    int hw = hardware_support();
+    if (hw & BITSET_AVX512) { words_not_avx512(src, dst, n); return; }
+#endif
+    words_not_scalar(src, dst, n);
 }
 
 } // namespace simd

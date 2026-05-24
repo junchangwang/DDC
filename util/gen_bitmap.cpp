@@ -20,6 +20,9 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <random>
+#include <numeric>
+#include <algorithm>
 
 // FastBit (WAH)
 #include "fastbit/bitvector.h"
@@ -65,6 +68,189 @@ std::vector<std::vector<uint32_t>> read_dataset_buckets(
         if (v >= 1 && v <= cardinality) {
             buckets[v].push_back(static_cast<uint32_t>(i));
         }
+    }
+    return buckets;
+}
+
+// Generate INDEPENDENT random bitmap buckets — used to expose CRoaring's
+// bitset→array AND-result transition, which only fires when the two input
+// bitmaps overlap (which dataset-bucket bitmaps never do, since dataset
+// values partition the rows).
+//
+// Each bitmap (v = 1..num_bitmaps) is sampled independently with `count_a`
+// set bits per 65 536-bit segment, drawn via Fisher–Yates without
+// replacement.  Returned buckets[v] = sorted positions of bitmap v;
+// buckets[0] is unused, matching read_dataset_buckets's convention.
+//
+// Different bitmaps share set bits at random — A ∩ B has expected
+// cardinality count_a² / 65 536 per segment.
+std::vector<std::vector<uint32_t>> make_transition_buckets(
+    uint64_t num_rows, int num_bitmaps, int count_a, uint64_t seed)
+{
+    constexpr size_t SEG_BITS = 65536;
+    if (count_a < 0 || static_cast<size_t>(count_a) > SEG_BITS) {
+        std::cerr << "[transition] Error: count_a must be in [0, " << SEG_BITS
+                  << "], got " << count_a << "\n";
+        return {};
+    }
+    const size_t num_segs = (num_rows + SEG_BITS - 1) / SEG_BITS;
+
+    std::vector<std::vector<uint32_t>> buckets(num_bitmaps + 1);
+    // Fisher-Yates scratch reused across segments to avoid per-segment alloc.
+    std::vector<uint32_t> ix(SEG_BITS);
+    for (int v = 1; v <= num_bitmaps; v++) {
+        buckets[v].reserve(num_segs * static_cast<size_t>(count_a));
+        for (size_t s = 0; s < num_segs; s++) {
+            std::iota(ix.begin(), ix.end(), 0);
+            // Unique seed per (bitmap, segment) → A and B are statistically
+            // independent across bitmaps, deterministic across runs.
+            std::mt19937 rng(seed + (s * static_cast<uint64_t>(num_bitmaps))
+                                  + static_cast<uint64_t>(v - 1));
+            for (int i = 0; i < count_a; i++) {
+                std::uniform_int_distribution<uint32_t> pick(i, SEG_BITS - 1);
+                std::swap(ix[i], ix[pick(rng)]);
+            }
+            const uint32_t base = static_cast<uint32_t>(s * SEG_BITS);
+            std::vector<uint32_t> seg_pos(count_a);
+            for (int i = 0; i < count_a; i++) seg_pos[i] = base + ix[i];
+            std::sort(seg_pos.begin(), seg_pos.end());
+            // Drop positions past num_rows (final segment may be truncated).
+            for (uint32_t p : seg_pos) {
+                if (static_cast<uint64_t>(p) < num_rows)
+                    buckets[v].push_back(p);
+            }
+        }
+    }
+    return buckets;
+}
+
+// Generate ASYMMETRIC disjoint bitmap buckets — A has count_a set bits per
+// 65 536-segment, B has count_b set bits, with A ∩ B = ∅ guaranteed.
+//
+// CR's "fast normal" zone for OR: when count_a + count_b ≤ 4096 (= CR's
+// DEFAULT_MAX_SIZE), the array_array_container_union stays in the direct
+// array merge path with no transient bitset.  Used as the MIDDLE point in
+// the OR density plot, sitting between the regret point (o3500) and the
+// no-regret bitset point (t2200) — see plot_or_density.py.
+//
+// Always produces 2 bitmaps (buckets size = 3; buckets[0] unused).
+std::vector<std::vector<uint32_t>> make_asymmetric_disjoint_buckets(
+    uint64_t num_rows, int count_a, int count_b, uint64_t seed)
+{
+    constexpr size_t SEG_BITS = 65536;
+    if (count_a <= 0 || static_cast<size_t>(count_a) > SEG_BITS
+     || count_b <= 0 || static_cast<size_t>(count_b) > SEG_BITS
+     || static_cast<size_t>(count_a + count_b) > SEG_BITS) {
+        std::cerr << "[asym] Error: invalid count_a=" << count_a
+                  << ", count_b=" << count_b
+                  << " (require both > 0 and a+b ≤ " << SEG_BITS << ")\n";
+        return {};
+    }
+    const size_t num_segs = (num_rows + SEG_BITS - 1) / SEG_BITS;
+
+    std::vector<std::vector<uint32_t>> buckets(3);  // [0] unused, [1]=A, [2]=B
+    buckets[1].reserve(num_segs * static_cast<size_t>(count_a));
+    buckets[2].reserve(num_segs * static_cast<size_t>(count_b));
+
+    std::vector<uint32_t> ix(SEG_BITS);
+    const int prefix_len = count_a + count_b;
+    for (size_t s = 0; s < num_segs; s++) {
+        // Fisher-Yates partial shuffle of the first (count_a + count_b)
+        // positions.  After this:
+        //   ix[0..count_a)            → A's positions in this segment
+        //   ix[count_a..count_a+count_b) → B's positions (disjoint with A)
+        std::iota(ix.begin(), ix.end(), 0);
+        std::mt19937 rng(seed + s);
+        for (int i = 0; i < prefix_len; i++) {
+            std::uniform_int_distribution<uint32_t> pick(i, SEG_BITS - 1);
+            std::swap(ix[i], ix[pick(rng)]);
+        }
+        const uint32_t base = static_cast<uint32_t>(s * SEG_BITS);
+
+        std::vector<uint32_t> a_pos(count_a);
+        for (int i = 0; i < count_a; i++) a_pos[i] = base + ix[i];
+        std::sort(a_pos.begin(), a_pos.end());
+        for (uint32_t p : a_pos)
+            if (static_cast<uint64_t>(p) < num_rows) buckets[1].push_back(p);
+
+        std::vector<uint32_t> b_pos(count_b);
+        for (int i = 0; i < count_b; i++) b_pos[i] = base + ix[count_a + i];
+        std::sort(b_pos.begin(), b_pos.end());
+        for (uint32_t p : b_pos)
+            if (static_cast<uint64_t>(p) < num_rows) buckets[2].push_back(p);
+    }
+    return buckets;
+}
+
+// Generate OVERLAPPING bitmap buckets — A and B share `overlap_ratio · count_a`
+// set bits per segment, plus B has `count_a − overlap_ratio · count_a` fresh
+// disjoint bits.  Used to expose CRoaring's OR-result `array → bitset → array`
+// worst path: each input is an array container (count_a < 4096 per segment),
+// |A|+|B|=2·count_a > 4096 triggers a transient bitset allocation, but
+// |A∪B|=count_a·(2 − overlap_ratio) ≤ 4096 forces CR to convert that bitset
+// back to an array (the regret path).
+//
+// At overlap_ratio = 0.95, count_a = 3500 → |A∪B| ≈ 3675 per segment, sitting
+// just under the 4096 threshold for maximum CR damage (matches Scenario 3 in
+// the transition_bench micro-benchmark).
+//
+// Always produces 2 bitmaps (buckets size = 3; buckets[0] unused).
+std::vector<std::vector<uint32_t>> make_overlap_buckets(
+    uint64_t num_rows, int count_a, double overlap_ratio, uint64_t seed)
+{
+    constexpr size_t SEG_BITS = 65536;
+    if (count_a <= 0 || static_cast<size_t>(count_a) > SEG_BITS) {
+        std::cerr << "[overlap] Error: count_a must be in (0, " << SEG_BITS
+                  << "], got " << count_a << "\n";
+        return {};
+    }
+    if (overlap_ratio < 0.0 || overlap_ratio > 1.0) {
+        std::cerr << "[overlap] Error: overlap_ratio must be in [0, 1], got "
+                  << overlap_ratio << "\n";
+        return {};
+    }
+    const uint32_t carry = static_cast<uint32_t>(overlap_ratio * count_a);
+    const uint32_t fresh = static_cast<uint32_t>(count_a) - carry;
+    const size_t   num_segs = (num_rows + SEG_BITS - 1) / SEG_BITS;
+
+    std::vector<std::vector<uint32_t>> buckets(3);   // [0] unused, [1]=A, [2]=B
+    buckets[1].reserve(num_segs * static_cast<size_t>(count_a));
+    buckets[2].reserve(num_segs * static_cast<size_t>(count_a));
+
+    std::vector<uint32_t> ix(SEG_BITS);
+    std::vector<uint8_t>  in_a(SEG_BITS);
+    for (size_t s = 0; s < num_segs; s++) {
+        // --- Sample A: count_a positions via Fisher-Yates ---
+        std::iota(ix.begin(), ix.end(), 0);
+        std::mt19937 rng_a(seed + 2 * s + 0);
+        for (int i = 0; i < count_a; i++) {
+            std::uniform_int_distribution<uint32_t> pick(i, SEG_BITS - 1);
+            std::swap(ix[i], ix[pick(rng_a)]);
+        }
+        const uint32_t base = static_cast<uint32_t>(s * SEG_BITS);
+        std::fill(in_a.begin(), in_a.end(), 0);
+        for (int i = 0; i < count_a; i++) in_a[ix[i]] = 1;
+
+        // --- Build B: first `carry` of A's positions + `fresh` new disjoint ---
+        std::vector<uint32_t> b_pos;
+        b_pos.reserve(count_a);
+        for (uint32_t i = 0; i < carry; i++) b_pos.push_back(base + ix[i]);
+        std::mt19937 rng_b(seed + 2 * s + 1);
+        uint32_t fresh_added = 0;
+        while (fresh_added < fresh) {
+            uint32_t p = std::uniform_int_distribution<uint32_t>(0, SEG_BITS - 1)(rng_b);
+            if (!in_a[p]) { in_a[p] = 2; b_pos.push_back(base + p); fresh_added++; }
+        }
+
+        // --- Emit A and B (sorted, dropping positions past num_rows) ---
+        std::vector<uint32_t> a_pos(count_a);
+        for (int i = 0; i < count_a; i++) a_pos[i] = base + ix[i];
+        std::sort(a_pos.begin(), a_pos.end());
+        std::sort(b_pos.begin(), b_pos.end());
+        for (uint32_t p : a_pos)
+            if (static_cast<uint64_t>(p) < num_rows) buckets[1].push_back(p);
+        for (uint32_t p : b_pos)
+            if (static_cast<uint64_t>(p) < num_rows) buckets[2].push_back(p);
     }
     return buckets;
 }
@@ -407,6 +593,49 @@ static std::string compressed_dir_path(const std::string& base_dir, int n, int c
          + "_c" + std::to_string(c) + "_" + algo_lower;
 }
 
+/// Transition-mode bitmaps (independent random A, B):
+///   bitmap/bm_100m_t6000_wah/  ← count_a = 6000 bits per 65 536-segment
+/// Same directory layout as compressed_dir_path so benchmark_app --compressed-dir
+/// can read it without modification.
+static std::string transition_dir_path(const std::string& base_dir, int n,
+                                       int count_a, const std::string& algorithm) {
+    std::string algo_lower = algorithm;
+    for (auto& ch : algo_lower)
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return base_dir + "/bitmap/bm_" + format_rows(n)
+         + "_t" + std::to_string(count_a) + "_" + algo_lower;
+}
+
+/// Overlap-mode bitmaps (A + B with high overlap → CR OR worst path):
+///   bitmap/bm_100m_o3500_wah/   ← count_a = 3500, overlap = 95% (hard-coded)
+/// Same directory layout as compressed_dir_path so benchmark_app --compressed-dir
+/// reads it without modification.
+static std::string overlap_dir_path(const std::string& base_dir, int n,
+                                    int count_a, const std::string& algorithm) {
+    std::string algo_lower = algorithm;
+    for (auto& ch : algo_lower)
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return base_dir + "/bitmap/bm_" + format_rows(n)
+         + "_o" + std::to_string(count_a) + "_" + algo_lower;
+}
+
+/// Asymmetric-disjoint bitmaps (A with count_a bits, B with count_b bits,
+/// guaranteed A∩B=∅):
+///   bitmap/bm_100m_A2700_B1300_wah/   ← MIDDLE point in OR density plot
+/// Used as a "CR fast" reference between the two CR slow points (o3500 +
+/// t2200); A+B ≤ 4096 keeps CR in the direct array merge path.
+static std::string asym_dir_path(const std::string& base_dir, int n,
+                                 int count_a, int count_b,
+                                 const std::string& algorithm) {
+    std::string algo_lower = algorithm;
+    for (auto& ch : algo_lower)
+        ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    return base_dir + "/bitmap/bm_" + format_rows(n)
+         + "_A" + std::to_string(count_a)
+         + "_B" + std::to_string(count_b)
+         + "_" + algo_lower;
+}
+
 static std::string compressed_done_path(const std::string& dir) {
     return dir + "/done.txt";
 }
@@ -471,6 +700,9 @@ static bool generate_compressed(const std::string& algorithm,
 int main(int argc, char* argv[]) {
     int n = -1;
     int c = -1;
+    int t = -1;   // -t <count_a> : transition mode (independent random bitmaps)
+    int o = -1;   // -o <count_a> : overlap mode (95% overlap, fresh = count_a*0.05)
+    int asym_a = -1, asym_b = -1;  // -A <count_a> -B <count_b> : asymmetric disjoint
     int z = 1;
     int w = 8;
     int tile = 1;
@@ -484,6 +716,14 @@ int main(int argc, char* argv[]) {
             n = std::stoi(argv[++i]);
         } else if (arg == "-c" && i + 1 < argc) {
             c = std::stoi(argv[++i]);
+        } else if (arg == "-t" && i + 1 < argc) {
+            t = std::stoi(argv[++i]);
+        } else if (arg == "-o" && i + 1 < argc) {
+            o = std::stoi(argv[++i]);
+        } else if (arg == "-A" && i + 1 < argc) {
+            asym_a = std::stoi(argv[++i]);
+        } else if (arg == "-B" && i + 1 < argc) {
+            asym_b = std::stoi(argv[++i]);
         } else if (arg == "-z" && i + 1 < argc) {
             z = std::stoi(argv[++i]);
         } else if (arg == "-w" && i + 1 < argc) {
@@ -500,10 +740,35 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Transition / overlap / asymmetric modes force 2 bitmaps and ignore -c.
+    // They are mutually exclusive.
+    const bool transition_mode = (t > 0);
+    const bool overlap_mode    = (o > 0);
+    const bool asym_mode       = (asym_a > 0 && asym_b > 0);
+    if (transition_mode || overlap_mode || asym_mode) c = 2;
+
+    int special_modes = transition_mode + overlap_mode + asym_mode;
+    if (special_modes > 1) {
+        std::cerr << "Error: -t, -o, and -A/-B are mutually exclusive\n";
+        return 1;
+    }
+    if ((asym_a > 0) != (asym_b > 0)) {
+        std::cerr << "Error: -A and -B must be used together\n";
+        return 1;
+    }
+
     if (n <= 0 || c <= 0 || algorithm.empty()) {
-        std::cerr << "Usage: " << argv[0] << " -n <n> -c <c> <algorithm> [options]\n"
+        std::cerr << "Usage: " << argv[0] << " -n <n> {-c <c> | -t <count_a> | -o <count_a>} <algorithm> [options]\n"
                   << "  -n <n>        : number of rows (final size)\n"
-                  << "  -c <c>        : cardinality\n"
+                  << "  -c <c>        : cardinality (column-style mutually-disjoint bitmaps)\n"
+                  << "  -t <count_a>  : transition mode — generate 2 independent random\n"
+                  << "                  bitmaps with count_a set bits per 65 536-segment.\n"
+                  << "                  Mutually exclusive with -c.  Output goes to\n"
+                  << "                  bitmap/bm_<n>_t<count_a>_<algo>/\n"
+                  << "  -o <count_a>  : overlap mode — 2 bitmaps with 95% overlap and 5% fresh\n"
+                  << "                  bits (count_a · 0.05 disjoint).  Exposes CRoaring's\n"
+                  << "                  OR array→bitset→array worst path.  Output goes to\n"
+                  << "                  bitmap/bm_<n>_o<count_a>_<algo>/\n"
                   << "  <algorithm>   : compression algorithm (bitset, wah, roaring, ewah, concise, combit)\n"
                   << "  -d <base_dir> : base directory (default: .)\n"
                   << "  -z <z>        : zip length for bitset mode (default: 1)\n"
@@ -512,6 +777,11 @@ int main(int argc, char* argv[]) {
                   << "                  size n/T with segment_bits = n/T, compress once, then\n"
                   << "                  byte-concat T copies.  Saves the n-scale compress pass.\n"
                   << "                  Requires n % T == 0.\n";
+        return 1;
+    }
+
+    if ((transition_mode || overlap_mode || asym_mode) && tile > 1) {
+        std::cerr << "Error: -t/-o/-A and -T (tile mode) are mutually exclusive\n";
         return 1;
     }
 
@@ -538,7 +808,19 @@ int main(int argc, char* argv[]) {
 
     // Determine output directory
     std::string comp_dir;
-    if (algo_lower == "bitset") {
+    if (transition_mode) {
+        // Transition mode: bitmap/bm_<n>_t<count_a>_<algo>[_w<W>]/
+        comp_dir = transition_dir_path(base_dir, n, t, algorithm);
+        if (algo_lower == "combit") comp_dir += "_w" + std::to_string(w);
+    } else if (overlap_mode) {
+        // Overlap mode: bitmap/bm_<n>_o<count_a>_<algo>[_w<W>]/
+        comp_dir = overlap_dir_path(base_dir, n, o, algorithm);
+        if (algo_lower == "combit") comp_dir += "_w" + std::to_string(w);
+    } else if (asym_mode) {
+        // Asymmetric mode: bitmap/bm_<n>_A<a>_B<b>_<algo>[_w<W>]/
+        comp_dir = asym_dir_path(base_dir, n, asym_a, asym_b, algorithm);
+        if (algo_lower == "combit") comp_dir += "_w" + std::to_string(w);
+    } else if (algo_lower == "bitset") {
         if (z == 1)
             comp_dir = compressed_dir_path(base_dir, n, c, "bitset");
         else
@@ -561,6 +843,108 @@ int main(int argc, char* argv[]) {
                               + " small_n=" + std::to_string(gen_n))
                            : "")
               << " base_dir=" << base_dir << std::endl;
+
+    // Transition mode short-circuits the dataset+raw pipeline: it generates
+    // the bucket positions in memory via make_transition_buckets (independent
+    // random sampling per bitmap), then runs the standard generate_compressed
+    // dispatcher.  All 7 backend gen_X functions are reused unchanged.
+    if (transition_mode) {
+        if (compression_exists(comp_dir)) {
+            std::cout << "[gen_bitmap] Compressed data already exists: " << comp_dir << std::endl;
+            return 0;
+        }
+        std::cout << "[gen_bitmap] Transition mode — generating " << c
+                  << " independent random bitmaps with count_a=" << t
+                  << " per 65 536-segment." << std::endl;
+        fs::create_directories(comp_dir);
+
+        auto buckets = make_transition_buckets(
+            static_cast<uint64_t>(n), c, t,
+            /*seed=*/0xCAFE0000u + static_cast<uint64_t>(t));
+        if (buckets.empty()) return 1;
+
+        if (!generate_compressed(algorithm, buckets, comp_dir,
+                                 static_cast<uint64_t>(n), c, z, w)) {
+            std::cerr << "[gen_bitmap] Error: transition compression failed." << std::endl;
+            return 1;
+        }
+        std::ofstream done(compressed_done_path(comp_dir));
+        done << "algorithm=" << algorithm << "\n"
+             << "n=" << n << "\n"
+             << "c=" << c << "\n"
+             << "t=" << t << "\n"
+             << "mode=transition\n";
+        std::cout << "[gen_bitmap] Transition compression completed: " << comp_dir << std::endl;
+        return 0;
+    }
+
+    // Overlap mode mirrors transition mode but uses make_overlap_buckets
+    // (B carries 95% of A's bits + 5% fresh disjoint) to expose CR's OR
+    // array→bitset→array worst path.
+    if (overlap_mode) {
+        if (compression_exists(comp_dir)) {
+            std::cout << "[gen_bitmap] Compressed data already exists: " << comp_dir << std::endl;
+            return 0;
+        }
+        constexpr double overlap_ratio = 0.95;
+        std::cout << "[gen_bitmap] Overlap mode — generating 2 bitmaps with count_a="
+                  << o << " per 65 536-segment, " << (overlap_ratio * 100)
+                  << "% overlap." << std::endl;
+        fs::create_directories(comp_dir);
+
+        auto buckets = make_overlap_buckets(
+            static_cast<uint64_t>(n), o, overlap_ratio,
+            /*seed=*/0xBEEF0000u + static_cast<uint64_t>(o));
+        if (buckets.empty()) return 1;
+
+        if (!generate_compressed(algorithm, buckets, comp_dir,
+                                 static_cast<uint64_t>(n), c, z, w)) {
+            std::cerr << "[gen_bitmap] Error: overlap compression failed." << std::endl;
+            return 1;
+        }
+        std::ofstream done(compressed_done_path(comp_dir));
+        done << "algorithm=" << algorithm << "\n"
+             << "n=" << n << "\n"
+             << "c=" << c << "\n"
+             << "o=" << o << "\n"
+             << "overlap_ratio=" << overlap_ratio << "\n"
+             << "mode=overlap\n";
+        std::cout << "[gen_bitmap] Overlap compression completed: " << comp_dir << std::endl;
+        return 0;
+    }
+
+    // Asymmetric mode: A and B have different counts (count_a, count_b),
+    // forced disjoint.  Used as a CR "fast normal" reference point in OR.
+    if (asym_mode) {
+        if (compression_exists(comp_dir)) {
+            std::cout << "[gen_bitmap] Compressed data already exists: " << comp_dir << std::endl;
+            return 0;
+        }
+        std::cout << "[gen_bitmap] Asymmetric mode — A=" << asym_a
+                  << " bits/seg, B=" << asym_b << " bits/seg, disjoint." << std::endl;
+        fs::create_directories(comp_dir);
+
+        auto buckets = make_asymmetric_disjoint_buckets(
+            static_cast<uint64_t>(n), asym_a, asym_b,
+            /*seed=*/0xCAFE0000u + static_cast<uint64_t>(asym_a) * 1000
+                                + static_cast<uint64_t>(asym_b));
+        if (buckets.empty()) return 1;
+
+        if (!generate_compressed(algorithm, buckets, comp_dir,
+                                 static_cast<uint64_t>(n), c, z, w)) {
+            std::cerr << "[gen_bitmap] Error: asymmetric compression failed." << std::endl;
+            return 1;
+        }
+        std::ofstream done(compressed_done_path(comp_dir));
+        done << "algorithm=" << algorithm << "\n"
+             << "n=" << n << "\n"
+             << "c=" << c << "\n"
+             << "count_a=" << asym_a << "\n"
+             << "count_b=" << asym_b << "\n"
+             << "mode=asymmetric_disjoint\n";
+        std::cout << "[gen_bitmap] Asymmetric compression completed: " << comp_dir << std::endl;
+        return 0;
+    }
 
     // Step 1: Ensure dataset (small or full) exists
     std::string ds_file = dataset_path(base_dir, gen_n, c);
