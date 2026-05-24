@@ -172,6 +172,17 @@ target_include_directories(gen_bitmap PRIVATE
 target_link_libraries(gen_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
 
 # ==========================================
+# bench_L_sizes: analytical L2/L3/L4/L5 size measurement
+# ==========================================
+add_executable(bench_L_sizes
+    src/benchmark/bench_L_sizes.cpp
+)
+target_include_directories(bench_L_sizes PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_link_libraries(bench_L_sizes PRIVATE combit Threads::Threads atomic)
+
+# ==========================================
 # verify_bitmap: bitmap correctness verification
 # ==========================================
 add_executable(verify_bitmap
