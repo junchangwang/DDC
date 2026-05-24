@@ -110,14 +110,16 @@ int main(int argc, char** argv) {
                 agg_l5_raw += s.l5_byte_cnt;             // ⌈l4_byte_cnt/8⌉
             }
         }
-        // Per-variant totals (single bitmap = aggregate / file_count).
+        // Per-variant TOTALS across all C bitmaps loaded for this
+        // cardinality (matches the motivation-chart memory reporting
+        // format: "Density 0.001 | Loaded 1000 | L4: 23.33 MB" = sum of
+        // L4 bytes across all 1000 bitmaps, NOT per-bitmap average).
         auto emit = [&](const char* variant, size_t l1, size_t l2, size_t l3,
                         size_t l4, size_t l5) {
-            // Report PER-BITMAP averages so numbers are comparable across c.
-            double n = double(file_count);
-            double total = (l1 + l2 + l3 + l4 + l5) / n;
+            double total = double(l1 + l2 + l3 + l4 + l5);
             out << c << "," << variant << ","
-                << l1/n << "," << l2/n << "," << l3/n << "," << l4/n << "," << l5/n << ","
+                << double(l1) << "," << double(l2) << "," << double(l3) << ","
+                << double(l4) << "," << double(l5) << ","
                 << total << "," << total / (1024.0 * 1024.0) << "\n";
         };
         // L2 variant: L1 + L2_raw
