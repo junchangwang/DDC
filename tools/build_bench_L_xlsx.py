@@ -5,14 +5,14 @@ Aggregate L2/L3/L4/L5 variant measurements into bench_L.xlsx.
 Layout:
   - "Summary" sheet: one big table per cardinality, columns =
       Depth | L1 MB | L2 MB | L3 MB | L4 MB | L5 MB | Total MB |
-      AND ms | OR ms | XOR ms
+      AND ms | OR ms | NOT ms
     L4 row bolded (production winner).  Smallest size + smallest
     op time per cardinality are highlighted green.
   - "Notes" sheet: methodology + correctness flag summary.
 
 Source CSVs (produced by ./build/bench_L_sizes and ./build/bench_L_ops):
   - bench_L_sizes.csv : analytical per-layer bytes for L2/L3/L4/L5
-  - bench_L_ops.csv   : real depth-N compress + AND/OR/XOR ms +
+  - bench_L_ops.csv   : real depth-N compress + AND/OR/NOT ms +
                         correctness flags (40/40 pass)
 """
 
@@ -85,23 +85,25 @@ def main():
 
     # ---------- title ----------
     ws.cell(row=1, column=1,
-            value="L2 / L3 / L4 / L5 marker-depth study  —  per-layer size (MB) + AND / OR / XOR op-only ms").font = BOLD_BLUE
+            value="L2 / L3 / L4 / L5 marker-depth study  —  per-layer size (MB) + AND / OR / NOT op-only ms").font = BOLD_BLUE
     ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=11)
     ws.row_dimensions[1].height = 22
 
     # subheader: methodology one-liner
     ws.cell(row=2, column=1,
-            value="100M rows, segment_bits=2¹⁶, 5-iter median.  AND = self-AND (ha & ha) using "
-                  "and_no_bypass; OR / XOR cross (ha vs hb) using operator| / operator^.  "
-                  "L4 = production AVX-512; L2 / L3 / L5 use the same per-region SIMD kernel "
-                  "plus matching batch-skip + per-region bypass for fairness.").font = Font(italic=True, color="595959")
+            value="100M rows, segment_bits=2¹⁶, 5-iter median.  AND / OR = CROSS (ha vs hb) "
+                  "using and_no_bypass / operator|.  NOT = unary on ha: production "
+                  "negate_inplace+decompress→bytes for L4, combit_n_not_dec_avx (depth-aware "
+                  "expand_l1_stream + SIMD XOR 0xFF) for L2/L3/L5.  L4 = production AVX-512; "
+                  "L2/L3/L5 use the same per-region SIMD kernel plus matching batch-skip + "
+                  "asymmetric bypass for fairness.").font = Font(italic=True, color="595959")
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=11)
     ws.row_dimensions[2].height = 32
 
     headers = ["Cardinality", "Depth",
                "L1 (MB)", "L2 (MB)", "L3 (MB)", "L4 (MB)", "L5 (MB)",
                "Total (MB)",
-               "AND (ms)", "OR (ms)", "XOR (ms)"]
+               "AND (ms)", "OR (ms)", "NOT (ms)"]
     HDR_ROW = 4
     make_table_header(ws, HDR_ROW, headers)
 
@@ -115,7 +117,7 @@ def main():
         # per-cardinality block: 4 rows (one per variant) + blank separator
         block_start = r
         # find best (smallest) size and op times across the 4 variants
-        sizes = []; ands = []; ors_ = []; xors = []
+        sizes = []; ands = []; ors_ = []; nots = []
         for v in variants:
             sr = sizes_by.get((c, v));  op = ops_by.get((c, v))
             if not sr or not op: continue
@@ -123,11 +125,11 @@ def main():
             sizes.append(total_mb)
             ands.append(float(op["and_ms"]))
             ors_.append(float(op["or_ms"]))
-            xors.append(float(op["xor_ms"]))
+            nots.append(float(op["not_ms"]))
         best_size = min(sizes) if sizes else None
         best_and  = min(ands)  if ands  else None
         best_or   = min(ors_)  if ors_  else None
-        best_xor  = min(xors)  if xors  else None
+        best_not  = min(nots)  if nots  else None
 
         for i, v in enumerate(variants):
             sr = sizes_by.get((c, v))
@@ -142,13 +144,13 @@ def main():
             total = to_mb(sr["total_bytes"])
             and_ms = float(op["and_ms"])
             or_ms  = float(op["or_ms"])
-            xor_ms = float(op["xor_ms"])
+            not_ms = float(op["not_ms"])
 
             # cardinality only on first row of block
             ws.cell(row=r, column=1, value=c if i == 0 else None).alignment = CENTER
             ws.cell(row=r, column=2, value=v).alignment = CENTER
 
-            for col, val in enumerate([l1, l2, l3, l4, l5, total, and_ms, or_ms, xor_ms], start=3):
+            for col, val in enumerate([l1, l2, l3, l4, l5, total, and_ms, or_ms, not_ms], start=3):
                 cell = ws.cell(row=r, column=col, value=val)
                 cell.number_format = '0.000'
                 cell.alignment = RIGHT
@@ -176,7 +178,7 @@ def main():
             if abs(or_ms - best_or) < 1e-6:
                 ws.cell(row=r, column=10).fill = BEST_FILL
                 ws.cell(row=r, column=10).font = BOLD
-            if abs(xor_ms - best_xor) < 1e-6:
+            if abs(not_ms - best_not) < 1e-6:
                 ws.cell(row=r, column=11).fill = BEST_FILL
                 ws.cell(row=r, column=11).font = BOLD
 
@@ -205,7 +207,7 @@ def main():
         "  all C .bm files in bm_100m_c{N}_combit_w8/ (matches motivation-chart",
         "  'total in-memory' format: c=1000 L4 = 285 MB = sum of 1000 bitmaps).",
         "",
-        "Op-only timing (AND/OR/XOR ms):",
+        "Op-only timing (AND/OR/NOT ms):",
         "  AVX-512 implementations for L2/L3/L5 share the SAME per-region SIMD",
         "  kernel as production L4 (see combit_n.cpp + and.cpp / or.cpp / xor.cpp).",
         "  All variants have:",
@@ -223,7 +225,7 @@ def main():
         "Findings:",
         "  • Sizes:  L4 / L5 are ~10× smaller than L2 at sparse end (0.16 vs 1.54",
         "            MiB at c=2000).  L5 saves only ~2 KB / bitmap over L4.",
-        "  • Speed:  L4 wins AND / OR / XOR across most cardinalities; the win",
+        "  • Speed:  L4 wins AND / OR / NOT across most cardinalities; the win",
         "            comes from marker GRANULARITY — L4's 8-byte top layer skips",
         "            64 regions per batch check, while L2/L3/L5 with the same",
         "            optimizations still pay more iterations through the walker.",

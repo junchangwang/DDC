@@ -49,11 +49,14 @@ static std::vector<bool> ref_or(const std::vector<bool>& a, const std::vector<bo
     for (size_t i = 0; i < a.size(); i++) r[i] = a[i] | b[i];
     return r;
 }
-static std::vector<bool> ref_xor(const std::vector<bool>& a, const std::vector<bool>& b) {
+static std::vector<bool> ref_not(const std::vector<bool>& a) {
     std::vector<bool> r(a.size());
-    for (size_t i = 0; i < a.size(); i++) r[i] = a[i] ^ b[i];
+    for (size_t i = 0; i < a.size(); i++) r[i] = !a[i];
     return r;
 }
+
+// (no extra helpers needed — NOT timing uses production operator~ for L4
+//  and combit_n_not_inplace for L2/L3/L5; correctness uses decompress.)
 
 int main(int argc, char** argv) {
     if (argc < 3) {
@@ -68,8 +71,8 @@ int main(int argc, char** argv) {
 
     std::ofstream out(out_path);
     out << "cardinality,variant,total_bytes,total_MiB,"
-        << "and_ms,or_ms,xor_ms,"
-        << "and_ok,or_ok,xor_ok,roundtrip_ok\n";
+        << "and_ms,or_ms,not_ms,"
+        << "and_ok,or_ok,not_ok,roundtrip_ok\n";
 
     for (int c : cards) {
         fs::path dir = root / ("bm_100m_c" + std::to_string(c) + "_combit_w8");
@@ -104,14 +107,11 @@ int main(int argc, char** argv) {
             base += v.size();
         }
 
-        // Reference results (raw bit-vector ops).  All three ops are
-        // CROSS (ha vs hb) — switched from the previous self-AND setup
-        // so AND doesn't get the production self-AND fast-path shortcut.
-        // All variants now do the general cross-AND code path, apples
-        // to apples.
+        // Reference results (raw bit-vector ops).  AND and OR are
+        // CROSS (ba vs bb).  NOT is unary on A.
         auto rA = ref_and(ba, bb);
         auto rO = ref_or (ba, bb);
-        auto rX = ref_xor(ba, bb);
+        auto rN = ref_not(ba);
 
         // For each depth, compress + measure + time + validate.
         for (int depth : {2, 3, 4, 5}) {
@@ -141,21 +141,18 @@ int main(int argc, char** argv) {
             }
 
             // -------- OP TIMING -------------------------------------
-            // L4 path uses the PRODUCTION AVX-512 ComBit ops:
-            //   AND: and_no_bypass (explicit no-bypass — matches the
-            //        motivation-chart fast path)
-            //   OR:  operator| (default, WITH bypass)
-            //   XOR: operator^ (default)
-            // All three run with combit_compress_results=false (op-only
-            // decompressed output).  See and.cpp / or.cpp / xor.cpp for
-            // the production AVX-512 inner loops.
-            std::vector<double> tA, tO, tX;
-            bool and_ok = true, or_ok = true, xor_ok = true;
+            // AND / OR: cross (A op B) — no self-AND fast-path shortcut.
+            // NOT: unary on A.  All produce decompressed byte streams
+            // (combit_compress_results=false for the L4 OR; for L4 NOT
+            // we manually decompress and pack so the output format is
+            // the same vector<uint8_t> the combit_n walkers produce).
+            std::vector<double> tA, tO, tN;
+            bool and_ok = true, or_ok = true, not_ok = true;
             if (depth == 4) {
                 // Warm-ups
                 { ComBit w = A.and_no_bypass(B); (void)w; }
                 { ComBit w = A | B; (void)w; }
-                { ComBit w = A ^ B; (void)w; }
+                { ComBit w = ~A; (void)w; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     ComBit r = A.and_no_bypass(B);
@@ -172,9 +169,9 @@ int main(int argc, char** argv) {
                 }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    ComBit r = A ^ B;
+                    ComBit r = ~A;  // production in-place NOT
                     auto t1 = clk::now();
-                    tX.push_back(ms(t0, t1));
+                    tN.push_back(ms(t0, t1));
                     (void)r;
                 }
                 // Correctness: decompress each result and compare to raw.
@@ -191,11 +188,13 @@ int main(int argc, char** argv) {
                 };
                 and_ok = (cb_to_bits(A.and_no_bypass(B)) == rA);
                 or_ok  = (cb_to_bits(A | B) == rO);
-                xor_ok = (cb_to_bits(A ^ B) == rX);
+                not_ok = (cb_to_bits(~A) == rN);
             } else {
                 // Cross-AND too (matches L4 above).  Goes through general
                 // seg_op_l*<AND>, not seg_self_and_l*.
                 { auto w = combit_n_and_dec_avx(cA, cB); (void)w; }
+                { auto w = combit_n_or_dec_avx(cA, cB); (void)w; }
+                { auto w = combit_n_not_inplace(cA); (void)w; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     auto r = combit_n_and_dec_avx(cA, cB);
@@ -210,9 +209,9 @@ int main(int argc, char** argv) {
                 }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    auto r = combit_n_xor_dec_avx(cA, cB);
+                    auto r = combit_n_not_inplace(cA);  // in-place NOT
                     auto t1 = clk::now();
-                    tX.push_back(ms(t0, t1)); (void)r;
+                    tN.push_back(ms(t0, t1)); (void)r;
                 }
                 auto chk = [&](const std::vector<uint8_t>& r,
                                const std::vector<bool>& ref) {
@@ -220,19 +219,21 @@ int main(int argc, char** argv) {
                 };
                 and_ok = chk(combit_n_and_dec_avx(cA, cB), rA);
                 or_ok  = chk(combit_n_or_dec_avx (cA, cB), rO);
-                xor_ok = chk(combit_n_xor_dec_avx(cA, cB), rX);
+                // Verify NOT by decompressing the result and comparing
+                // to the reference (decompress is NOT in the timed loop).
+                not_ok = (combit_n_decompress(combit_n_not_inplace(cA)) == rN);
             }
 
             out << c << ",L" << depth << ","
                 << total << "," << double(total) / (1024.0 * 1024.0) << ","
-                << median(tA) << "," << median(tO) << "," << median(tX) << ","
-                << (and_ok ? 1 : 0) << "," << (or_ok ? 1 : 0) << "," << (xor_ok ? 1 : 0) << ","
+                << median(tA) << "," << median(tO) << "," << median(tN) << ","
+                << (and_ok ? 1 : 0) << "," << (or_ok ? 1 : 0) << "," << (not_ok ? 1 : 0) << ","
                 << (rt_ok ? 1 : 0) << "\n";
             out.flush();
             std::cerr << "[c=" << c << " L" << depth << "] size=" << total
                       << "B and=" << median(tA) << "ms or=" << median(tO)
-                      << "ms xor=" << median(tX) << "ms (correct: A="
-                      << and_ok << " O=" << or_ok << " X=" << xor_ok
+                      << "ms not=" << median(tN) << "ms (correct: A="
+                      << and_ok << " O=" << or_ok << " N=" << not_ok
                       << " RT=" << rt_ok << ")\n";
         }
     }
