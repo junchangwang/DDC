@@ -40,3 +40,20 @@ bool gen_concise(const std::vector<std::vector<uint32_t>>& buckets,
 bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
                 const std::string& output_dir, uint64_t rows, int cardinality,
                 int word_size);
+
+/// Generate ComBitN-compressed bitmaps at a fixed depth (2/3/4/5).
+/// Each .bm file is the result of combit_n_compress(bits, depth) followed
+/// by combit_n_serialize(...).  Used by the bench_L_ops fairness study so
+/// each depth gets a real on-disk artefact that the bench can deserialize
+/// directly (no in-memory recompression in the timed window).
+bool gen_combit_n(const std::vector<std::vector<uint32_t>>& buckets,
+                  const std::string& output_dir, uint64_t rows, int cardinality,
+                  int depth);
+
+/// Tile-mode ComBitN generator — mirrors gen_combit_tile.  Compresses a
+/// small_n-bit ComBitN once, then byte-concatenates the per-segment payload
+/// tile_factor× and rewrites the top-level header.  Used to match the
+/// existing L4 .bm files at c=2000 (which were generated tile=100 small_n=1M).
+bool gen_combit_n_tile(const std::vector<std::vector<uint32_t>>& buckets,
+                       const std::string& output_dir, uint64_t small_n,
+                       int cardinality, int tile_factor, int depth);

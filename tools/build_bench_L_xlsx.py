@@ -91,12 +91,12 @@ def main():
 
     # subheader: methodology one-liner
     ws.cell(row=2, column=1,
-            value="100M rows, segment_bits=2¹⁶, 5-iter median.  AND / OR = CROSS (ha vs hb) "
-                  "using and_no_bypass / operator|.  NOT = unary on ha: production "
-                  "negate_inplace+decompress→bytes for L4, combit_n_not_dec_avx (depth-aware "
-                  "expand_l1_stream + SIMD XOR 0xFF) for L2/L3/L5.  L4 = production AVX-512; "
-                  "L2/L3/L5 use the same per-region SIMD kernel plus matching batch-skip + "
-                  "asymmetric bypass for fairness.").font = Font(italic=True, color="595959")
+            value="100M rows, segment_bits=2¹⁶, 5-iter median.  Every variant is deserialized "
+                  "fresh from disk (combit_w8 for L4, combit_L{2,3,5} for the others — all written "
+                  "by gen_bitmap), no in-memory recompression in the timed window.  AND / OR = "
+                  "CROSS (cA vs cB).  NOT = unary on cA (production ~ for L4, combit_n_not_inplace "
+                  "for L2/L3/L5).  L4 = production AVX-512; L2/L3/L5 use the same per-region SIMD "
+                  "kernel + matching batch-skip + asymmetric bypass for fairness.").font = Font(italic=True, color="595959")
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=11)
     ws.row_dimensions[2].height = 32
 

@@ -113,16 +113,39 @@ int main(int argc, char** argv) {
         auto rO = ref_or (ba, bb);
         auto rN = ref_not(ba);
 
-        // For each depth, compress + measure + time + validate.
+        // For each depth, load + measure + time + validate.
         for (int depth : {2, 3, 4, 5}) {
             // -------- LOAD inputs at this depth ----------------------
             ComBitN cA, cB;
             // L4 uses production AVX-512 code path; A and B are reused
             // from the existing ComBit objects loaded above.  L2/L3/L5
-            // use the scalar ComBitN reference (AVX-512 versions TBD).
+            // load real ComBitN .bm artefacts written by gen_bitmap
+            // -L <depth>, mirroring how L4 is loaded from combit_w8/.
+            // This keeps the comparison apples-to-apples — every variant
+            // is deserialized fresh from disk in the timed window.
             if (depth != 4) {
-                cA = combit_n_compress(ba, depth);
-                cB = combit_n_compress(bb, depth);
+                fs::path ndir = root / ("bm_100m_c" + std::to_string(c)
+                                         + "_combit_L" + std::to_string(depth));
+                if (!fs::is_directory(ndir)) {
+                    std::cerr << "[skip] " << ndir << " (run gen_bitmap -L "
+                              << depth << " first)\n";
+                    continue;
+                }
+                std::vector<fs::path> nfiles;
+                for (auto& e : fs::directory_iterator(ndir))
+                    if (e.path().extension() == ".bm") nfiles.push_back(e.path());
+                std::sort(nfiles.begin(), nfiles.end(),
+                    [](const fs::path& a, const fs::path& b){
+                        return std::stoi(a.stem().string()) < std::stoi(b.stem().string());
+                    });
+                if (nfiles.size() < 2) {
+                    std::cerr << "[skip] " << ndir << " (<2 files)\n";
+                    continue;
+                }
+                std::ifstream nia(nfiles[0], std::ios::binary);
+                std::ifstream nib(nfiles[1], std::ios::binary);
+                cA = combit_n_deserialize(nia);
+                cB = combit_n_deserialize(nib);
             }
 
             // Round-trip check (only meaningful for ComBitN depths).
