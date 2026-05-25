@@ -97,18 +97,18 @@ def main():
                   "CROSS (cA vs cB).  NOT = unary on cA (production ~ for L4, combit_n_not_inplace "
                   "for L2/L3/L5).  L4 = production AVX-512; L2/L3/L5 use the same per-region SIMD "
                   "kernel + matching batch-skip + asymmetric bypass for fairness.").font = Font(italic=True, color="595959")
-    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=11)
+    ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=12)
     ws.row_dimensions[2].height = 32
 
     headers = ["Cardinality", "Depth",
                "L1 (MB)", "L2 (MB)", "L3 (MB)", "L4 (MB)", "L5 (MB)",
                "Total (MB)",
-               "AND (ms)", "OR (ms)", "NOT (ms)"]
+               "AND (ms)", "OR (ms)", "NOT (ms)", "COMP (ms)"]
     HDR_ROW = 4
     make_table_header(ws, HDR_ROW, headers)
 
     # column widths
-    widths = [13, 8, 9, 9, 9, 9, 9, 11, 10, 10, 10]
+    widths = [13, 8, 9, 9, 9, 9, 9, 11, 10, 10, 10, 11]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
@@ -117,7 +117,7 @@ def main():
         # per-cardinality block: 4 rows (one per variant) + blank separator
         block_start = r
         # find best (smallest) size and op times across the 4 variants
-        sizes = []; ands = []; ors_ = []; nots = []
+        sizes = []; ands = []; ors_ = []; nots = []; comps = []
         for v in variants:
             sr = sizes_by.get((c, v));  op = ops_by.get((c, v))
             if not sr or not op: continue
@@ -126,10 +126,13 @@ def main():
             ands.append(float(op["and_ms"]))
             ors_.append(float(op["or_ms"]))
             nots.append(float(op["not_ms"]))
+            if "comp_ms" in op:
+                comps.append(float(op["comp_ms"]))
         best_size = min(sizes) if sizes else None
         best_and  = min(ands)  if ands  else None
         best_or   = min(ors_)  if ors_  else None
         best_not  = min(nots)  if nots  else None
+        best_comp = min(comps) if comps else None
 
         for i, v in enumerate(variants):
             sr = sizes_by.get((c, v))
@@ -145,12 +148,16 @@ def main():
             and_ms = float(op["and_ms"])
             or_ms  = float(op["or_ms"])
             not_ms = float(op["not_ms"])
+            comp_ms = float(op["comp_ms"]) if "comp_ms" in op else None
 
             # cardinality only on first row of block
             ws.cell(row=r, column=1, value=c if i == 0 else None).alignment = CENTER
             ws.cell(row=r, column=2, value=v).alignment = CENTER
 
-            for col, val in enumerate([l1, l2, l3, l4, l5, total, and_ms, or_ms, not_ms], start=3):
+            data_cols = [l1, l2, l3, l4, l5, total, and_ms, or_ms, not_ms]
+            if comp_ms is not None:
+                data_cols.append(comp_ms)
+            for col, val in enumerate(data_cols, start=3):
                 cell = ws.cell(row=r, column=col, value=val)
                 cell.number_format = '0.000'
                 cell.alignment = RIGHT
@@ -162,7 +169,7 @@ def main():
 
             # L4 row gets pale yellow fill + bold variant
             if v == "L4":
-                for col in range(1, 12):
+                for col in range(1, 13):
                     ws.cell(row=r, column=col).fill = L4_FILL
                 ws.cell(row=r, column=2).font = BOLD
             else:
@@ -181,6 +188,9 @@ def main():
             if abs(not_ms - best_not) < 1e-6:
                 ws.cell(row=r, column=11).fill = BEST_FILL
                 ws.cell(row=r, column=11).font = BOLD
+            if comp_ms is not None and best_comp is not None and abs(comp_ms - best_comp) < 1e-6:
+                ws.cell(row=r, column=12).fill = BEST_FILL
+                ws.cell(row=r, column=12).font = BOLD
 
             r += 1
 

@@ -71,8 +71,8 @@ int main(int argc, char** argv) {
 
     std::ofstream out(out_path);
     out << "cardinality,variant,total_bytes,total_MiB,"
-        << "and_ms,or_ms,not_ms,"
-        << "and_ok,or_ok,not_ok,roundtrip_ok\n";
+        << "and_ms,or_ms,not_ms,comp_ms,"
+        << "and_ok,or_ok,not_ok,comp_ok,roundtrip_ok\n";
 
     for (int c : cards) {
         fs::path dir = root / ("bm_100m_c" + std::to_string(c) + "_combit_w8");
@@ -88,36 +88,40 @@ int main(int argc, char** argv) {
         if (files.size() < 2) { std::cerr << "[skip] " << dir << " (<2 files)\n"; continue; }
 
         // Load via existing ComBit and decompress to bool vectors.
-        std::ifstream ia(files[0], std::ios::binary), ib(files[1], std::ios::binary);
+        // A,B drive single-op AND/OR.  C joins B to drive the COMP
+        // expression ~((A|B) & (B|C)) — same 3-input pattern as the
+        // production motivation chart's COMP_op.  At c=2 only 2 .bm
+        // files exist, so fall back to C = A (matches benchmark_main).
+        const fs::path& fileC = (files.size() >= 3) ? files[2] : files[0];
+        std::ifstream ia(files[0], std::ios::binary), ib(files[1], std::ios::binary), ic(fileC, std::ios::binary);
         ComBit A = ComBit::deserialize(ia);
         ComBit B = ComBit::deserialize(ib);
-        std::vector<bool> ba(A.bit_count()), bb(B.bit_count());
-        // ComBit::decompress returns segment-wise; concat all segments.
-        // We use the depth-4 ComBit's segment-by-segment decompress.
-        size_t base = 0;
-        for (size_t s = 0; s < A.num_segments(); s++) {
-            auto v = A.segment(s).decompress();
-            for (size_t i = 0; i < v.size() && base + i < ba.size(); i++) ba[base + i] = v[i];
-            base += v.size();
-        }
-        base = 0;
-        for (size_t s = 0; s < B.num_segments(); s++) {
-            auto v = B.segment(s).decompress();
-            for (size_t i = 0; i < v.size() && base + i < bb.size(); i++) bb[base + i] = v[i];
-            base += v.size();
-        }
+        ComBit C = ComBit::deserialize(ic);
+        std::vector<bool> ba(A.bit_count()), bb(B.bit_count()), bc(C.bit_count());
+        auto cb_decompress_to = [](const ComBit& cb, std::vector<bool>& out) {
+            size_t base = 0;
+            for (size_t s = 0; s < cb.num_segments(); s++) {
+                auto v = cb.segment(s).decompress();
+                for (size_t i = 0; i < v.size() && base + i < out.size(); i++) out[base + i] = v[i];
+                base += v.size();
+            }
+        };
+        cb_decompress_to(A, ba);
+        cb_decompress_to(B, bb);
+        cb_decompress_to(C, bc);
 
-        // Reference results (raw bit-vector ops).  AND and OR are
-        // CROSS (ba vs bb).  NOT is unary on A.
+        // Reference results.  AND/OR are CROSS (ba vs bb).  NOT is unary on A.
+        // COMP = ~((A|B) & (B|C)) — same as production benchmark_main COMP_op.
         auto rA = ref_and(ba, bb);
         auto rO = ref_or (ba, bb);
         auto rN = ref_not(ba);
+        auto rCOMP = ref_not(ref_and(ref_or(ba, bb), ref_or(bb, bc)));
 
         // For each depth, load + measure + time + validate.
         for (int depth : {2, 3, 4, 5}) {
             // -------- LOAD inputs at this depth ----------------------
-            ComBitN cA, cB;
-            // L4 uses production AVX-512 code path; A and B are reused
+            ComBitN cA, cB, cC;
+            // L4 uses production AVX-512 code path; A,B,C are reused
             // from the existing ComBit objects loaded above.  L2/L3/L5
             // load real ComBitN .bm artefacts written by gen_bitmap
             // -L <depth>, mirroring how L4 is loaded from combit_w8/.
@@ -142,10 +146,14 @@ int main(int argc, char** argv) {
                     std::cerr << "[skip] " << ndir << " (<2 files)\n";
                     continue;
                 }
+                // c=2: fall back to C = A (matches production motivation pattern).
+                const fs::path& nfileC = (nfiles.size() >= 3) ? nfiles[2] : nfiles[0];
                 std::ifstream nia(nfiles[0], std::ios::binary);
                 std::ifstream nib(nfiles[1], std::ios::binary);
+                std::ifstream nic(nfileC, std::ios::binary);
                 cA = combit_n_deserialize(nia);
                 cB = combit_n_deserialize(nib);
+                cC = combit_n_deserialize(nic);
             }
 
             // Round-trip check (only meaningful for ComBitN depths).
@@ -169,13 +177,19 @@ int main(int argc, char** argv) {
             // (combit_compress_results=false for the L4 OR; for L4 NOT
             // we manually decompress and pack so the output format is
             // the same vector<uint8_t> the combit_n walkers produce).
-            std::vector<double> tA, tO, tN;
-            bool and_ok = true, or_ok = true, not_ok = true;
+            std::vector<double> tA, tO, tN, tCOMP;
+            bool and_ok = true, or_ok = true, not_ok = true, comp_ok = true;
             if (depth == 4) {
                 // Warm-ups (A.negate_inplace mutates A — pair it to restore).
                 { ComBit w = A.and_no_bypass(B); (void)w; }
                 { ComBit w = A | B; (void)w; }
                 A.negate_inplace(); A.negate_inplace();
+                // COMP warm-up: ~((A|B) & (B|C)).  Production chain — every
+                // stage returns compressed ComBit, no decompress in the chain.
+                { ComBit t1 = A | B;
+                  ComBit t2 = B | C;
+                  ComBit t3 = t1.and_no_bypass(t2);
+                  ComBit r  = ~t3; (void)r; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     ComBit r = A.and_no_bypass(B);
@@ -199,6 +213,19 @@ int main(int argc, char** argv) {
                     tN.push_back(ms(t0, t1));
                     A.negate_inplace();  // restore for next iter
                 }
+                // COMP: ~((A|B) & (B|C)).  Time the full 4-stage compressed
+                // chain — every intermediate ComBit is built with markers,
+                // matching production motivation chart's COMP_op pattern.
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    ComBit t1 = A | B;
+                    ComBit t2 = B | C;
+                    ComBit t3 = t1.and_no_bypass(t2);
+                    ComBit r  = ~t3;
+                    auto t1c = clk::now();
+                    tCOMP.push_back(ms(t0, t1c));
+                    (void)r;
+                }
                 // Correctness: decompress each result and compare to raw.
                 auto cb_to_bits = [&](const ComBit& cb) {
                     std::vector<bool> out(cb.bit_count(), false);
@@ -216,6 +243,13 @@ int main(int argc, char** argv) {
                 A.negate_inplace();
                 not_ok = (cb_to_bits(A) == rN);
                 A.negate_inplace();   // restore A to its original state
+                {
+                    ComBit t1 = A | B;
+                    ComBit t2 = B | C;
+                    ComBit t3 = t1.and_no_bypass(t2);
+                    ComBit r  = ~t3;
+                    comp_ok = (cb_to_bits(r) == rCOMP);
+                }
             } else {
                 // Cross-AND too (matches L4 above).  Goes through general
                 // seg_op_l*<AND>, not seg_self_and_l*.  combit_n_not_inplace
@@ -223,6 +257,13 @@ int main(int argc, char** argv) {
                 { auto w = combit_n_and_dec_avx(cA, cB); (void)w; }
                 { auto w = combit_n_or_dec_avx(cA, cB); (void)w; }
                 combit_n_not_inplace(cA); combit_n_not_inplace(cA);
+                // COMP warm-up: compressed chain — each combit_n_or/and
+                // returns a ComBitN at the same depth, so the next stage
+                // gets a marker-aware input (matches L4's compressed chain).
+                { ComBitN t1 = combit_n_or (cA, cB);
+                  ComBitN t2 = combit_n_or (cB, cC);
+                  ComBitN t3 = combit_n_and(t1, t2);
+                  combit_n_not_inplace(t3); (void)t3; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     auto r = combit_n_and_dec_avx(cA, cB);
@@ -242,6 +283,16 @@ int main(int argc, char** argv) {
                     tN.push_back(ms(t0, t1));
                     combit_n_not_inplace(cA);   // restore (untimed)
                 }
+                // COMP: ~((A|B) & (B|C)) compressed chain.
+                for (int i = 0; i < N_ITER; i++) {
+                    auto t0 = clk::now();
+                    ComBitN t1 = combit_n_or (cA, cB);
+                    ComBitN t2 = combit_n_or (cB, cC);
+                    ComBitN t3 = combit_n_and(t1, t2);
+                    combit_n_not_inplace(t3);
+                    auto t1c = clk::now();
+                    tCOMP.push_back(ms(t0, t1c));
+                }
                 auto chk = [&](const std::vector<uint8_t>& r,
                                const std::vector<bool>& ref) {
                     return bytes_to_bits(r, ref.size()) == ref;
@@ -252,18 +303,26 @@ int main(int argc, char** argv) {
                 combit_n_not_inplace(cA);
                 not_ok = (combit_n_decompress(cA) == rN);
                 combit_n_not_inplace(cA);   // restore
+                {
+                    ComBitN t1 = combit_n_or (cA, cB);
+                    ComBitN t2 = combit_n_or (cB, cC);
+                    ComBitN t3 = combit_n_and(t1, t2);
+                    combit_n_not_inplace(t3);
+                    comp_ok = (combit_n_decompress(t3) == rCOMP);
+                }
             }
 
             out << c << ",L" << depth << ","
                 << total << "," << double(total) / (1024.0 * 1024.0) << ","
-                << median(tA) << "," << median(tO) << "," << median(tN) << ","
+                << median(tA) << "," << median(tO) << "," << median(tN) << "," << median(tCOMP) << ","
                 << (and_ok ? 1 : 0) << "," << (or_ok ? 1 : 0) << "," << (not_ok ? 1 : 0) << ","
-                << (rt_ok ? 1 : 0) << "\n";
+                << (comp_ok ? 1 : 0) << "," << (rt_ok ? 1 : 0) << "\n";
             out.flush();
             std::cerr << "[c=" << c << " L" << depth << "] size=" << total
                       << "B and=" << median(tA) << "ms or=" << median(tO)
-                      << "ms not=" << median(tN) << "ms (correct: A="
-                      << and_ok << " O=" << or_ok << " N=" << not_ok
+                      << "ms not=" << median(tN) << "ms comp=" << median(tCOMP)
+                      << "ms (correct: A=" << and_ok << " O=" << or_ok
+                      << " N=" << not_ok << " C=" << comp_ok
                       << " RT=" << rt_ok << ")\n";
         }
     }
