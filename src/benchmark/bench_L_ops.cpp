@@ -104,9 +104,12 @@ int main(int argc, char** argv) {
             base += v.size();
         }
 
-        // Reference results (raw bit-vector ops).  AND = self (ha & ha);
-        // OR / XOR = cross (ha vs hb).  Matches motivation chart.
-        auto rA = ref_and(ba, ba);
+        // Reference results (raw bit-vector ops).  All three ops are
+        // CROSS (ha vs hb) — switched from the previous self-AND setup
+        // so AND doesn't get the production self-AND fast-path shortcut.
+        // All variants now do the general cross-AND code path, apples
+        // to apples.
+        auto rA = ref_and(ba, bb);
         auto rO = ref_or (ba, bb);
         auto rX = ref_xor(ba, bb);
 
@@ -150,12 +153,12 @@ int main(int argc, char** argv) {
             bool and_ok = true, or_ok = true, xor_ok = true;
             if (depth == 4) {
                 // Warm-ups
-                { ComBit w = A.and_no_bypass(A); (void)w; }
+                { ComBit w = A.and_no_bypass(B); (void)w; }
                 { ComBit w = A | B; (void)w; }
                 { ComBit w = A ^ B; (void)w; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    ComBit r = A.and_no_bypass(A);
+                    ComBit r = A.and_no_bypass(B);
                     auto t1 = clk::now();
                     tA.push_back(ms(t0, t1));
                     (void)r;
@@ -186,15 +189,16 @@ int main(int argc, char** argv) {
                     }
                     return out;
                 };
-                and_ok = (cb_to_bits(A.and_no_bypass(A)) == rA);
+                and_ok = (cb_to_bits(A.and_no_bypass(B)) == rA);
                 or_ok  = (cb_to_bits(A | B) == rO);
                 xor_ok = (cb_to_bits(A ^ B) == rX);
             } else {
-                // Scalar combit_n for L2/L3/L5 (AVX-512 TBD).
-                { auto w = combit_n_and_dec_avx(cA, cA); (void)w; }
+                // Cross-AND too (matches L4 above).  Goes through general
+                // seg_op_l*<AND>, not seg_self_and_l*.
+                { auto w = combit_n_and_dec_avx(cA, cB); (void)w; }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    auto r = combit_n_and_dec_avx(cA, cA);
+                    auto r = combit_n_and_dec_avx(cA, cB);
                     auto t1 = clk::now();
                     tA.push_back(ms(t0, t1)); (void)r;
                 }
@@ -214,7 +218,7 @@ int main(int argc, char** argv) {
                                const std::vector<bool>& ref) {
                     return bytes_to_bits(r, ref.size()) == ref;
                 };
-                and_ok = chk(combit_n_and_dec_avx(cA, cA), rA);
+                and_ok = chk(combit_n_and_dec_avx(cA, cB), rA);
                 or_ok  = chk(combit_n_or_dec_avx (cA, cB), rO);
                 xor_ok = chk(combit_n_xor_dec_avx(cA, cB), rX);
             }
