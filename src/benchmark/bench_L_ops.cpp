@@ -172,10 +172,10 @@ int main(int argc, char** argv) {
             std::vector<double> tA, tO, tN;
             bool and_ok = true, or_ok = true, not_ok = true;
             if (depth == 4) {
-                // Warm-ups
+                // Warm-ups (A.negate_inplace mutates A — pair it to restore).
                 { ComBit w = A.and_no_bypass(B); (void)w; }
                 { ComBit w = A | B; (void)w; }
-                { ComBit w = ~A; (void)w; }
+                A.negate_inplace(); A.negate_inplace();
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     ComBit r = A.and_no_bypass(B);
@@ -190,12 +190,14 @@ int main(int argc, char** argv) {
                     tO.push_back(ms(t0, t1));
                     (void)r;
                 }
+                // NOT: time the in-place flip itself (no out-of-place copy).
+                // NOT is self-inverse, so a second untimed call restores A.
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    ComBit r = ~A;  // production in-place NOT
+                    A.negate_inplace();
                     auto t1 = clk::now();
                     tN.push_back(ms(t0, t1));
-                    (void)r;
+                    A.negate_inplace();  // restore for next iter
                 }
                 // Correctness: decompress each result and compare to raw.
                 auto cb_to_bits = [&](const ComBit& cb) {
@@ -211,13 +213,16 @@ int main(int argc, char** argv) {
                 };
                 and_ok = (cb_to_bits(A.and_no_bypass(B)) == rA);
                 or_ok  = (cb_to_bits(A | B) == rO);
-                not_ok = (cb_to_bits(~A) == rN);
+                A.negate_inplace();
+                not_ok = (cb_to_bits(A) == rN);
+                A.negate_inplace();   // restore A to its original state
             } else {
                 // Cross-AND too (matches L4 above).  Goes through general
-                // seg_op_l*<AND>, not seg_self_and_l*.
+                // seg_op_l*<AND>, not seg_self_and_l*.  combit_n_not_inplace
+                // mutates cA — pair it (NOT twice = identity) to restore.
                 { auto w = combit_n_and_dec_avx(cA, cB); (void)w; }
                 { auto w = combit_n_or_dec_avx(cA, cB); (void)w; }
-                { auto w = combit_n_not_inplace(cA); (void)w; }
+                combit_n_not_inplace(cA); combit_n_not_inplace(cA);
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
                     auto r = combit_n_and_dec_avx(cA, cB);
@@ -232,9 +237,10 @@ int main(int argc, char** argv) {
                 }
                 for (int i = 0; i < N_ITER; i++) {
                     auto t0 = clk::now();
-                    auto r = combit_n_not_inplace(cA);  // in-place NOT
+                    combit_n_not_inplace(cA);   // in-place flip (timed)
                     auto t1 = clk::now();
-                    tN.push_back(ms(t0, t1)); (void)r;
+                    tN.push_back(ms(t0, t1));
+                    combit_n_not_inplace(cA);   // restore (untimed)
                 }
                 auto chk = [&](const std::vector<uint8_t>& r,
                                const std::vector<bool>& ref) {
@@ -242,9 +248,10 @@ int main(int argc, char** argv) {
                 };
                 and_ok = chk(combit_n_and_dec_avx(cA, cB), rA);
                 or_ok  = chk(combit_n_or_dec_avx (cA, cB), rO);
-                // Verify NOT by decompressing the result and comparing
-                // to the reference (decompress is NOT in the timed loop).
-                not_ok = (combit_n_decompress(combit_n_not_inplace(cA)) == rN);
+                // Verify NOT by flipping, decompressing, and restoring.
+                combit_n_not_inplace(cA);
+                not_ok = (combit_n_decompress(cA) == rN);
+                combit_n_not_inplace(cA);   // restore
             }
 
             out << c << ",L" << depth << ","
