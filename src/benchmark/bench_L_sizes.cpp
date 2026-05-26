@@ -78,7 +78,8 @@ int main(int argc, char** argv) {
     fs::path root = argv[1];
     fs::path out_path = argv[2];
 
-    std::vector<int> cards = {2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
+    std::vector<int> cards = {2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000,
+                              3000, 5000, 10000, 20000, 50000};
 
     std::ofstream out(out_path);
     out << "cardinality,variant,l1_bytes,l2_bytes,l3_bytes,l4_bytes,l5_bytes,total_bytes,total_MiB\n";
