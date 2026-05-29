@@ -198,6 +198,19 @@ target_compile_options(bench_L_ops PRIVATE -O3)
 target_link_libraries(bench_L_ops PRIVATE combit Threads::Threads atomic)
 
 # ==========================================
+# bench_bypass: bypass-ablation at the default depth=4 — OR/AND/COMP
+# timing under 3 configs (all / no_L4 / no_L3) of the seg_op_l4 walker.
+# ==========================================
+add_executable(bench_bypass
+    src/benchmark/bench_bypass.cpp
+)
+target_include_directories(bench_bypass PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_compile_options(bench_bypass PRIVATE -O3)
+target_link_libraries(bench_bypass PRIVATE combit Threads::Threads atomic)
+
+# ==========================================
 # bench_L_run_bar: one-shot COMP throughput at a single cardinality
 # on run-length clustered bitmaps (TPC-H Q6-aligned).  Produces the bar
 # chart .dat for tools/hierarchy_depth_runlength_bar.gnuplot.
