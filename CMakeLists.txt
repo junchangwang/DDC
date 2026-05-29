@@ -198,6 +198,33 @@ target_compile_options(bench_L_ops PRIVATE -O3)
 target_link_libraries(bench_L_ops PRIVATE combit Threads::Threads atomic)
 
 # ==========================================
+# bench_L_run_bar: one-shot COMP throughput at a single cardinality
+# on run-length clustered bitmaps (TPC-H Q6-aligned).  Produces the bar
+# chart .dat for tools/hierarchy_depth_runlength_bar.gnuplot.
+# ==========================================
+add_executable(bench_L_run_bar
+    src/benchmark/bench_L_run_bar.cpp
+)
+target_include_directories(bench_L_run_bar PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_compile_options(bench_L_run_bar PRIVATE -O3)
+target_link_libraries(bench_L_run_bar PRIVATE combit Threads::Threads atomic)
+
+# ==========================================
+# bench_seg: segment-size ablation — size + AND/OR/NOT/COMP timing
+# at (cardinality × segment_bits) for the Figure 11 ablation study.
+# ==========================================
+add_executable(bench_seg
+    src/benchmark/bench_seg.cpp
+)
+target_include_directories(bench_seg PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+)
+target_compile_options(bench_seg PRIVATE -O3)
+target_link_libraries(bench_seg PRIVATE combit Threads::Threads atomic)
+
+# ==========================================
 # verify_bitmap: bitmap correctness verification
 # ==========================================
 add_executable(verify_bitmap

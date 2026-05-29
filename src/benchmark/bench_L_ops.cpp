@@ -120,56 +120,46 @@ int main(int argc, char** argv) {
         // For each depth, load + measure + time + validate.
         for (int depth : {2, 3, 4, 5}) {
             // -------- LOAD inputs at this depth ----------------------
+            // All four depths use the SAME implementation path
+            // (combit_n_or / combit_n_and / combit_n_not_inplace), so
+            // even L4 loads from bm_100m_c<c>_combit_L4/ rather than the
+            // legacy combit_w8/ production format.  This isolates the
+            // marker-depth effect from production-vs-mine implementation
+            // differences (production fused walker+compress).
             ComBitN cA, cB, cC;
-            // L4 uses production AVX-512 code path; A,B,C are reused
-            // from the existing ComBit objects loaded above.  L2/L3/L5
-            // load real ComBitN .bm artefacts written by gen_bitmap
-            // -L <depth>, mirroring how L4 is loaded from combit_w8/.
-            // This keeps the comparison apples-to-apples — every variant
-            // is deserialized fresh from disk in the timed window.
-            if (depth != 4) {
-                fs::path ndir = root / ("bm_100m_c" + std::to_string(c)
-                                         + "_combit_L" + std::to_string(depth));
-                if (!fs::is_directory(ndir)) {
-                    std::cerr << "[skip] " << ndir << " (run gen_bitmap -L "
-                              << depth << " first)\n";
-                    continue;
-                }
-                std::vector<fs::path> nfiles;
-                for (auto& e : fs::directory_iterator(ndir))
-                    if (e.path().extension() == ".bm") nfiles.push_back(e.path());
-                std::sort(nfiles.begin(), nfiles.end(),
-                    [](const fs::path& a, const fs::path& b){
-                        return std::stoi(a.stem().string()) < std::stoi(b.stem().string());
-                    });
-                if (nfiles.size() < 2) {
-                    std::cerr << "[skip] " << ndir << " (<2 files)\n";
-                    continue;
-                }
-                // c=2: fall back to C = A (matches production motivation pattern).
-                const fs::path& nfileC = (nfiles.size() >= 3) ? nfiles[2] : nfiles[0];
-                std::ifstream nia(nfiles[0], std::ios::binary);
-                std::ifstream nib(nfiles[1], std::ios::binary);
-                std::ifstream nic(nfileC, std::ios::binary);
-                cA = combit_n_deserialize(nia);
-                cB = combit_n_deserialize(nib);
-                cC = combit_n_deserialize(nic);
+            fs::path ndir = root / ("bm_100m_c" + std::to_string(c)
+                                     + "_combit_L" + std::to_string(depth));
+            if (!fs::is_directory(ndir)) {
+                std::cerr << "[skip] " << ndir << " (run gen_bitmap -L "
+                          << depth << " first)\n";
+                continue;
             }
-
-            // Round-trip check (only meaningful for ComBitN depths).
-            bool rt_ok = true;
-            if (depth != 4) rt_ok = (combit_n_decompress(cA) == ba);
-
-            // Compressed size at this depth.  For L4 use production
-            // ComBit's total compressed bytes; for the others use
-            // combit_n_total_bytes on the recompressed input.
-            size_t total = 0;
-            if (depth == 4) {
-                for (const auto& seg : A.segments())
-                    total += seg.size_breakdown().total_bits / 8;
-            } else {
-                total = combit_n_total_bytes(cA);
+            std::vector<fs::path> nfiles;
+            for (auto& e : fs::directory_iterator(ndir))
+                if (e.path().extension() == ".bm") nfiles.push_back(e.path());
+            std::sort(nfiles.begin(), nfiles.end(),
+                [](const fs::path& a, const fs::path& b){
+                    return std::stoi(a.stem().string()) < std::stoi(b.stem().string());
+                });
+            if (nfiles.size() < 2) {
+                std::cerr << "[skip] " << ndir << " (<2 files)\n";
+                continue;
             }
+            // c=2: fall back to C = A (matches production motivation pattern).
+            const fs::path& nfileC = (nfiles.size() >= 3) ? nfiles[2] : nfiles[0];
+            std::ifstream nia(nfiles[0], std::ios::binary);
+            std::ifstream nib(nfiles[1], std::ios::binary);
+            std::ifstream nic(nfileC, std::ios::binary);
+            cA = combit_n_deserialize(nia);
+            cB = combit_n_deserialize(nib);
+            cC = combit_n_deserialize(nic);
+
+            // Round-trip check (combit_n_decompress(cA) must match the
+            // production-ComBit-derived ba reference for the same bitmap).
+            bool rt_ok = (combit_n_decompress(cA) == ba);
+
+            // Compressed size at this depth — ComBitN total bytes.
+            size_t total = combit_n_total_bytes(cA);
 
             // -------- OP TIMING -------------------------------------
             // AND / OR: cross (A op B) — no self-AND fast-path shortcut.
@@ -179,81 +169,10 @@ int main(int argc, char** argv) {
             // the same vector<uint8_t> the combit_n walkers produce).
             std::vector<double> tA, tO, tN, tCOMP;
             bool and_ok = true, or_ok = true, not_ok = true, comp_ok = true;
-            if (depth == 4) {
-                // Warm-ups (A.negate_inplace mutates A — pair it to restore).
-                { ComBit w = A.and_no_bypass(B); (void)w; }
-                { ComBit w = A | B; (void)w; }
-                A.negate_inplace(); A.negate_inplace();
-                // COMP warm-up: ~((A|B) & (B|C)).  Production chain — every
-                // stage returns compressed ComBit, no decompress in the chain.
-                { ComBit t1 = A | B;
-                  ComBit t2 = B | C;
-                  ComBit t3 = t1.and_no_bypass(t2);
-                  ComBit r  = ~t3; (void)r; }
-                for (int i = 0; i < N_ITER; i++) {
-                    auto t0 = clk::now();
-                    ComBit r = A.and_no_bypass(B);
-                    auto t1 = clk::now();
-                    tA.push_back(ms(t0, t1));
-                    (void)r;
-                }
-                for (int i = 0; i < N_ITER; i++) {
-                    auto t0 = clk::now();
-                    ComBit r = A | B;
-                    auto t1 = clk::now();
-                    tO.push_back(ms(t0, t1));
-                    (void)r;
-                }
-                // NOT: time the in-place flip itself (no out-of-place copy).
-                // NOT is self-inverse, so a second untimed call restores A.
-                for (int i = 0; i < N_ITER; i++) {
-                    auto t0 = clk::now();
-                    A.negate_inplace();
-                    auto t1 = clk::now();
-                    tN.push_back(ms(t0, t1));
-                    A.negate_inplace();  // restore for next iter
-                }
-                // COMP: ~((A|B) & (B|C)).  Time the full 4-stage compressed
-                // chain — every intermediate ComBit is built with markers,
-                // matching production motivation chart's COMP_op pattern.
-                for (int i = 0; i < N_ITER; i++) {
-                    auto t0 = clk::now();
-                    ComBit t1 = A | B;
-                    ComBit t2 = B | C;
-                    ComBit t3 = t1.and_no_bypass(t2);
-                    ComBit r  = ~t3;
-                    auto t1c = clk::now();
-                    tCOMP.push_back(ms(t0, t1c));
-                    (void)r;
-                }
-                // Correctness: decompress each result and compare to raw.
-                auto cb_to_bits = [&](const ComBit& cb) {
-                    std::vector<bool> out(cb.bit_count(), false);
-                    size_t off = 0;
-                    for (size_t s = 0; s < cb.num_segments(); s++) {
-                        auto v = cb.segment(s).decompress();
-                        for (size_t i = 0; i < v.size() && off + i < out.size(); i++)
-                            out[off + i] = v[i];
-                        off += v.size();
-                    }
-                    return out;
-                };
-                and_ok = (cb_to_bits(A.and_no_bypass(B)) == rA);
-                or_ok  = (cb_to_bits(A | B) == rO);
-                A.negate_inplace();
-                not_ok = (cb_to_bits(A) == rN);
-                A.negate_inplace();   // restore A to its original state
-                {
-                    ComBit t1 = A | B;
-                    ComBit t2 = B | C;
-                    ComBit t3 = t1.and_no_bypass(t2);
-                    ComBit r  = ~t3;
-                    comp_ok = (cb_to_bits(r) == rCOMP);
-                }
-            } else {
-                // Cross-AND too (matches L4 above).  Goes through general
-                // seg_op_l*<AND>, not seg_self_and_l*.  combit_n_not_inplace
-                // mutates cA — pair it (NOT twice = identity) to restore.
+            {
+                // Cross-AND through general seg_op_l*<AND> (no self-AND
+                // fast-path shortcut).  combit_n_not_inplace mutates cA —
+                // pair it (NOT twice = identity) to restore.
                 { auto w = combit_n_and_dec_avx(cA, cB); (void)w; }
                 { auto w = combit_n_or_dec_avx(cA, cB); (void)w; }
                 combit_n_not_inplace(cA); combit_n_not_inplace(cA);

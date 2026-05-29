@@ -73,6 +73,29 @@ std::vector<std::vector<uint32_t>> read_dataset_buckets(
     return buckets;
 }
 
+// Run-length per-value buckets — models a column store table sorted by
+// the indexed attribute, so every distinct value's bitmap is a single
+// contiguous run of set bits.  This is the TPC-H Q6 / sorted-shipdate
+// shape: value v ∈ [1..c] owns rows [(v-1)·N/c, v·N/c).  The resulting
+// per-value bitmap has cardinality N/c set bits all clustered, which is
+// what L4's 32K-bit batch-skip is designed for.  Bench_L_ops + the
+// bar-chart driver use this to validate the L-depth design choice on
+// its target workload (the uniform-random sweep is the worst case).
+std::vector<std::vector<uint32_t>> make_runlength_buckets(
+    uint64_t num_rows, int cardinality)
+{
+    std::vector<std::vector<uint32_t>> buckets(cardinality + 1);
+    uint64_t run = num_rows / cardinality;
+    for (int v = 1; v <= cardinality; v++) {
+        uint64_t start = static_cast<uint64_t>(v - 1) * run;
+        uint64_t end   = (v == cardinality) ? num_rows : start + run;
+        buckets[v].reserve(end - start);
+        for (uint64_t i = start; i < end; i++)
+            buckets[v].push_back(static_cast<uint32_t>(i));
+    }
+    return buckets;
+}
+
 // Generate INDEPENDENT random bitmap buckets — used to expose CRoaring's
 // bitset→array AND-result transition, which only fires when the two input
 // bitmaps overlap (which dataset-bucket bitmaps never do, since dataset
@@ -466,7 +489,7 @@ bool gen_concise(const std::vector<std::vector<uint32_t>>& buckets,
 
 bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
                 const std::string& output_dir, uint64_t rows, int cardinality,
-                int word_size)
+                int word_size, size_t segment_bits = ComBit::default_segment_bits)
 {
     fs::create_directories(output_dir);
 
@@ -477,8 +500,8 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
         for (size_t i = 0; i < raw.size() && raw[i] < rows; i++)
             bits[raw[i]] = true;
 
-        // Compress with the selected word size and serialize
-        ComBit cb = ComBit::compress(bits);
+        // Compress with the selected word size + segment_bits and serialize
+        ComBit cb = ComBit::compress(bits, /*l1_fill_ones=*/false, segment_bits);
         std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
         std::ofstream out(out_path, std::ios::binary);
         cb.serialize(out);
@@ -488,7 +511,7 @@ bool gen_combit(const std::vector<std::vector<uint32_t>>& buckets,
         }
     }
     std::cout << "[gen_combit] All " << cardinality << " ComBit (w" << word_size
-              << ") bitmaps written to " << output_dir << "\n";
+              << ", S=" << segment_bits << ") bitmaps written to " << output_dir << "\n";
     return true;
 }
 
@@ -792,7 +815,8 @@ static bool generate_compressed(const std::string& algorithm,
                                 const std::vector<std::vector<uint32_t>>& buckets,
                                 const std::string& output_dir,
                                 uint64_t rows, int cardinality, int z,
-                                int word_size, int depth_n) {
+                                int word_size, int depth_n,
+                                size_t segment_bits = ComBit::default_segment_bits) {
     std::string algo = algorithm;
     for (auto& ch : algo)
         ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
@@ -805,7 +829,7 @@ static bool generate_compressed(const std::string& algorithm,
     if (algo == "combit") {
         if (depth_n > 0)
             return gen_combit_n(buckets, output_dir, rows, cardinality, depth_n);
-        return gen_combit(buckets, output_dir, rows, cardinality, word_size);
+        return gen_combit(buckets, output_dir, rows, cardinality, word_size, segment_bits);
     }
 
     std::cerr << "[gen_bitmap] Error: unsupported algorithm '" << algorithm << "'\n"
@@ -827,6 +851,8 @@ int main(int argc, char* argv[]) {
     int w = 8;
     int tile = 1;
     int L_depth = -1;   // -L <depth> : combit ComBitN depth-N variant (2/3/4/5)
+    long long seg_bits_arg = -1;   // -S <bits> : combit segment_bits (default 65536)
+    bool run_length = false;   // -R : run-length per-value bitmaps (clustered)
     std::string algorithm;
     std::string base_dir = ".";
 
@@ -853,6 +879,10 @@ int main(int argc, char* argv[]) {
             L_depth = std::stoi(argv[++i]);
         } else if (arg == "-T" && i + 1 < argc) {
             tile = std::stoi(argv[++i]);
+        } else if (arg == "-S" && i + 1 < argc) {
+            seg_bits_arg = std::stoll(argv[++i]);
+        } else if (arg == "-R") {
+            run_length = true;
         } else if (arg == "-d" && i + 1 < argc) {
             base_dir = argv[++i];
         } else if (arg[0] != '-') {
@@ -900,6 +930,10 @@ int main(int argc, char* argv[]) {
                   << "                  Overrides -w.  Produces bitmap/bm_<n>_c<c>_combit_L<depth>/\n"
                   << "                  files in the on-disk ComBitN format.  Used by the\n"
                   << "                  bench_L_ops fairness study.  Mutually exclusive with -T.\n"
+                  << "  -S <bits>     : ComBit segment_bits (combit only, L4 only): power of 2 in\n"
+                  << "                  [64, 2^24].  Default 65536 (2^16).  Output dir gets the\n"
+                  << "                  suffix _S<bits> when non-default.  Mutually exclusive with -L\n"
+                  << "                  and -T.  Used by the segment-size ablation study.\n"
                   << "  -T <T>        : tile factor (combit only).  Generate small dataset of\n"
                   << "                  size n/T with segment_bits = n/T, compress once, then\n"
                   << "                  byte-concat T copies.  Saves the n-scale compress pass.\n"
@@ -944,12 +978,42 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // -S validation: power-of-2, multiple of 64 bits, combit-only, L4 only
+    // (combit_n_compress takes its own segment_bits arg via default 1<<16).
+    size_t segment_bits_val = ComBit::default_segment_bits;
+    if (seg_bits_arg > 0) {
+        if (algo_lower != "combit") {
+            std::cerr << "Error: -S is only valid with combit algorithm" << std::endl;
+            return 1;
+        }
+        if (L_depth > 0) {
+            std::cerr << "Error: -S currently only supported with native ComBit (L4); not with -L" << std::endl;
+            return 1;
+        }
+        if (tile > 1) {
+            std::cerr << "Error: -S and -T are mutually exclusive (tile mode hard-codes seg_bits=n/T)" << std::endl;
+            return 1;
+        }
+        // Power-of-2 + ≥64 + ≤ 2^24 for sanity.
+        if (seg_bits_arg < 64 || (seg_bits_arg & (seg_bits_arg - 1)) != 0
+            || seg_bits_arg > (1LL << 24)) {
+            std::cerr << "Error: -S must be a power of 2 in [64, 2^24], got "
+                      << seg_bits_arg << std::endl;
+            return 1;
+        }
+        segment_bits_val = static_cast<size_t>(seg_bits_arg);
+    }
+
     // Suffix for combit output dir: -L overrides -w (ComBitN serialised
     // format lives in bm_..._combit_L<N>/ rather than _w<W>/).
+    // -S appends _S<bits> after the word/depth suffix (omitted when default).
     auto combit_suffix = [&]() {
-        return (L_depth > 0)
+        std::string base = (L_depth > 0)
             ? std::string("_L") + std::to_string(L_depth)
             : std::string("_w") + std::to_string(w);
+        if (seg_bits_arg > 0 && static_cast<size_t>(seg_bits_arg) != ComBit::default_segment_bits)
+            base += "_S" + std::to_string(seg_bits_arg);
+        return base;
     };
 
     // Determine output directory
@@ -977,6 +1041,9 @@ int main(int argc, char* argv[]) {
     } else {
         comp_dir = compressed_dir_path(base_dir, n, c, algorithm);
     }
+    // Run-length mode appends "_run" so it doesn't collide with the
+    // existing uniform-random data at the same cardinality.
+    if (run_length) comp_dir += "_run";
 
     // Tile mode: small_n = n / tile.  Generate small dataset only,
     // compress small bitmaps once, then byte-concat T copies.
@@ -988,6 +1055,36 @@ int main(int argc, char* argv[]) {
                               + " small_n=" + std::to_string(gen_n))
                            : "")
               << " base_dir=" << base_dir << std::endl;
+
+    // Run-length mode: every value v ∈ [1..c] owns rows [(v-1)·N/c .. v·N/c),
+    // modelling a column store sorted by the indexed attribute (TPC-H Q6
+    // shipdate after sort).  Skips dataset read, builds buckets directly.
+    if (run_length) {
+        if (compression_exists(comp_dir)) {
+            std::cout << "[gen_bitmap] Compressed data already exists: " << comp_dir << std::endl;
+            return 0;
+        }
+        std::cout << "[gen_bitmap] Run-length mode — generating " << c
+                  << " per-value bitmaps, each a contiguous run of "
+                  << (n / c) << " bits." << std::endl;
+        fs::create_directories(comp_dir);
+
+        auto buckets = make_runlength_buckets(static_cast<uint64_t>(n), c);
+        if (buckets.empty()) return 1;
+
+        if (!generate_compressed(algorithm, buckets, comp_dir,
+                                 static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val)) {
+            std::cerr << "[gen_bitmap] Error: run-length compression failed." << std::endl;
+            return 1;
+        }
+        std::ofstream done(compressed_done_path(comp_dir));
+        done << "algorithm=" << algorithm << "\n"
+             << "n=" << n << "\n"
+             << "c=" << c << "\n"
+             << "mode=run_length\n";
+        std::cout << "[gen_bitmap] Run-length compression completed: " << comp_dir << std::endl;
+        return 0;
+    }
 
     // Transition mode short-circuits the dataset+raw pipeline: it generates
     // the bucket positions in memory via make_transition_buckets (independent
@@ -1009,7 +1106,7 @@ int main(int argc, char* argv[]) {
         if (buckets.empty()) return 1;
 
         if (!generate_compressed(algorithm, buckets, comp_dir,
-                                 static_cast<uint64_t>(n), c, z, w, L_depth)) {
+                                 static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val)) {
             std::cerr << "[gen_bitmap] Error: transition compression failed." << std::endl;
             return 1;
         }
@@ -1043,7 +1140,7 @@ int main(int argc, char* argv[]) {
         if (buckets.empty()) return 1;
 
         if (!generate_compressed(algorithm, buckets, comp_dir,
-                                 static_cast<uint64_t>(n), c, z, w, L_depth)) {
+                                 static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val)) {
             std::cerr << "[gen_bitmap] Error: overlap compression failed." << std::endl;
             return 1;
         }
@@ -1076,7 +1173,7 @@ int main(int argc, char* argv[]) {
         if (buckets.empty()) return 1;
 
         if (!generate_compressed(algorithm, buckets, comp_dir,
-                                 static_cast<uint64_t>(n), c, z, w, L_depth)) {
+                                 static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val)) {
             std::cerr << "[gen_bitmap] Error: asymmetric compression failed." << std::endl;
             return 1;
         }
@@ -1155,7 +1252,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             ok = generate_compressed(algorithm, tiled_buckets, comp_dir,
-                                     static_cast<uint64_t>(n), c, z, w, L_depth);
+                                     static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val);
         }
         if (!ok) {
             std::cerr << "[gen_bitmap] Error: tile compression failed." << std::endl;
@@ -1183,7 +1280,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Generate compressed bitmaps
-    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c, z, w, L_depth)) {
+    if (!generate_compressed(algorithm, buckets, comp_dir, static_cast<uint64_t>(n), c, z, w, L_depth, segment_bits_val)) {
         std::cerr << "[gen_bitmap] Error: compression failed." << std::endl;
         return 1;
     }

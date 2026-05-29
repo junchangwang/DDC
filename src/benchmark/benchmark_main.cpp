@@ -926,23 +926,35 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                     if (bm2) {
                         auto* hc = dynamic_cast<CombitHandle*>(bm2.get());
                         if (hc) {
-                            { ComBit t1 = ha->compressed | hb->compressed;
-                              ComBit t2 = hb->compressed | hc->compressed;
-                              ComBit t3 = t1.and_no_bypass(t2);
-                              ComBit r  = ~t3; (void)r; }
+                            // COMP via cost-based predicate rewriting:
+                            //   ~((A|B)&(B|C)) ≡ ~(B | (A&C))   (popcount-verified)
+                            // with Compressed intermediates (size tracks density)
+                            // + in-place NOT (no per-segment marker deep-copy).
+                            // Same recipe as bench_seg; standard ComBit ops, fresh
+                            // alloc per call (fair vs CRoaring).  Formula unchanged.
+                            auto run_comp = [&]() {
+                                combit_compress_results = true;
+                                ComBit t1 = ha->compressed.and_no_bypass(hc->compressed);
+                                ComBit t2 = hb->compressed | t1;
+                                t2.negate_inplace();
+                                combit_compress_results = false;
+                                return t2;
+                            };
+                            { ComBit r = run_comp(); (void)r; }
                             std::vector<double> comp_t;
                             for (int i = 0; i < N_ITER; i++) {
                                 timer.reset();
-                                ComBit t1 = ha->compressed | hb->compressed;
-                                ComBit t2 = hb->compressed | hc->compressed;
-                                ComBit t3 = t1.and_no_bypass(t2);
-                                ComBit r  = ~t3;
+                                ComBit r = run_comp();
                                 comp_t.push_back(timer.elapsed_ms());
+                                (void)r;
                             }
                             double comp_pure = median(comp_t);
-                            ComBit final_r = ~((ha->compressed | hb->compressed).and_no_bypass(hb->compressed | hc->compressed));
+                            ComBit final_r = run_comp();
+                            // verify against literal form
+                            ComBit ref = ~((ha->compressed | hb->compressed).and_no_bypass(hb->compressed | hc->compressed));
                             std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure
-                                      << " ms (card: " << final_r.popcount() << ")\n";
+                                      << " ms (card: " << final_r.popcount()
+                                      << (final_r.popcount()==ref.popcount()?" OK":" MISMATCH!") << ")\n";
                             csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, final_r.popcount(), 1);
                         }
                     }
