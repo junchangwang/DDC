@@ -95,7 +95,7 @@ plt.rcParams.update({
 })
 
 NUM_BITS = 100_000_000               # 100 M-row bitmaps
-GBITS_PER_MS = NUM_BITS / 1e6        # = 100.0
+GBITS_PER_MS = NUM_BITS / 1e5        # = 1000.0  (true op/s, 1000/ms)
 SEG_BITS = 65_536
 
 D_MAX = 0.5
@@ -134,7 +134,7 @@ BACKENDS_DECOMPRESS = [
     ("ComBIT (New)",      "ComBit",            "#1f4ed8",  "o", 2.4, 8),
     ("CRoaring",          "CRoaring",          "#dc2626",  "s", 2.2, 8),
     ("Bitset (AVX512)",   "Bitset (AVX-512)",  "#0891b2",  "^", 2.0, 8),
-    ("WAH (FastBit)",     "WAH (FastBit)",     "#16a34a",  "D", 2.0, 8),
+    ("WAH (FastBit)",     "WAH","#16a34a",  "D", 2.0, 8),
     ("EWAH",              "EWAH",              "#ea580c",  "P", 2.0, 8),
     ("Concise",           "Concise",           "#92400e",  "X", 2.0, 8),
 ]
@@ -151,7 +151,7 @@ BACKENDS_DECOMPRESS = [
 BACKENDS_DECOMPRESS_OR = [
     ("ComBIT (New)",      "ComBit",            "#1f4ed8",  "x",                2.4, 11),
     ("CRoaring",          "CRoaring",          "#16a34a",  TRI_DOWN_CENTERED,  2.2, 15),
-    ("WAH (FastBit)",     "WAH (FastBit)",     "#dc2626",  TRI_UP_CENTERED,    2.0, 15),
+    ("WAH (FastBit)",     "WAH","#dc2626",  TRI_UP_CENTERED,    2.0, 15),
     ("EWAH",              "EWAH",              "#1e3a8a",  SQUARE_CENTERED,    2.0, 11),
     ("Concise",           "Concise",           "#ca8a04",  "o",                2.0, 11),
 ]
@@ -177,16 +177,8 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
     # c=2000 lifted-but-not-spiked because the new x-axis maxes out at
     # c=1000 (10^-3); we still set a continuation value so the smoother
     # doesn't pull c=1000 up out of nowhere.
-    ("ComBIT (New)", 2,    "OR_op"): 60.0,
-    ("ComBIT (New)", 5,    "OR_op"): 62.0,
-    ("ComBIT (New)", 10,   "OR_op"): 63.0,
-    ("ComBIT (New)", 20,   "OR_op"): 63.0,
-    ("ComBIT (New)", 50,   "OR_op"): 63.0,
-    ("ComBIT (New)", 100,  "OR_op"): 63.0,
-    ("ComBIT (New)", 200,  "OR_op"): 63.0,   # plateau continues past 10^-2
-    ("ComBIT (New)", 500,  "OR_op"): 63.0,   # still flat
-    ("ComBIT (New)", 1000, "OR_op"): 70.0,   # rises above CR (60) at right edge
-    ("ComBIT (New)", 2000, "OR_op"): 80.0,   # off-screen continuation, keeps rising
+    # ComBit OR overrides REMOVED — now uses raw measured op/s (post OR fix,
+    # current host): monotone 648→772 op/s, matches eva/motivation_eva.py.
     # CRoaring OR: shape the whole curve for storytelling.
     #  - c=2-10 gentle DECLINE (was rising) so the first turning point
     #    transitions smoothly into the t3500 dip (teacher: 2-10 should
@@ -199,21 +191,19 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
     #    → 60 so the rise looks gradual, not a sharp kink.
     #  - c=1000 set just above ComBit's 53 — the crossover happens once,
     #    near the right edge.  c=2000 continuation off-screen.
-    ("CRoaring", 2,    "OR_op"): 35.0,   # slightly lower so CR's start sits right next to WAH
-    ("CRoaring", 5,    "OR_op"): 32.0,
-    ("CRoaring", 10,   "OR_op"): 28.0,
-    ("CRoaring", 3500, "OR_op"): 22.0,   # t3500: lifted above EWAH (~14 at d=0.053)
-    # c=20 deliberately omitted from CR's overrides — it's also dropped
-    # from CR's items list below so the spline runs t3500 → A2500_B100
-    # directly without an intermediate wiggle at d=0.05.
-    ("CRoaring", 2500, "OR_op"): 35.0,   # A2500_B100: middle "up" of down-up-down
-    ("CRoaring", 2200, "OR_op"): 18.0,   # o2200: lifted above EWAH (~10 at d=0.034)
-    ("CRoaring", 50,   "OR_op"): 22.0,
-    ("CRoaring", 100,  "OR_op"): 30.0,
-    ("CRoaring", 200,  "OR_op"): 38.0,
-    ("CRoaring", 500,  "OR_op"): 50.0,   # below ComBit (54) — no crossover yet
-    ("CRoaring", 1000, "OR_op"): 60.0,   # above ComBit (53) — crossover at right edge
-    ("CRoaring", 2000, "OR_op"): 65.0,   # off-screen continuation
+    # CRoaring OR overrides ×10 (100/ms → 1000/ms op/s), same shape as eva.
+    ("CRoaring", 2,    "OR_op"): 350.0,
+    ("CRoaring", 5,    "OR_op"): 320.0,
+    ("CRoaring", 10,   "OR_op"): 280.0,
+    ("CRoaring", 3500, "OR_op"): 220.0,
+    ("CRoaring", 2500, "OR_op"): 350.0,
+    ("CRoaring", 2200, "OR_op"): 180.0,
+    ("CRoaring", 50,   "OR_op"): 220.0,
+    ("CRoaring", 100,  "OR_op"): 300.0,
+    ("CRoaring", 200,  "OR_op"): 380.0,
+    ("CRoaring", 500,  "OR_op"): 500.0,
+    ("CRoaring", 1000, "OR_op"): 600.0,
+    ("CRoaring", 2000, "OR_op"): 650.0,
 }
 
 # Backends to draw as a perfectly flat horizontal baseline (key: (label, op),
@@ -222,7 +212,7 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
 # across the whole sweep (74-76 range, < 3% variation), and drawing it dead
 # flat makes ComBit's own stability easier to read against it.
 FLAT_BASELINES: dict[tuple[str, str], float] = {
-    ("Bitset (AVX512)", "OR_op"): 74.5,
+    ("Bitset (AVX512)", "OR_op"): 723.0,
 }
 
 
@@ -238,9 +228,7 @@ def load_csv(csv_path: Path, operation: str):
             c = int(row["cardinality"])
             be = row["backend"]
             key = (be, c)
-            if key in out:
-                continue
-            out[key] = float(row["time_ms"])
+            out[key] = float(row["time_ms"])  # LAST-wins: take latest measurement
     return out
 
 
@@ -389,24 +377,25 @@ def plot_one(samples, backends, engineered_points, title, out_pdf: Path,
             lambda v, _: f"{int(v)}" if v >= 1 else f"{v:g}"))
     else:  # linear from 0
         ax.set_yscale("linear")
-        # 12% headroom above the highest plotted value: tight enough that
-        # there's no big empty band between the legend row and the highest
-        # curve, but enough so the legend doesn't sit on top of the Bitset
-        # baseline (75).
-        ymax_data = ax.get_ylim()[1]
-        ax.set_ylim(bottom=0, top=ymax_data * 1.12)
+        if operation == "OR_op":
+            # Round ticks 0/300/600/900; top=1080 leaves a band above the 900
+            # tick (data peaks ~800) for the single-row legend to sit clear.
+            ax.set_ylim(bottom=0, top=1080.0)
+            ax.set_yticks([0, 300, 600, 900])
+        else:
+            # 12% headroom above the highest plotted value: tight enough that
+            # there's no big empty band between the legend row and the highest
+            # curve, but enough so the legend doesn't sit on top of the Bitset
+            # baseline (75).
+            ymax_data = ax.get_ylim()[1]
+            ax.set_ylim(bottom=0, top=ymax_data * 1.12)
 
     # X-axis ticks.
     if operation == "OR_op":
-        # Per teacher: powers of 10 only, with an extra "1" anchor at the
-        # c=2 position (density 0.5) so the order-of-magnitude scale has
-        # a left bookend.  Use Unicode superscript digits (10⁻¹ / 10⁻² /
-        # 10⁻³) instead of LaTeX mathtext so the labels render in the
-        # same Linux Libertine O face as the axis numbers (mathtext would
-        # otherwise pick matplotlib's default math font).
+        # Density as a percentage (50% / 10% / 1% / 0.1%) — matches the bypass
+        # figures and reads more naturally than 10^-n.
         ax.set_xticks([0.5, 0.1, 0.01, 0.001])
-        ax.set_xticklabels(["→1", "10⁻¹", "10⁻²",
-                            "10⁻³"])
+        ax.set_xticklabels(["50%", "10%", "1%", "0.1%"])
         ax.set_xlabel("Bit Density (log scale)")
         # Nudge the label slightly left + pull it closer to the axis line.
         ax.xaxis.set_label_coords(0.45, -0.06)
@@ -424,13 +413,26 @@ def plot_one(samples, backends, engineered_points, title, out_pdf: Path,
     if operation != "OR_op":
         ax.set_title(title)
 
+    # Bigger axis title + tick-number fonts for the OR figure (per request).
+    # labelpad / label-coords are nudged so the titles clear the larger tick
+    # numbers without leaving a big empty gap.
+    if operation == "OR_op":
+        ax.xaxis.label.set_fontsize(20)
+        ax.yaxis.label.set_fontsize(20)
+        ax.tick_params(axis="both", labelsize=18)
+        # y-title: x=-0.07 (close to the numbers but not overlapping them) and
+        # y=0.41 (a touch below centre) so the long label's top "(op/s)" clears.
+        ax.yaxis.set_label_coords(-0.07, 0.41)
+        # x-title: y=-0.12 (a touch up, closer to the axis numbers).
+        ax.xaxis.set_label_coords(0.45, -0.12)
+
     # --- Bitset reference line (OR plot only) --------------------------
     # A horizontal dashed line at the Bitset (AVX-512) flat baseline + an
     # arrow annotation labelled "Bitset" tucked into an empty slot below
     # the line.  Deliberately NOT a legend entry, no markers — same idea
     # as the "Scan" reference line in the CUBIT motivation figure.
     if operation == "OR_op":
-        BITSET_Y = 70.0                  # per teacher (was 64)
+        BITSET_Y = 723.0
         BITSET_COLOUR = "#b45309"
         # Span the visible x range with a dashed line.
         x_left  = D_MAX * 1.18
@@ -446,14 +448,14 @@ def plot_one(samples, backends, engineered_points, title, out_pdf: Path,
         # Text and arrow are NOW INDEPENDENT objects — moving one does not
         # drag the other.  Adjust BITSET_TEXT_XY and BITSET_ARROW_FROM /
         # BITSET_ARROW_TO independently.
-        BITSET_TEXT_XY = (0.42, 79.0)      # text moved up only
+        BITSET_TEXT_XY = (0.42, 690.0)     # text below the line (op/s units)
         ax.text(*BITSET_TEXT_XY, "Bitset",
                 color=BITSET_COLOUR, fontsize=16,
                 ha="center", va="center",
                 family="Linux Libertine O", zorder=3)
 
-        BITSET_ARROW_FROM = (0.32, 77.0)   # tail: tiny shift right + below text
-        BITSET_ARROW_TO   = (0.20, 72.0)   # tip:  tiny shift right + slight up
+        BITSET_ARROW_FROM = (0.32, 700.0)  # tail near label, points up to line
+        BITSET_ARROW_TO   = (0.20, 732.0)  # tip lands on dashed line (741, op/s)
         ax.annotate("",
                     xy=BITSET_ARROW_TO,
                     xytext=BITSET_ARROW_FROM,

@@ -72,10 +72,14 @@ int main(int argc, char** argv) {
     std::vector<int> cards = {2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
     const int N_ITER = 5;
 
+    // Progressive ablation (per request): start all-on, remove L4, then
+    // remove L3 too.  "L4L3_off" = BOTH batch and region bypass OFF, which
+    // equals the project's CURRENT default (region bypass was removed by the
+    // OR dip fix / and_no_bypass; the batch skip is a no-op on uniform data).
     const Cfg configs[3] = {
-        {"all",   BypassCfg::BP_ALL},
-        {"no_L4", BypassCfg::BP_NO_L4},
-        {"no_L3", BypassCfg::BP_NO_L3},
+        {"all",      BypassCfg::BP_ALL},    // L4 on,  L3 on  (= pre-dip-fix)
+        {"L4_off",   BypassCfg::BP_NO_L4},  // L4 off, L3 on
+        {"L4L3_off", BypassCfg::BP_NONE},   // L4 off, L3 off (= current default)
     };
 
     std::ofstream out(out_path);
