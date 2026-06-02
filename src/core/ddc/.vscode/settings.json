@@ -1,0 +1,20 @@
+{
+    "cSpell.words": [
+        "maskz",
+        "epi",
+        "cmpeq",
+        "cmpneq",
+        "loadu",
+        "storeu",
+        "setzero",
+        "popcountll",
+        "popcount",
+        "popcntdq",
+        "compressstoreu",
+        "expandloadu",
+        "cvtsi",
+        "castsi",
+        "prefetch",
+        "ddc"
+    ]
+}

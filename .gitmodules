@@ -1,4 +1,0 @@
-[submodule "src/core/ddc"]
-	path = src/core/ddc
-	url = git@github.com:junchangwang/DDC-core.git
-	branch = VLDB27
