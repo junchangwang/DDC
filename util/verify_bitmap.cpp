@@ -1,24 +1,4 @@
-/**
- * verify_bitmap.cpp
- *
- * Two experiments to verify bitmap correctness across multiple modes.
- *
- * Experiment 1 (popcount):
- *   Load all bitmaps, sum popcounts, verify sum == n.
- *
- * Experiment 2 (getBit):
- *   Check first min(10000, n) rows against original dataset.
- *
- * Usage:
- *   ./verify_bitmap -mode <mode> -n <rows> -c <cardinality> [-d <base_dir>] [-z <zip_length>]
- *
- * Modes: raw, wah, roaring, ewah, concise, combit, bitset
- *
- * Example:
- *   ./verify_bitmap -mode wah     -n 10000 -c 100 -d .
- *   ./verify_bitmap -mode bitset  -n 10000 -c 100 -z 10 -d .
- *   ./verify_bitmap -mode roaring -n 10000 -c 100 -d .
- */
+
 
 #include <iostream>
 #include <fstream>
@@ -28,27 +8,17 @@
 #include <filesystem>
 #include <algorithm>
 
-// WAH (FastBit)
 #include "benchmark/backends/wah/wah_backend.h"
 #include "fastbit/bitvector.h"
 #include "utils/util.h"
 
-// CRoaring
 #include "croaring/roaring.hh"
 
-// EWAH
 #include "ewah/ewah.h"
 
-// Concise
 #include "Concise/concise.h"
 
-// ComBit
-
 namespace fs = std::filesystem;
-
-// ============================================================
-// Path helpers — must match gen_bitmap.cpp naming conventions
-// ============================================================
 
 static std::string format_rows(int n) {
     if (n >= 1000000000 && n % 1000000000 == 0) return std::to_string(n / 1000000000) + "b";
@@ -57,13 +27,11 @@ static std::string format_rows(int n) {
     return std::to_string(n);
 }
 
-/// wah/roaring/ewah/concise/combit: base_dir/bitmap/bm_<rows>_c<c>_<algo>/
 static std::string compressed_dir(const std::string& base_dir, int n, int c,
                                    const std::string& algo) {
     return base_dir + "/bitmap/bm_" + format_rows(n) + "_c" + std::to_string(c) + "_" + algo;
 }
 
-/// bitset: base_dir/bitmap/bitmap_n<n>_c<c>_z<z>/
 static std::string bitset_dir(const std::string& base_dir, int n, int c, int z) {
     return base_dir + "/bitmap/bitmap_n" + format_rows(n)
          + "_c" + std::to_string(c) + "_z" + std::to_string(z);
@@ -76,10 +44,6 @@ static std::string dataset_file(const std::string& base_dir, int n, int c) {
 static std::string bm_path(const std::string& dir, int v) {
     return dir + "/" + std::to_string(v) + ".bm";
 }
-
-// ============================================================
-// Dataset loader
-// ============================================================
 
 static std::vector<int32_t> load_dataset(const std::string& path, int n) {
     std::ifstream fin(path, std::ios::binary);
@@ -95,12 +59,6 @@ static std::vector<int32_t> load_dataset(const std::string& path, int n) {
     }
     return data;
 }
-
-// ============================================================
-// Per-mode: popcount and getBit helpers
-// ============================================================
-
-// ---------- RAW / BITSET (little-endian packed bits) ----------
 
 static int packed_bytes_for(int n) { return (n + 7) / 8; }
 
@@ -126,8 +84,6 @@ static std::vector<uint8_t> load_raw(const std::string& dir, int n, int v) {
     return buf;
 }
 
-// ---------- BITSET (.bmz offset-based) ----------
-
 static std::vector<uint8_t> load_bitset(const std::string& dir, int n, int z, int v) {
     int bmz_idx   = (v - 1) / z;
     int local_idx = (v - 1) % z;
@@ -141,16 +97,12 @@ static std::vector<uint8_t> load_bitset(const std::string& dir, int n, int z, in
     return buf;
 }
 
-// ---------- WAH (FastBit) ----------
-
 static std::unique_ptr<BitmapHandle> load_wah(WahBackend& backend,
                                                const std::string& dir, int v) {
     std::string path = bm_path(dir, v);
     if (!fs::exists(path)) { std::cerr << "[verify] not found: " << path << "\n"; return nullptr; }
     return backend.Load(path);
 }
-
-// ---------- ROARING ----------
 
 struct RoaringBM {
     roaring::Roaring bm;
@@ -168,8 +120,6 @@ static RoaringBM load_roaring(const std::string& dir, int v) {
     return result;
 }
 
-// ---------- EWAH ----------
-
 struct EwahBM {
     ewah::EWAHBoolArray<uint64_t> bm;
     uint64_t n_rows = 0;
@@ -184,8 +134,6 @@ static EwahBM load_ewah(const std::string& dir, int v) {
     result.bm.read(fin);
     return result;
 }
-
-// ---------- CONCISE ----------
 
 struct ConciseBM {
     ConciseSet<false> bm;
@@ -208,15 +156,13 @@ static ConciseBM load_concise(const std::string& dir, int v) {
     return result;
 }
 
-// ---------- COMBIT ----------
-
-struct CombitBM {
+struct DDCBM {
     std::vector<uint32_t> set_positions;
     uint64_t n_rows = 0;
 };
 
-static CombitBM load_combit(const std::string& dir, int v) {
-    CombitBM result;
+static DDCBM load_ddc(const std::string& dir, int v) {
+    DDCBM result;
     std::string path = bm_path(dir, v);
     if (!fs::exists(path)) { std::cerr << "[verify] not found: " << path << "\n"; return result; }
     std::ifstream fin(path, std::ios::binary);
@@ -229,28 +175,21 @@ static CombitBM load_combit(const std::string& dir, int v) {
     return result;
 }
 
-// ============================================================
-// Generic experiment runner
-// ============================================================
-
 struct ModeContext {
     std::string mode;
     std::string dir;
     int n, c, z;
 
-    // WAH backend (only used for wah mode)
     WahBackend wah_backend;
 
-    // Pre-loaded bitmaps
     std::vector<std::unique_ptr<BitmapHandle>> wah_bitmaps;
     std::vector<std::vector<uint8_t>>          raw_bitmaps;
     std::vector<RoaringBM>                     roaring_bitmaps;
     std::vector<EwahBM>                        ewah_bitmaps;
     std::vector<ConciseBM>                     concise_bitmaps;
-    std::vector<CombitBM>                      combit_bitmaps;
+    std::vector<DDCBM>                      ddc_bitmaps;
 };
 
-/// Returns popcount for value v in given mode
 static uint64_t get_popcount(ModeContext& ctx, int v) {
     if (ctx.mode == "raw" || ctx.mode == "bitset")
         return raw_popcount(ctx.raw_bitmaps[v], ctx.n);
@@ -262,12 +201,11 @@ static uint64_t get_popcount(ModeContext& ctx, int v) {
         return ctx.ewah_bitmaps[v].bm.numberOfOnes();
     else if (ctx.mode == "concise")
         return ctx.concise_bitmaps[v].bm.size();
-    else if (ctx.mode == "combit")
-        return ctx.combit_bitmaps[v].set_positions.size();
+    else if (ctx.mode == "ddc")
+        return ctx.ddc_bitmaps[v].set_positions.size();
     return 0;
 }
 
-/// Returns true if bit at row is set for value v in given mode
 static bool get_bit(ModeContext& ctx, int v, int row) {
     if (ctx.mode == "raw" || ctx.mode == "bitset") {
         return raw_get_bit(ctx.raw_bitmaps[v], row);
@@ -283,16 +221,12 @@ static bool get_bit(ModeContext& ctx, int v, int row) {
         return std::binary_search(ones.begin(), ones.end(), (size_t)row);
     } else if (ctx.mode == "concise") {
         return ctx.concise_bitmaps[v].bm.contains(row);
-    } else if (ctx.mode == "combit") {
-        const auto& pos = ctx.combit_bitmaps[v].set_positions;
+    } else if (ctx.mode == "ddc") {
+        const auto& pos = ctx.ddc_bitmaps[v].set_positions;
         return std::binary_search(pos.begin(), pos.end(), (uint32_t)row);
     }
     return false;
 }
-
-// ============================================================
-// Preload all bitmaps into ModeContext
-// ============================================================
 
 static void preload_bitmaps(ModeContext& ctx) {
     std::cout << "[verify] Preloading " << ctx.c << " bitmaps...\n";
@@ -324,17 +258,13 @@ static void preload_bitmaps(ModeContext& ctx) {
         ctx.concise_bitmaps.resize(ctx.c + 1);
         for (int v = 1; v <= ctx.c; v++)
             ctx.concise_bitmaps[v] = load_concise(ctx.dir, v);
-    } else if (ctx.mode == "combit") {
-        ctx.combit_bitmaps.resize(ctx.c + 1);
+    } else if (ctx.mode == "ddc") {
+        ctx.ddc_bitmaps.resize(ctx.c + 1);
         for (int v = 1; v <= ctx.c; v++)
-            ctx.combit_bitmaps[v] = load_combit(ctx.dir, v);
+            ctx.ddc_bitmaps[v] = load_ddc(ctx.dir, v);
     }
     std::cout << "[verify] Preload complete.\n";
 }
-
-// ============================================================
-// Experiment 1 — popcount
-// ============================================================
 
 static void experiment1(ModeContext& ctx) {
     std::cout << "\n========================================\n";
@@ -365,10 +295,6 @@ static void experiment1(ModeContext& ctx) {
         std::cout << "Result: FAIL — sum differs by " << (int64_t)total - ctx.n << "\n";
 }
 
-// ============================================================
-// Batch bit collector
-// ============================================================
-
 static std::vector<bool> collect_bits_for_rows(ModeContext& ctx, int v, int check_rows) {
     std::vector<bool> bits(check_rows, false);
     if (ctx.mode == "raw" || ctx.mode == "bitset") {
@@ -389,17 +315,13 @@ static std::vector<bool> collect_bits_for_rows(ModeContext& ctx, int v, int chec
     } else if (ctx.mode == "concise") {
         for (int row = 0; row < check_rows; row++)
             bits[row] = ctx.concise_bitmaps[v].bm.contains(row);
-    } else if (ctx.mode == "combit") {
-        const auto& pos = ctx.combit_bitmaps[v].set_positions;
+    } else if (ctx.mode == "ddc") {
+        const auto& pos = ctx.ddc_bitmaps[v].set_positions;
         for (int row = 0; row < check_rows; row++)
             bits[row] = std::binary_search(pos.begin(), pos.end(), (uint32_t)row);
     }
     return bits;
 }
-
-// ============================================================
-// Experiment 2 — getBit
-// ============================================================
 
 static void experiment2(ModeContext& ctx, const std::string& base_dir) {
     std::cout << "\n========================================\n";
@@ -410,7 +332,6 @@ static void experiment2(ModeContext& ctx, const std::string& base_dir) {
     std::cout << "n=" << ctx.n << "  c=" << ctx.c
               << "  checking first " << check_rows << " rows\n\n";
 
-    // Load dataset
     auto data = load_dataset(dataset_file(base_dir, ctx.n, ctx.c), ctx.n);
     if (data.empty()) return;
 
@@ -419,7 +340,6 @@ static void experiment2(ModeContext& ctx, const std::string& base_dir) {
         return;
     }
 
-    // Pass 1: true positive — each row's expected bitmap must have bit=1
     int pass = 0, fail = 0;
     for (int row = 0; row < check_rows; row++) {
         int expected_val = data[row];
@@ -433,7 +353,6 @@ static void experiment2(ModeContext& ctx, const std::string& base_dir) {
         }
     }
 
-    // Pass 2: false positive — no other bitmap should have bit=1 for these rows
     int fp_fail = 0;
     for (int v = 1; v <= ctx.c; v++) {
         auto bits = collect_bits_for_rows(ctx, v, check_rows);
@@ -454,10 +373,6 @@ static void experiment2(ModeContext& ctx, const std::string& base_dir) {
     std::cout << (fail == 0 && fp_fail == 0 ? "Result: PASS\n" : "Result: FAIL\n");
 }
 
-// ============================================================
-// Main
-// ============================================================
-
 int main(int argc, char* argv[]) {
     std::string mode;
     int n = -1, c = -1, z = 1;
@@ -475,16 +390,14 @@ int main(int argc, char* argv[]) {
 
     if (mode.empty() || n <= 0 || c <= 0) {
         std::cerr << "Usage: " << argv[0]
-                  << " -mode <raw|wah|roaring|ewah|concise|combit|bitset>"
+                  << " -mode <raw|wah|roaring|ewah|concise|ddc|bitset>"
                   << " -n <rows> -c <cardinality>"
                   << " [-z <zip_length>] [-d <base_dir>]\n";
         return 1;
     }
 
-    // Normalise mode to lowercase
     for (auto& ch : mode) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 
-    // Build context
     ModeContext ctx;
     ctx.mode = mode;
     ctx.n    = n;

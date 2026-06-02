@@ -1,14 +1,4 @@
-// compress_tpch_q6.cpp — Generate ComBit & WAH compressed bitmaps for TPC-H Q6
-//
-// Publication-grade: all columns use equality encoding (including shipdate).
-//
-// Reads raw .bm files from bitmap/tpch_q6/ (LSB-first packed bits)
-// and generates compressed versions:
-//   bitmap/tpch_q6_combit/  — ComBit serialized format
-//   bitmap/tpch_q6_wah/     — WAH (ibis::bitvector) format
-//
-// Usage:
-//   compress_tpch_q6 [input_dir] [output_base]
+
 
 #include <iostream>
 #include <fstream>
@@ -20,7 +10,7 @@
 #include <iomanip>
 
 #include "benchmark/uti.h"
-#include "benchmark/backends/combit/combit_backend.h"
+#include "benchmark/backends/ddc/ddc_backend.h"
 #include "benchmark/backends/wah/wah_backend.h"
 #include "benchmark/backends/croaring/croaring_backend.h"
 #include "benchmark/backends/ewah/ewah_backend.h"
@@ -31,7 +21,7 @@ static size_t NUM_ROWS = 59986052;
 
 struct CompressStats {
     long raw_total = 0;
-    long combit_total = 0;
+    long ddc_total = 0;
     long wah_total = 0;
     long croaring_total = 0;
     long ewah_total = 0;
@@ -39,59 +29,57 @@ struct CompressStats {
 };
 
 void compress_one(const std::string& raw_path,
-                  const std::string& combit_path,
+                  const std::string& ddc_path,
                   const std::string& wah_path,
                   const std::string& croaring_path,
                   const std::string& ewah_path,
-                  CombitBackend& combit_be,
+                  DDCBackend& ddc_be,
                   WahBackend& wah_be,
                   CroaringBackend& croaring_be,
                   EwahBackend& ewah_be,
                   CompressStats& stats,
                   bool verbose = true) {
+    // compress one bitmap, all backends
     auto bits = read_raw_bm(raw_path, NUM_ROWS);
     if (bits.empty()) {
         std::cerr << "Error: failed to read " << raw_path << "\n";
         return;
     }
 
-    fs::create_directories(fs::path(combit_path).parent_path());
+    fs::create_directories(fs::path(ddc_path).parent_path());
     fs::create_directories(fs::path(wah_path).parent_path());
     fs::create_directories(fs::path(croaring_path).parent_path());
     fs::create_directories(fs::path(ewah_path).parent_path());
 
-    // ComBit compress + serialize
     {
-        auto handle = bits_to_bitmap(&combit_be, bits);
-        combit_be.Serialize(*handle, combit_path);
+        auto handle = bits_to_bitmap(&ddc_be, bits);
+        ddc_be.Serialize(*handle, ddc_path);
     }
 
-    // WAH compress + serialize
     {
         auto handle = bits_to_bitmap(&wah_be, bits);
         wah_be.Serialize(*handle, wah_path);
     }
 
-    // CRoaring compress + serialize
     {
         auto handle = bits_to_bitmap(&croaring_be, bits);
         croaring_be.Serialize(*handle, croaring_path);
     }
 
-    // EWAH compress + serialize
     {
         auto handle = bits_to_bitmap(&ewah_be, bits);
         ewah_be.Serialize(*handle, ewah_path);
     }
 
+    // accumulate sizes
     long raw_size = get_file_size(raw_path);
-    long cb_size = get_file_size(combit_path);
+    long cb_size = get_file_size(ddc_path);
     long wah_size = get_file_size(wah_path);
     long cr_size = get_file_size(croaring_path);
     long ew_size = get_file_size(ewah_path);
 
     stats.raw_total += raw_size;
-    stats.combit_total += cb_size;
+    stats.ddc_total += cb_size;
     stats.wah_total += wah_size;
     stats.croaring_total += cr_size;
     stats.ewah_total += ew_size;
@@ -102,7 +90,7 @@ void compress_one(const std::string& raw_path,
                          + "/" + fs::path(raw_path).filename().string();
         std::cout << "  " << name
                   << "  raw=" << raw_size
-                  << "  combit=" << cb_size
+                  << "  ddc=" << cb_size
                   << "  wah=" << wah_size
                   << "  croaring=" << cr_size
                   << "  ewah=" << ew_size << "\n";
@@ -110,13 +98,13 @@ void compress_one(const std::string& raw_path,
 }
 
 void print_stats(const std::string& label, const CompressStats& s) {
-    double cb_ratio = s.raw_total > 0 ? (double)s.combit_total / s.raw_total : 0;
+    double cb_ratio = s.raw_total > 0 ? (double)s.ddc_total / s.raw_total : 0;
     double wah_ratio = s.raw_total > 0 ? (double)s.wah_total / s.raw_total : 0;
     double cr_ratio = s.raw_total > 0 ? (double)s.croaring_total / s.raw_total : 0;
     double ew_ratio = s.raw_total > 0 ? (double)s.ewah_total / s.raw_total : 0;
     std::cout << "  " << label << ": " << s.count << " bitmaps"
               << "  raw=" << s.raw_total / (1024*1024) << "MB"
-              << "  combit=" << s.combit_total / (1024*1024) << "MB (" 
+              << "  ddc=" << s.ddc_total / (1024*1024) << "MB ("
               << std::fixed << std::setprecision(2) << cb_ratio << "x)"
               << "  wah=" << s.wah_total / (1024*1024) << "MB ("
               << std::fixed << std::setprecision(2) << wah_ratio << "x)"
@@ -134,7 +122,7 @@ int main(int argc, char* argv[]) {
     if (argc >= 3) output_base = argv[2];
     if (argc >= 4) NUM_ROWS = std::stoull(argv[3]);
 
-    std::string combit_dir = output_base + "_combit";
+    std::string ddc_dir = output_base + "_ddc";
     std::string wah_dir = output_base + "_wah";
     std::string croaring_dir = output_base + "_croaring";
     std::string ewah_dir = output_base + "_ewah";
@@ -144,13 +132,13 @@ int main(int argc, char* argv[]) {
     std::cout << "  (Publication-grade: equality encoding)\n";
     std::cout << "=========================================\n";
     std::cout << "  Input:    " << input_dir << "\n";
-    std::cout << "  ComBit:   " << combit_dir << "\n";
+    std::cout << "  DDC:   " << ddc_dir << "\n";
     std::cout << "  WAH:      " << wah_dir << "\n";
     std::cout << "  CRoaring: " << croaring_dir << "\n";
     std::cout << "  EWAH:     " << ewah_dir << "\n";
     std::cout << "  Rows:     " << NUM_ROWS << "\n\n";
 
-    CombitBackend combit_be;
+    DDCBackend ddc_be;
     WahBackend wah_be;
     CroaringBackend croaring_be;
     EwahBackend ewah_be;
@@ -158,31 +146,31 @@ int main(int argc, char* argv[]) {
     auto t0 = std::chrono::high_resolution_clock::now();
     CompressStats disc_stats, qty_stats, ship_stats, total_stats;
 
-    // Discount: 0.bm .. 10.bm
+    // discount predicate
     std::cout << "[Discount] Compressing 11 bitmaps...\n";
     for (int v = 0; v <= 10; v++) {
         std::string rel = "discount/" + std::to_string(v) + ".bm";
         compress_one(input_dir + "/" + rel,
-                     combit_dir + "/" + rel,
+                     ddc_dir + "/" + rel,
                      wah_dir + "/" + rel,
                      croaring_dir + "/" + rel,
                      ewah_dir + "/" + rel,
-                     combit_be, wah_be, croaring_be, ewah_be, disc_stats);
+                     ddc_be, wah_be, croaring_be, ewah_be, disc_stats);
     }
 
-    // Quantity: 1.bm .. 50.bm
+    // quantity predicate
     std::cout << "\n[Quantity] Compressing 50 bitmaps...\n";
     for (int v = 1; v <= 50; v++) {
         std::string rel = "quantity/" + std::to_string(v) + ".bm";
         compress_one(input_dir + "/" + rel,
-                     combit_dir + "/" + rel,
+                     ddc_dir + "/" + rel,
                      wah_dir + "/" + rel,
                      croaring_dir + "/" + rel,
                      ewah_dir + "/" + rel,
-                     combit_be, wah_be, croaring_be, ewah_be, qty_stats);
+                     ddc_be, wah_be, croaring_be, ewah_be, qty_stats);
     }
 
-    // Shipdate: scan input directory for all .bm files
+    // shipdate predicate
     std::string ship_input = input_dir + "/shipdate";
     std::vector<int> shipdate_ids;
     for (auto& entry : fs::directory_iterator(ship_input)) {
@@ -198,11 +186,11 @@ int main(int argc, char* argv[]) {
     for (int id : shipdate_ids) {
         std::string rel = "shipdate/" + std::to_string(id) + ".bm";
         compress_one(input_dir + "/" + rel,
-                     combit_dir + "/" + rel,
+                     ddc_dir + "/" + rel,
                      wah_dir + "/" + rel,
                      croaring_dir + "/" + rel,
                      ewah_dir + "/" + rel,
-                     combit_be, wah_be, croaring_be, ewah_be, ship_stats, false);  // quiet for 2500+ files
+                     ddc_be, wah_be, croaring_be, ewah_be, ship_stats, false);
         ship_progress++;
         if (ship_progress % 500 == 0 || ship_progress == (int)shipdate_ids.size()) {
             std::cout << "  ... " << ship_progress << "/" << shipdate_ids.size() << " done\n";
@@ -212,20 +200,20 @@ int main(int argc, char* argv[]) {
     auto t1 = std::chrono::high_resolution_clock::now();
     double total_sec = std::chrono::duration<double>(t1 - t0).count();
 
-    // Aggregate stats
+    // aggregate totals
     total_stats.raw_total = disc_stats.raw_total + qty_stats.raw_total + ship_stats.raw_total;
-    total_stats.combit_total = disc_stats.combit_total + qty_stats.combit_total + ship_stats.combit_total;
+    total_stats.ddc_total = disc_stats.ddc_total + qty_stats.ddc_total + ship_stats.ddc_total;
     total_stats.wah_total = disc_stats.wah_total + qty_stats.wah_total + ship_stats.wah_total;
     total_stats.croaring_total = disc_stats.croaring_total + qty_stats.croaring_total + ship_stats.croaring_total;
     total_stats.ewah_total = disc_stats.ewah_total + qty_stats.ewah_total + ship_stats.ewah_total;
     total_stats.count = disc_stats.count + qty_stats.count + ship_stats.count;
 
-    // Write done markers with stats
+    // write manifests
     {
-        std::ofstream f(combit_dir + "/done.txt");
-        f << "format=combit\nnum_rows=" << NUM_ROWS
+        std::ofstream f(ddc_dir + "/done.txt");
+        f << "format=ddc\nnum_rows=" << NUM_ROWS
           << "\nnum_bitmaps=" << total_stats.count
-          << "\ntotal_bytes=" << total_stats.combit_total << "\n";
+          << "\ntotal_bytes=" << total_stats.ddc_total << "\n";
     }
     {
         std::ofstream f(wah_dir + "/done.txt");
@@ -246,7 +234,6 @@ int main(int argc, char* argv[]) {
           << "\ntotal_bytes=" << total_stats.ewah_total << "\n";
     }
 
-    // Summary
     std::cout << "\n=========================================\n";
     std::cout << "  Compression Summary\n";
     std::cout << "=========================================\n";
@@ -256,7 +243,7 @@ int main(int argc, char* argv[]) {
     std::cout << "  -----------------------------------------\n";
     print_stats("TOTAL (" + std::to_string(total_stats.count) + ")", total_stats);
     std::cout << "\n  Time: " << std::fixed << std::setprecision(1) << total_sec << "s\n";
-    std::cout << "  ComBit output:   " << combit_dir << "\n";
+    std::cout << "  DDC output:   " << ddc_dir << "\n";
     std::cout << "  WAH output:      " << wah_dir << "\n";
     std::cout << "  CRoaring output: " << croaring_dir << "\n";
     std::cout << "  EWAH output:     " << ewah_dir << "\n";

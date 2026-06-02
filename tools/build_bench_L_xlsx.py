@@ -92,9 +92,9 @@ def main():
     # subheader: methodology one-liner
     ws.cell(row=2, column=1,
             value="100M rows, segment_bits=2¹⁶, 5-iter median.  Every variant is deserialized "
-                  "fresh from disk (combit_w8 for L4, combit_L{2,3,5} for the others — all written "
+                  "fresh from disk (ddc_w8 for L4, ddc_L{2,3,5} for the others — all written "
                   "by gen_bitmap), no in-memory recompression in the timed window.  AND / OR = "
-                  "CROSS (cA vs cB).  NOT = unary on cA (production ~ for L4, combit_n_not_inplace "
+                  "CROSS (cA vs cB).  NOT = unary on cA (production ~ for L4, ddc_n_not_inplace "
                   "for L2/L3/L5).  L4 = production AVX-512; L2/L3/L5 use the same per-region SIMD "
                   "kernel + matching batch-skip + asymmetric bypass for fairness.").font = Font(italic=True, color="595959")
     ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=12)
@@ -212,20 +212,20 @@ def main():
         "  • L5 — L1 + L2_lit + L3_lit + L4_lit + L5 raw       (extra layer)",
         "",
         "Sizes (MB columns L1..L5 + Total):",
-        "  Derived analytically from existing L4-compressed combit_w8 .bm files.",
+        "  Derived analytically from existing L4-compressed ddc_w8 .bm files.",
         "  All values are MiB (binary, 2²⁰) and are TOTAL bytes summed across",
-        "  all C .bm files in bm_100m_c{N}_combit_w8/ (matches motivation-chart",
+        "  all C .bm files in bm_100m_c{N}_ddc_w8/ (matches motivation-chart",
         "  'total in-memory' format: c=1000 L4 = 285 MB = sum of 1000 bitmaps).",
         "",
         "Op-only timing (AND/OR/NOT ms):",
         "  AVX-512 implementations for L2/L3/L5 share the SAME per-region SIMD",
-        "  kernel as production L4 (see combit_n.cpp + and.cpp / or.cpp / xor.cpp).",
+        "  kernel as production L4 (see ddc_n.cpp + and.cpp / or.cpp / xor.cpp).",
         "  All variants have:",
         "    • Batch-level skip (skip whole batch when both sides are all-zero;",
         "      AND additionally skips when either side is all-zero)",
         "    • Per-region bypass for OR / XOR (skip per-region SIMD when both",
         "      sides' marker is zero); AND uses no_bypass to mirror production.",
-        "  L4 row uses the production ComBit code directly (ha.and_no_bypass(ha)",
+        "  L4 row uses the production DDC code directly (ha.and_no_bypass(ha)",
         "  for AND, operator| for OR, operator^ for XOR).",
         "",
         "Correctness: 40/40 cardinality × depth combinations pass — round-trip",

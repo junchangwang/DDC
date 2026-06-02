@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compress Q3 join_result bitmap into ComBit/WAH/CRoaring/EWAH formats
+Compress Q3 join_result bitmap into DDC/WAH/CRoaring/EWAH formats
 using the existing compress_tpch_q1 tool's infrastructure.
 
 Since compress_tpch_q1 expects returnflag/linestatus/shipdate structure,
@@ -19,8 +19,8 @@ def read_raw_bm(path, num_rows):
     return bits
 
 
-def write_combit_bm(bits, path):
-    """Write as ComBit serialized format using the combit library via a temp tool."""
+def write_ddc_bm(bits, path):
+    """Write as DDC serialized format using the ddc library via a temp tool."""
     packed = np.packbits(bits.astype(np.uint8), bitorder='little')
     packed.tofile(path)
 
@@ -67,7 +67,7 @@ def main():
         sys.exit(1)
 
     # Move the compressed returnflag/0.bm to join_result/0.bm in each output dir
-    for fmt in ["combit", "wah", "croaring", "ewah"]:
+    for fmt in ["ddc", "wah", "croaring", "ewah"]:
         out_dir = f"{output_base}_{fmt}"
         src = os.path.join(out_dir, "returnflag", "0.bm")
         dst_dir = os.path.join(out_dir, "join_result")

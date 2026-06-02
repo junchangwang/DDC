@@ -23,12 +23,13 @@ void BitsetBackend::Append(BitmapHandle& handle, bool bit) {
 
 uint64_t BitsetBackend::Cardinality(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
-    return h.btv.popcount(false); // plain scalar
+    return h.btv.popcount(false);
 }
 
 std::vector<uint32_t> BitsetBackend::Decode(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
     std::vector<uint32_t> result = h.btv.decode_positions();
+    // trim tail padding
     while (!result.empty() && result.back() >= h.current_bits) {
         result.pop_back();
     }
@@ -39,6 +40,7 @@ std::unique_ptr<BitmapHandle> BitsetBackend::bitOr(const BitmapHandle& a, const 
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<BitsetHandle>();
+    // word-level OR
     res->btv = bitset::BitsetVector::word_or(ha.btv, hb.btv, false);
     res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
@@ -48,6 +50,7 @@ std::unique_ptr<BitmapHandle> BitsetBackend::bitAnd(const BitmapHandle& a, const
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<BitsetHandle>();
+    // word-level AND
     res->btv = bitset::BitsetVector::word_and(ha.btv, hb.btv, false);
     res->current_bits = std::min(ha.current_bits, hb.current_bits);
     return res;
@@ -66,8 +69,9 @@ void BitsetBackend::Serialize(const BitmapHandle& handle, const std::string& pat
     auto& h = getHandle(handle);
     std::ofstream out(path, std::ios::binary);
     if (!out) return;
+    // raw word dump
     size_t packed_bytes = (h.current_bits + 7) / 8;
-    // Write raw packed bytes (same format as gen_bitmap)
+
     out.write(reinterpret_cast<const char*>(h.btv.words()), packed_bytes);
 }
 

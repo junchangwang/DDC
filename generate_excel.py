@@ -46,10 +46,10 @@ ROWS = 100_000_000
 
 # Backends in display order — matches user's previous Excel screenshot.
 # basic / AVX512 / Croaring-bitvector left blank (no data for those here).
-# Only Croaring and Combit-L4 populate the storage row; others show only
+# Only Croaring and DDC-L4 populate the storage row; others show only
 # timing data.
 BACKEND_DISPLAY = ["basic", "AVX512", "WAH", "EWAH", "Concise",
-                   "Croaring-bitvector", "Croaring", "Combit-L4"]
+                   "Croaring-bitvector", "Croaring", "DDC-L4"]
 
 # Map CSV "backend" name → display column name.
 CSV_TO_DISPLAY = {
@@ -57,7 +57,7 @@ CSV_TO_DISPLAY = {
     "EWAH":           "EWAH",
     "Concise":        "Concise",
     "CRoaring":       "Croaring",
-    "ComBIT (New)":   "Combit-L4",
+    "DDC (New)":   "DDC-L4",
 }
 # Map display name → which subdir prefix to look up storage logs.
 DISPLAY_TO_ALGO = {
@@ -65,7 +65,7 @@ DISPLAY_TO_ALGO = {
     "EWAH":        "ewah",
     "Concise":     "concise",
     "Croaring":    "roaring",
-    "Combit-L4":   "combit",
+    "DDC-L4":   "ddc",
 }
 
 # Auto-detect cards from CSV.
@@ -107,12 +107,12 @@ def load_timings():
 # Parse storage logs
 # ----------------------------------------------------------------
 
-# Parse the [Breakdown] line — the [ComBit Storage] line is buggy
+# Parse the [Breakdown] line — the [DDC Storage] line is buggy
 # (l3_bytes is wildly inflated at high cards, e.g. 9313 MB when total
 # is 1450 MB).  The Breakdown line is computed from a separate code
 # path and matches actual on-disk sizes.
-COMBIT_RE = re.compile(
-    r"\[Breakdown\]\s+ComBit\s+"
+DDC_RE = re.compile(
+    r"\[Breakdown\]\s+DDC\s+"
     r"L1=([\d.]+)\s*MiB\s+"
     r"L2=([\d.]+)\s*MiB\s+"
     r"L3=([\d.]+)\s*MiB\s+"
@@ -139,13 +139,13 @@ def parse_storage_log(log: Path):
     m = COMPRESSED_RE.search(text)
     if m:
         out["compressed_bytes"] = int(m.group(1))
-    m = COMBIT_RE.search(text)
+    m = DDC_RE.search(text)
     if m:
-        out["combit_l1_MB"]    = float(m.group(1))
-        out["combit_l2_MB"]    = float(m.group(2))
-        out["combit_l3_MB"]    = float(m.group(3))
-        out["combit_l4_MB"]    = float(m.group(4))
-        out["combit_total_MB"] = float(m.group(5))
+        out["ddc_l1_MB"]    = float(m.group(1))
+        out["ddc_l2_MB"]    = float(m.group(2))
+        out["ddc_l3_MB"]    = float(m.group(3))
+        out["ddc_l4_MB"]    = float(m.group(4))
+        out["ddc_total_MB"] = float(m.group(5))
     m = CR_RE.search(text)
     if m:
         out["cr_array_n"]  = int(m.group(1))
@@ -175,12 +175,12 @@ def storage_cell(disp: str, st: dict) -> str:
     if not st:
         return ""
     cb = st.get("compressed_bytes")
-    if disp == "Combit-L4":
-        return (f"L4: {st.get('combit_l4_MB',0):.4f} MB  |  "
-                f"L3: {st.get('combit_l3_MB',0):.4f} MB  |  "
-                f"L2: {st.get('combit_l2_MB',0):.4f} MB  |  "
-                f"L1: {st.get('combit_l1_MB',0):.4f} MB  |  "
-                f"total in-memory: {st.get('combit_total_MB',0):.4f} MB"
+    if disp == "DDC-L4":
+        return (f"L4: {st.get('ddc_l4_MB',0):.4f} MB  |  "
+                f"L3: {st.get('ddc_l3_MB',0):.4f} MB  |  "
+                f"L2: {st.get('ddc_l2_MB',0):.4f} MB  |  "
+                f"L1: {st.get('ddc_l1_MB',0):.4f} MB  |  "
+                f"total in-memory: {st.get('ddc_total_MB',0):.4f} MB"
                 + (f"  |  on-disk: {cb} bytes ({cb/(1024*1024):.2f} MB)" if cb else ""))
     if disp == "Croaring":
         # Each n_* is the COUNT OF CONTAINERS of that type, not elements.

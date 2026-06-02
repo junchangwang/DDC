@@ -25,6 +25,7 @@ void CroaringBackend::Append(BitmapHandle& handle, bool bit) {
     h.current_size++;
 }
 
+// OR kernel
 std::unique_ptr<BitmapHandle> CroaringBackend::bitOr(const BitmapHandle& a, const BitmapHandle& b, uint32_t range) {
     auto result = std::make_unique<CroaringHandle>();
     const auto& ha = getHandle(a);
@@ -35,6 +36,7 @@ std::unique_ptr<BitmapHandle> CroaringBackend::bitOr(const BitmapHandle& a, cons
     return result;
 }
 
+// AND kernel
 std::unique_ptr<BitmapHandle> CroaringBackend::bitAnd(const BitmapHandle& a, const BitmapHandle& b) {
     auto result = std::make_unique<CroaringHandle>();
     const auto& ha = getHandle(a);
@@ -45,6 +47,7 @@ std::unique_ptr<BitmapHandle> CroaringBackend::bitAnd(const BitmapHandle& a, con
     return result;
 }
 
+// XOR kernel
 std::unique_ptr<BitmapHandle> CroaringBackend::bitXor(const BitmapHandle& a, const BitmapHandle& b) {
     auto result = std::make_unique<CroaringHandle>();
     const auto& ha = getHandle(a);
@@ -58,6 +61,7 @@ std::unique_ptr<BitmapHandle> CroaringBackend::bitXor(const BitmapHandle& a, con
 void CroaringBackend::Serialize(const BitmapHandle& handle, const std::string& path) {
     const auto& h = getHandle(handle);
     
+    // serialize bitmap
     size_t expected_size = h.bitmap.getSizeInBytes();
     std::vector<char> buffer(expected_size);
     h.bitmap.write(buffer.data());
@@ -77,6 +81,7 @@ std::unique_ptr<BitmapHandle> CroaringBackend::Load(const std::string& path) {
     std::streamsize size = in.tellg();
     in.seekg(0, std::ios::beg);
     
+    // read size header then bitmap
     in.read(reinterpret_cast<char*>(&result->current_size), sizeof(result->current_size));
     
     std::streamsize bitmap_size = size - sizeof(result->current_size);
@@ -95,6 +100,7 @@ uint64_t CroaringBackend::Cardinality(const BitmapHandle& handle) {
 
 std::vector<uint32_t> CroaringBackend::Decode(const BitmapHandle& handle) {
     const auto& h = getHandle(handle);
+    // decode to positions
     std::vector<uint32_t> result(h.bitmap.cardinality());
     h.bitmap.toUint32Array(result.data());
     return result;

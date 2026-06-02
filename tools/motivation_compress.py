@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""motivation_compress.py — OR / AND density chart for ComBit's COMPRESS
+"""motivation_compress.py — OR / AND density chart for DDC's COMPRESS
 result path (operator returns a Compressed segment instead of the default
 Decompressed form).
 
-Differences from motivation.py (which charts ComBit's Decompressed path):
-  * ComBit row in CSV is "ComBIT (compress)" not "ComBIT (New)".
-  * NO Y_OVERRIDES for ComBit — the raw measurements are plotted directly
+Differences from motivation.py (which charts DDC's Decompressed path):
+  * DDC row in CSV is "DDC (compress)" not "DDC (New)".
+  * NO Y_OVERRIDES for DDC — the raw measurements are plotted directly
     because the storyboard here is "compress is X× slower than decompress",
-    not "ComBit is a stable baseline".
+    not "DDC is a stable baseline".
   * X-axis spans the full standard sweep (c=2..2000), not capped at 10⁻³.
   * Bitset reference dashed line + arrow callout reused from motivation.
 
@@ -92,9 +92,9 @@ AND_POINTS = [
 ]
 
 # Same backend list / colours / markers as motivation.py, except we use
-# the "ComBIT (compress)" CSV row instead of "ComBIT (New)".
+# the "DDC (compress)" CSV row instead of "DDC (New)".
 BACKENDS_DECOMPRESS_OR = [
-    ("ComBIT (compress)", "ComBit (compress)", "#1f4ed8",  "x",                2.4, 11),
+    ("DDC (compress)", "DDC (compress)", "#1f4ed8",  "x",                2.4, 11),
     ("CRoaring",          "CRoaring",          "#16a34a",  TRI_DOWN_CENTERED,  2.2, 15),
     ("WAH (FastBit)",     "WAH (FastBit)",     "#dc2626",  TRI_UP_CENTERED,    2.0, 15),
     ("EWAH",              "EWAH",              "#1e3a8a",  SQUARE_CENTERED,    2.0, 11),

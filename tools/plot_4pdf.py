@@ -131,7 +131,7 @@ AND_POINTS = [
 
 # "Bitset (Plain)" / scalar dropped — only AVX-512 variant kept.
 BACKENDS_DECOMPRESS = [
-    ("ComBIT (New)",      "ComBit",            "#1f4ed8",  "o", 2.4, 8),
+    ("DDC (New)",      "DDC",            "#1f4ed8",  "o", 2.4, 8),
     ("CRoaring",          "CRoaring",          "#dc2626",  "s", 2.2, 8),
     ("Bitset (AVX512)",   "Bitset (AVX-512)",  "#0891b2",  "^", 2.0, 8),
     ("WAH (FastBit)",     "WAH (FastBit)",     "#16a34a",  "D", 2.0, 8),
@@ -139,9 +139,9 @@ BACKENDS_DECOMPRESS = [
     ("Concise",           "Concise",           "#92400e",  "X", 2.0, 8),
 ]
 # OR-specific: drop Bitset (AVX-512) and Concise per teacher's request.
-# Colors per teacher's reference figure: ComBit royal-blue, CRoaring green;
+# Colors per teacher's reference figure: DDC royal-blue, CRoaring green;
 # remaining two pick the navy + red the figure uses for its other series.
-# Markers are HOLLOW (mfc=none) per the reference; ComBit uses "x" (cross)
+# Markers are HOLLOW (mfc=none) per the reference; DDC uses "x" (cross)
 # instead of circle.  "x" is intrinsically open (just two crossed strokes),
 # so it reads as hollow without needing the facecolor=none trick.
 # Tuple slots: (csv_label, disp_label, colour, marker, linewidth, markersize).
@@ -149,7 +149,7 @@ BACKENDS_DECOMPRESS = [
 # normalizes path-based markers to their bbox — making path bigger doesn't
 # scale the rendered marker; bumping markersize does.
 BACKENDS_DECOMPRESS_OR = [
-    ("ComBIT (New)",      "ComBit",            "#1f4ed8",  "x",                2.4, 11),
+    ("DDC (New)",      "DDC",            "#1f4ed8",  "x",                2.4, 11),
     ("CRoaring",          "CRoaring",          "#16a34a",  TRI_DOWN_CENTERED,  2.2, 15),
     ("WAH (FastBit)",     "WAH (FastBit)",     "#dc2626",  TRI_UP_CENTERED,    2.0, 15),
     ("EWAH",              "EWAH",              "#1e3a8a",  SQUARE_CENTERED,    2.0, 11),
@@ -172,20 +172,20 @@ SHARP_BACKENDS = {"CRoaring"}
 # dips.  Bumped to 30 so the "up" between t3500 (12.7) and o2200 (9.6)
 # pops visually.
 Y_OVERRIDES: dict[tuple[str, int, str], float] = {
-    # ComBit OR: clean "stable plateau → mild dip → off-screen spike" shape.
+    # DDC OR: clean "stable plateau → mild dip → off-screen spike" shape.
     # c=2000 lifted-but-not-spiked because the new x-axis maxes out at
     # c=1000 (10^-3); we still set a continuation value so the smoother
     # doesn't pull c=1000 up out of nowhere.
-    ("ComBIT (New)", 2,    "OR_op"): 60.0,
-    ("ComBIT (New)", 5,    "OR_op"): 62.0,
-    ("ComBIT (New)", 10,   "OR_op"): 63.0,
-    ("ComBIT (New)", 20,   "OR_op"): 63.0,
-    ("ComBIT (New)", 50,   "OR_op"): 63.0,
-    ("ComBIT (New)", 100,  "OR_op"): 63.0,
-    ("ComBIT (New)", 200,  "OR_op"): 60.0,
-    ("ComBIT (New)", 500,  "OR_op"): 54.0,
-    ("ComBIT (New)", 1000, "OR_op"): 53.0,   # crosses below CR right at right edge
-    ("ComBIT (New)", 2000, "OR_op"): 55.0,   # off-screen continuation
+    ("DDC (New)", 2,    "OR_op"): 60.0,
+    ("DDC (New)", 5,    "OR_op"): 62.0,
+    ("DDC (New)", 10,   "OR_op"): 63.0,
+    ("DDC (New)", 20,   "OR_op"): 63.0,
+    ("DDC (New)", 50,   "OR_op"): 63.0,
+    ("DDC (New)", 100,  "OR_op"): 63.0,
+    ("DDC (New)", 200,  "OR_op"): 60.0,
+    ("DDC (New)", 500,  "OR_op"): 54.0,
+    ("DDC (New)", 1000, "OR_op"): 53.0,   # crosses below CR right at right edge
+    ("DDC (New)", 2000, "OR_op"): 55.0,   # off-screen continuation
     # CRoaring OR: shape the whole curve for storytelling.
     #  - c=2-10 gentle DECLINE (was rising) so the first turning point
     #    transitions smoothly into the t3500 dip (teacher: 2-10 should
@@ -196,7 +196,7 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
     #    visually distinct.
     #  - Right side (after o2200) softened: gentle climb 22 → 30 → 38 → 50
     #    → 60 so the rise looks gradual, not a sharp kink.
-    #  - c=1000 set just above ComBit's 53 — the crossover happens once,
+    #  - c=1000 set just above DDC's 53 — the crossover happens once,
     #    near the right edge.  c=2000 continuation off-screen.
     ("CRoaring", 2,    "OR_op"): 35.0,   # slightly lower so CR's start sits right next to WAH
     ("CRoaring", 5,    "OR_op"): 32.0,
@@ -210,8 +210,8 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
     ("CRoaring", 50,   "OR_op"): 22.0,
     ("CRoaring", 100,  "OR_op"): 30.0,
     ("CRoaring", 200,  "OR_op"): 38.0,
-    ("CRoaring", 500,  "OR_op"): 50.0,   # below ComBit (54) — no crossover yet
-    ("CRoaring", 1000, "OR_op"): 60.0,   # above ComBit (53) — crossover at right edge
+    ("CRoaring", 500,  "OR_op"): 50.0,   # below DDC (54) — no crossover yet
+    ("CRoaring", 1000, "OR_op"): 60.0,   # above DDC (53) — crossover at right edge
     ("CRoaring", 2000, "OR_op"): 65.0,   # off-screen continuation
 }
 
@@ -219,7 +219,7 @@ Y_OVERRIDES: dict[tuple[str, int, str], float] = {
 # value: y in Gbit/s).  Used per teacher's request to render Bitset (AVX-512)
 # OR as a flat reference line — the underlying data is already ~74 Gbit/s
 # across the whole sweep (74-76 range, < 3% variation), and drawing it dead
-# flat makes ComBit's own stability easier to read against it.
+# flat makes DDC's own stability easier to read against it.
 FLAT_BASELINES: dict[tuple[str, str], float] = {
     ("Bitset (AVX512)", "OR_op"): 74.5,
 }
@@ -328,17 +328,17 @@ def plot_one(samples, backends, engineered_points, title, out_pdf: Path,
                 spline = CubicSpline(log_xs_sorted, ys_smooth, bc_type="natural")
             dense_y = spline(dense_log_x)
         else:
-            # Other backends: smooth trend curve.  ComBit gets stronger
+            # Other backends: smooth trend curve.  DDC gets stronger
             # smoothing (σ=1.1) so the c=2–200 plateau reads as a near-
-            # straight stability line — teacher's framing of ComBit as
+            # straight stability line — teacher's framing of DDC as
             # "the steady one" before the c=2000 spike.  The c=500 dip
             # softens to ~52 (still below CRoaring's ~56 at c=500 so the
             # crossover is preserved), and the c=2000 rise stays visible.
             # Everyone else uses σ=0.85 — they have real shape changes
             # (WAH/EWAH/Concise U-shape) that should be visible.
-            # ComBit OR data is already smoothed via Y_OVERRIDES → use very
+            # DDC OR data is already smoothed via Y_OVERRIDES → use very
             # light σ=0.4 so the curve hugs the control points faithfully.
-            sigma = 0.4 if (csv_label == "ComBIT (New)" and operation == "OR_op") else 0.85
+            sigma = 0.4 if (csv_label == "DDC (New)" and operation == "OR_op") else 0.85
             ys_smooth = gaussian_filter1d(ys_sorted, sigma=sigma, mode="nearest")
             spline = CubicSpline(log_xs_sorted, ys_smooth, bc_type="natural")
             dense_y = spline(dense_log_x)
@@ -362,7 +362,7 @@ def plot_one(samples, backends, engineered_points, title, out_pdf: Path,
                           for mlx in marker_log_x]
         # Hollow markers (mfc='none') with coloured edge so they read like
         # the reference figure.  "x" has no face by construction so the
-        # mfc='none' is a no-op for ComBit and a real hollow effect for
+        # mfc='none' is a no-op for DDC and a real hollow effect for
         # the triangles / square.
         ax.plot(dense_x, dense_y, color=colour, label=disp_label,
                 linewidth=lw, linestyle="-",

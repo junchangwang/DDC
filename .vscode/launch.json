@@ -62,11 +62,11 @@
             "preLaunchTask": "build-debug"
         },
         {
-            "name": "Debug Compressed Benchmark (ComBIT)",
+            "name": "Debug Compressed Benchmark (DDC)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/debug/benchmark_app",
-            "args": ["--compressed-dir", "bitmap/bm_100m_c100_combit"],
+            "args": ["--compressed-dir", "bitmap/bm_100m_c100_ddc"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

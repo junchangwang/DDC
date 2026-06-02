@@ -7,12 +7,6 @@
 
 namespace bitset {
 
-// ---------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------
-// Round word count up to multiple of 8 so AVX-512 (8 words = 512 bits)
-// can read without bounds issues; also ensures the byte count is a
-// multiple of 64 which satisfies aligned_alloc.
 static inline size_t padded_words(size_t n) {
     return (n + 7) & ~size_t(7);
 }
@@ -31,14 +25,11 @@ static uint64_t* alloc_words_nozero(size_t n) {
     size_t pw = padded_words(n);
     size_t bytes = pw * sizeof(uint64_t);
     auto* p = static_cast<uint64_t*>(aligned_alloc(64, bytes));
-    // Zero only the padding tail (at most 7 words) for SIMD safety
+
     if (pw > n) memset(p + n, 0, (pw - n) * sizeof(uint64_t));
     return p;
 }
 
-// ---------------------------------------------------------------
-// Rule-of-5
-// ---------------------------------------------------------------
 BitsetVector::BitsetVector(const BitsetVector& o)
     : words_(nullptr), words_cnt_(o.words_cnt_), num_bits_(o.num_bits_) {
     if (words_cnt_ > 0) {
@@ -87,9 +78,6 @@ BitsetVector& BitsetVector::operator=(BitsetVector&& o) noexcept {
     return *this;
 }
 
-// ---------------------------------------------------------------
-// Allocation
-// ---------------------------------------------------------------
 void BitsetVector::allocate(size_t n) {
     free(words_);
     words_     = alloc_words(n);
@@ -107,16 +95,13 @@ void BitsetVector::ensure_capacity(uint64_t pos) {
     if (need <= words_cnt_) return;
     uint64_t* old = words_;
     size_t    old_cnt = words_cnt_;
-    words_     = alloc_words(need);   // zero-filled
+    words_     = alloc_words(need);
     words_cnt_ = need;
     if (old_cnt > 0)
         memcpy(words_, old, old_cnt * sizeof(uint64_t));
     free(old);
 }
 
-// ---------------------------------------------------------------
-// Bit access
-// ---------------------------------------------------------------
 void BitsetVector::set_bit(uint64_t position) {
     ensure_capacity(position);
     words_[position / 64] |= uint64_t(1) << (position % 64);
@@ -137,10 +122,6 @@ uint64_t BitsetVector::popcount(bool use_simd) const {
     else
         return simd::words_popcount_scalar(words_, words_cnt_);
 }
-
-// -----------------------------------------------------------------
-//  Static word-level bitwise operations
-// -----------------------------------------------------------------
 
 BitsetVector BitsetVector::word_or(const BitsetVector& a, const BitsetVector& b, bool use_simd) {
     BitsetVector result;
@@ -187,7 +168,6 @@ void BitsetVector::word_and_inplace(BitsetVector& a, const BitsetVector& b, bool
     else
         simd::words_and_inplace_scalar(a.words_, b.words_, min_n);
 
-    // Truncate: words beyond min_n become zero (AND with missing = 0)
     if (a.words_cnt_ > min_n) {
         memset(a.words_ + min_n, 0, (a.words_cnt_ - min_n) * sizeof(uint64_t));
         a.words_cnt_ = min_n;
@@ -270,4 +250,4 @@ bool BitsetVector::load(const std::string& path) {
     return true;
 }
 
-} // namespace bitset
+}

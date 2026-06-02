@@ -9,7 +9,7 @@ Coordinates come from real measurements:
   * OR Gbit/s plateau values from the OR-density sweep (plot_4pdf.py).
   * Compression ratios from per-backend dir sizes at c=100 (100M-bit, 100
     bitmaps, raw 1250 MB):
-        ComBit       6.5x
+        DDC       6.5x
         CRoaring     6.5x
         Concise      3.4x
         WAH          2.2x
@@ -40,8 +40,8 @@ plt.rcParams.update({
 # (label, x_perf, y_CR, marker, fill, edge)
 # Positions from GEOMETRIC MEAN of measurements across c=2/10/100/1000
 # (TPC-H falls inside this range too):
-#   OR Gbit/s geo-mean:  Bitset 74 │ ComBit 55 │ CR 38 │ EWAH 15 │ WAH 14 │ Concise 6
-#   CR  geo-mean:        ComBit 12.5× │ CR 12.0× │ Concise 8.7× │ WAH 6.6× │ EWAH 5.1× │ Bitset 1.0×
+#   OR Gbit/s geo-mean:  Bitset 74 │ DDC 55 │ CR 38 │ EWAH 15 │ WAH 14 │ Concise 6
+#   CR  geo-mean:        DDC 12.5× │ CR 12.0× │ Concise 8.7× │ WAH 6.6× │ EWAH 5.1× │ Bitset 1.0×
 # Note: smaller c = denser bitmap (c=2 means 50% set bits per bitmap).
 # EWAH compresses BEST at very-dense data (c=2: 52.5×, beats WAH/Concise)
 # but worst at medium-density (c=100: 1.4×, c=1000: 0.9×).  Geometric mean
@@ -51,7 +51,7 @@ plt.rcParams.update({
 #   x = OR perf in Gbit/s (geometric mean across c=2..1000)
 #   y = compression ratio (×, geometric mean across c=2..1000)
 BACKENDS = [
-    ("ComBit",            55.0, 12.5, "o",  "#3b82f6", "#1d4ed8"),
+    ("DDC",            55.0, 12.5, "o",  "#3b82f6", "#1d4ed8"),
     ("CRoaring",          38.0, 12.0, "h",  "#22c55e", "#15803d"),
     ("Concise",            6.0,  8.7, "D",  "#eab308", "#a16207"),
     ("WAH (FastBit)",     14.0,  6.6, "^",  "#ef4444", "#b91c1c"),
@@ -91,7 +91,7 @@ def main() -> None:
     # so it doesn't collide with any marker or the legend.
     ax.annotate(
         "",
-        xy=(48, 11.2),           # arrow head, just below ComBit
+        xy=(48, 11.2),           # arrow head, just below DDC
         xytext=(30, 6.5),        # arrow tail in the empty middle band
         arrowprops=dict(arrowstyle="-|>", color="#0f172a",
                         lw=2.4, mutation_scale=22),
@@ -109,7 +109,7 @@ def main() -> None:
                   family="Linux Libertine O")
 
     # Legend: single-row band at the very top (above the data band, which
-    # tops out at y≈8.6 for ComBit / CRoaring).  With ylim=11 the legend
+    # tops out at y≈8.6 for DDC / CRoaring).  With ylim=11 the legend
     # gets its own y=10-11 stripe and doesn't shadow any marker.
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, 0.99),
               ncol=6, frameon=True, fontsize=11,

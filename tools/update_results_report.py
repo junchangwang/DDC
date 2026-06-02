@@ -3,7 +3,7 @@
 
 Reads `build/refresh_results.csv` (the bench output for WAH/EWAH/Concise/
 Bitset/Bitset_AVX512) and overwrites the corresponding cells in
-`results_report.xlsx` — leaving Croaring, Croaring-bitvector, Combit-L4
+`results_report.xlsx` — leaving Croaring, Croaring-bitvector, DDC-L4
 columns untouched.
 
 Layout (per density block):
@@ -32,7 +32,7 @@ Columns:
   F(6) = Concise            ← Concise
   G(7) = Croaring-bitvector ← (skip)
   H(8) = Croaring           ← (skip, already filled)
-  I(9) = Combit-L4          ← (skip, already filled)
+  I(9) = DDC-L4          ← (skip, already filled)
 """
 from __future__ import annotations
 
@@ -155,7 +155,7 @@ def main():
                 cells_written += 1
 
     # Memory rows: find each "Density: ..." row and update memory in cols 2..6.
-    # Original format used col I for Combit; we'll add a one-line summary at each
+    # Original format used col I for DDC; we'll add a one-line summary at each
     # memory anchor row (col 2..6) showing "total: N MB" for the matching backend.
     mem_rows_written = 0
     for r in range(1, ws.max_row + 1):

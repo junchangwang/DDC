@@ -3,16 +3,14 @@
 #include "../../bitmap_backend.h"
 #include "fastbit/bitvector.h"
 
-// make wah's bitmap handle, which contains a FastBit bitvector
 struct WahHandle : public BitmapHandle {
-    ibis::bitvector btv; 
+    ibis::bitvector btv;
 };
 
-// acheves WAH compression by using FastBit's bitvector, which is a WAH-like compressed bitmap
 class WahBackend : public IBitmapBackend {
 public:
     std::unique_ptr<BitmapHandle> Create() override;
-    
+
     void Append(BitmapHandle& btv, bool bit) override;
     uint64_t Cardinality(const BitmapHandle& btv) override;
     std::vector<uint32_t> Decode(const BitmapHandle& btv) override;

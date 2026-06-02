@@ -33,7 +33,7 @@ with SRC.open() as f:
 
 ops_pair = ["OR", "AND", "XOR"]
 ops_pure = ["OR_op", "AND_op", "XOR_op"]
-backend_order = ["ComBIT (New)", "CRoaring", "EWAH", "Concise", "WAH (FastBit)"]
+backend_order = ["DDC (New)", "CRoaring", "EWAH", "Concise", "WAH (FastBit)"]
 cards = sorted({k[1] for k in times.keys()})
 
 with DST.open("w", newline="") as f:

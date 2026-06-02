@@ -5,9 +5,6 @@
 
 namespace fs = std::filesystem;
 
-// ==========================================
-// CSV output helper
-// ==========================================
 std::ofstream* g_csv = nullptr;
 
 void csv_write_header() {
@@ -27,6 +24,7 @@ void csv_row(const std::string& backend, size_t rows, size_t card,
            << result_card << "," << iteration << "\n";
 }
 
+// median
 double compute_median(std::vector<double>& v) {
     if (v.empty()) return 0;
     std::sort(v.begin(), v.end());
@@ -34,14 +32,12 @@ double compute_median(std::vector<double>& v) {
     return (n % 2 == 0) ? (v[n/2 - 1] + v[n/2]) / 2.0 : v[n/2];
 }
 
-// ==========================================
-// File / bitmap utilities
-// ==========================================
 long get_file_size(const std::string& filename) {
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
 }
 
+// raw bits load
 std::vector<bool> read_raw_bm(const std::string& path, size_t num_rows) {
     std::ifstream f(path, std::ios::binary);
     if (!f.good()) {
@@ -53,7 +49,7 @@ std::vector<bool> read_raw_bm(const std::string& path, size_t num_rows) {
     std::vector<bool> bits;
     bits.reserve(num_rows);
     for (size_t i = 0; i < bytes.size() && bits.size() < num_rows; ++i) {
-        for (int bit = 0; bit < 8 && bits.size() < num_rows; ++bit) {
+        for (int bit = 0; bit < 8 && bits.size() < num_rows; ++bit) {  // unpack byte
             bits.push_back((bytes[i] >> bit) & 1);
         }
     }
@@ -80,16 +76,11 @@ std::map<std::string, std::string> read_metadata(const std::string& path) {
     return m;
 }
 
-// ==========================================
-// Compressed directory name parser
-// ==========================================
+// parse dir name
 CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
     CompressedDirInfo info;
     std::string name = fs::path(dir_path).filename().string();
-    // Expected: bm_{rows}_c{card}_{algo}   (standard cardinality sweep)
-    //       or  bm_{rows}_t{count_a}_{algo}  (transition mode: independent
-    //                                         random bitmaps for CR's
-    //                                         bitset→array stress test)
+
     if (name.substr(0, 3) != "bm_") return info;
 
     size_t pos = 3;
@@ -97,6 +88,7 @@ CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
     if (u1 == std::string::npos) return info;
     std::string rows_str = name.substr(pos, u1 - pos);
 
+    // m/k suffix
     if (!rows_str.empty() && (rows_str.back() == 'm' || rows_str.back() == 'M'))
         info.rows = std::stoull(rows_str.substr(0, rows_str.size()-1)) * 1000000;
     else if (!rows_str.empty() && (rows_str.back() == 'k' || rows_str.back() == 'K'))
@@ -108,22 +100,16 @@ CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
     if (pos >= name.size()) return info;
     char tag = name[pos];
     if (tag != 'c' && tag != 't' && tag != 'o' && tag != 'A') return info;
-    // For `t` (transition: independent random A,B), `o` (overlap: A and B
-    // share 95% of A's bits + 5% fresh), and `A` (asymmetric disjoint:
-    // A=<a> bits, B=<b> bits, A∩B=∅) we set is_transition so callers can
-    // distinguish synthetic vs. standard cardinality-sweep dirs.
+
     info.is_transition = (tag == 't' || tag == 'o' || tag == 'A');
     pos++;
     size_t u2 = name.find('_', pos);
     if (u2 == std::string::npos) return info;
-    // For transition / overlap dirs, this field holds count_a (bits per
-    // 65 536-segment).  For asymmetric `A<a>_B<b>` dirs, also count_a (the
-    // larger side) — the rest of the name parses through to find algo.
+
     info.cardinality = std::stoull(name.substr(pos, u2 - pos));
     std::string rest = name.substr(u2 + 1);
     if (tag == 'A' && !rest.empty() && rest[0] == 'B') {
-        // Asymmetric: rest looks like "B<count_b>_<algo>" — skip past the
-        // count_b token to reach the algo.
+
         size_t u3 = rest.find('_');
         if (u3 != std::string::npos) info.algo = rest.substr(u3 + 1);
     } else {
@@ -132,25 +118,23 @@ CompressedDirInfo parse_compressed_dir_name(const std::string& dir_path) {
     return info;
 }
 
+// algo -> backend
 std::string algo_to_backend_key(const std::string& algo) {
     if (algo == "wah") return "wah";
     if (algo == "roaring") return "croaring";
     if (algo == "ewah") return "ewah";
     if (algo == "concise") return "concise";
-    if (algo == "combit") return "combit";
-    if (algo.substr(0, 8) == "combit_w") return "combit";
+    if (algo == "ddc") return "ddc";
+    if (algo.substr(0, 8) == "ddc_w") return "ddc";
     if (algo == "bitset") return "bitset";
     if (algo == "bitset_avx512") return "bitset_avx512";
     return "";
 }
 
-// ==========================================
-// Print usage
-// ==========================================
 void print_usage(const char* prog) {
     std::cout << "Usage: " << prog << " [OPTIONS]\n\n"
               << "Options:\n"
-              << "  --backend <wah|croaring|combit|ewah|concise|bitset|bitset_avx512|all>  Backend to benchmark (default: all)\n"
+              << "  --backend <wah|croaring|ddc|ewah|concise|bitset|bitset_avx512|all>  Backend to benchmark (default: all)\n"
               << "  --bm-dir <path>                      Directory with raw .bm files\n"
               << "  --compressed-dir <path>              Directory with pre-compressed .bm files\n"
               << "  --cross-or <dir_a> <dir_b>           Cross-cardinality OR: load bitmap 1 from each dir\n"

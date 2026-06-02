@@ -1,29 +1,5 @@
-// compress_any.cpp — Generic raw .bm → ComBit / WAH / CRoaring / EWAH
-// compressor.  Walks every subdir of input_dir and writes the same
-// subdir layout into output_<combit|wah|croaring|ewah>.  Used for
-// queries whose bitmap layout (e.g. Q3's join_result/0.bm) does not
-// match the rigid returnflag/linestatus/shipdate schema baked into
-// compress_tpch_q1.cpp.
-//
-// Usage:
-//   compress_any <input_dir> <output_base> <num_rows> [--combit-only]
-//                                                     [--from-croaring]
-//
-// Pass --combit-only to skip WAH/CRoaring/EWAH (useful when those
-// per-query dirs already exist on disk and only the ComBit format is
-// being regenerated after a serialize/deserialize change).
-//
-// Pass --from-croaring to treat input files as CRoaring serialised
-// .bm files ([uint32 logical_size][serialised roaring]) and decode
-// them into raw bits before compression.  Useful for queries whose
-// raw bitmap dirs are no longer on disk but whose CRoaring .bm copy
-// is still present (e.g. tpch_q6/q8/q10/q12/q15 at SF10).
-//
-// Produces:
-//   <output_base>_combit/<col>/<f>.bm
-//   <output_base>_wah/<col>/<f>.bm
-//   <output_base>_croaring/<col>/<f>.bm
-//   <output_base>_ewah/<col>/<f>.bm
+
+
 #include <chrono>
 #include <cstdint>
 #include <filesystem>
@@ -32,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "combit.h"
+#include "ddc.h"
 #include "fastbit/bitvector.h"
 #include "roaring.hh"
 #include "ewah/ewah.h"
@@ -49,8 +25,6 @@ static std::vector<uint8_t> read_raw(const std::string& path) {
     return buf;
 }
 
-// Decode CRoaring serialised file into a packed bit buffer of length
-// ceil(num_rows / 8) bytes.  Returns empty on read error.
 static std::vector<uint8_t> read_from_croaring(const std::string& path,
                                                size_t num_rows) {
     std::ifstream in(path, std::ios::binary | std::ios::ate);
@@ -73,11 +47,11 @@ static std::vector<uint8_t> read_from_croaring(const std::string& path,
     return bits;
 }
 
-static void write_combit(const std::string& out, const std::vector<uint8_t>& raw,
+static void write_ddc(const std::string& out, const std::vector<uint8_t>& raw,
                          size_t n) {
     std::vector<bool> bits(n, false);
     for (size_t i = 0; i < n; ++i) bits[i] = (raw[i / 8] >> (i % 8)) & 1;
-    auto cb = ComBit::compress(bits);
+    auto cb = DDC::compress(bits);
     fs::create_directories(fs::path(out).parent_path());
     std::ofstream o(out, std::ios::binary);
     cb.serialize(o);
@@ -86,8 +60,7 @@ static void write_combit(const std::string& out, const std::vector<uint8_t>& raw
 static void write_wah(const std::string& out, const std::vector<uint8_t>& raw,
                       size_t n) {
     ibis::bitvector bv;
-    // operator+= appends a single bit; the bitvector packs literals
-    // and runs internally as it goes.
+
     for (size_t i = 0; i < n; ++i)
         bv += int((raw[i / 8] >> (i % 8)) & 1);
     fs::create_directories(fs::path(out).parent_path());
@@ -131,15 +104,15 @@ int main(int argc, char** argv) {
     std::string in_dir   = argv[1];
     std::string out_base = argv[2];
     size_t num_rows      = std::stoull(argv[3]);
-    bool combit_only     = false;
+    bool ddc_only     = false;
     bool from_croaring   = false;
     for (int i = 4; i < argc; i++) {
         std::string a = argv[i];
-        if      (a == "--combit-only")  combit_only   = true;
+        if      (a == "--ddc-only")  ddc_only   = true;
         else if (a == "--from-croaring") from_croaring = true;
     }
 
-    std::string cb_dir   = out_base + "_combit";
+    std::string cb_dir   = out_base + "_ddc";
     std::string wah_dir  = out_base + "_wah";
     std::string cr_dir   = out_base + "_croaring";
     std::string ew_dir   = out_base + "_ewah";
@@ -157,8 +130,8 @@ int main(int argc, char** argv) {
                 ? read_from_croaring(f.path().string(), num_rows)
                 : read_raw(f.path().string());
             if (raw.empty()) continue;
-            write_combit  (cb_dir  + "/" + rel, raw, num_rows);
-            if (!combit_only) {
+            write_ddc  (cb_dir  + "/" + rel, raw, num_rows);
+            if (!ddc_only) {
                 write_wah     (wah_dir + "/" + rel, raw, num_rows);
                 write_croaring(cr_dir  + "/" + rel, raw, num_rows);
                 write_ewah    (ew_dir  + "/" + rel, raw, num_rows);
@@ -168,7 +141,6 @@ int main(int argc, char** argv) {
         }
     }
 
-    // num_rows marker (Q3 reader uses done.txt num_rows= line)
     std::ofstream(cb_dir + "/done.txt") << "num_rows=" << num_rows << "\n";
 
     auto dt = std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -15,11 +15,11 @@ OUTPUT_BASE="${2:?}"
 NUM_ROWS="${3:?}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMBIT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-COMPRESS_TOOL="$COMBIT_ROOT/build/compress_tpch_q1"
+DDC_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+COMPRESS_TOOL="$DDC_ROOT/build/compress_tpch_q1"
 
 if [ ! -f "$COMPRESS_TOOL" ]; then
-    echo "Error: $COMPRESS_TOOL not found. Build combit first."
+    echo "Error: $COMPRESS_TOOL not found. Build ddc first."
     exit 1
 fi
 
@@ -31,7 +31,7 @@ echo "  Rows:  $NUM_ROWS"
 echo ""
 
 # Create output dirs
-for fmt in combit wah croaring ewah; do
+for fmt in ddc wah croaring ewah; do
     mkdir -p "${OUTPUT_BASE}_${fmt}"
 done
 
@@ -45,7 +45,7 @@ ln -s "$(realpath "$INPUT_DIR/orderdate")" "$TMPDIR/shipdate"
 rm -rf "$TMPDIR"
 
 # Move shipdate → orderdate in output dirs
-for fmt in combit wah croaring ewah; do
+for fmt in ddc wah croaring ewah; do
     if [ -d "${OUTPUT_BASE}_odate_tmp_${fmt}/shipdate" ]; then
         mv "${OUTPUT_BASE}_odate_tmp_${fmt}/shipdate" "${OUTPUT_BASE}_${fmt}/orderdate"
     fi
@@ -63,7 +63,7 @@ ln -s "$(realpath "$INPUT_DIR/nation_join")" "$TMPDIR/shipdate"
 rm -rf "$TMPDIR"
 
 # Move shipdate → nation_join in output dirs
-for fmt in combit wah croaring ewah; do
+for fmt in ddc wah croaring ewah; do
     if [ -d "${OUTPUT_BASE}_nj_tmp_${fmt}/shipdate" ]; then
         mv "${OUTPUT_BASE}_nj_tmp_${fmt}/shipdate" "${OUTPUT_BASE}_${fmt}/nation_join"
     fi
@@ -77,7 +77,7 @@ ODATE_COUNT=$(ls "$INPUT_DIR/orderdate/"*.bm 2>/dev/null | wc -l)
 NJ_COUNT=$(ls "$INPUT_DIR/nation_join/"*.bm 2>/dev/null | wc -l)
 TOTAL=$((ODATE_COUNT + NJ_COUNT))
 
-for fmt in combit wah croaring ewah; do
+for fmt in ddc wah croaring ewah; do
     cat > "${OUTPUT_BASE}_${fmt}/done.txt" << EOF
 num_rows=$NUM_ROWS
 num_bitmaps=$TOTAL
@@ -88,7 +88,7 @@ done
 
 # Copy nation_names.csv if it exists
 if [ -f "$INPUT_DIR/nation_names.csv" ]; then
-    for fmt in combit wah croaring ewah; do
+    for fmt in ddc wah croaring ewah; do
         cp "$INPUT_DIR/nation_names.csv" "${OUTPUT_BASE}_${fmt}/"
     done
 fi
@@ -96,5 +96,5 @@ fi
 echo ""
 echo "==========================================="
 echo "  Done! $TOTAL bitmaps ($ODATE_COUNT orderdate + $NJ_COUNT nation_join)"
-echo "  Output: ${OUTPUT_BASE}_{combit,wah,croaring,ewah}"
+echo "  Output: ${OUTPUT_BASE}_{ddc,wah,croaring,ewah}"
 echo "==========================================="

@@ -8,11 +8,11 @@ mkdir -p storage_info
 
 CARDS="2 5 10 20 50 100 200 500 1000 2000 3000 4000 5000 8000 10000 20000 50000"
 for c in $CARDS; do
-    for algo in combit roaring ewah concise wah; do
+    for algo in ddc roaring ewah concise wah; do
         bend="$algo"
         [ "$algo" = "roaring" ] && bend="croaring"
         dir="bitmap/bm_100m_c${c}_${algo}"
-        [ "$algo" = "combit" ] && dir="${dir}_w8"
+        [ "$algo" = "ddc" ] && dir="${dir}_w8"
         log="storage_info/c${c}_${algo}.log"
 
         if [ ! -f "$dir/done.txt" ]; then continue; fi

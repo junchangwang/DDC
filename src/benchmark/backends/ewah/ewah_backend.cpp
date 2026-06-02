@@ -22,11 +22,13 @@ void EwahBackend::Append(BitmapHandle& handle, bool bit) {
     h.current_bits++;
 }
 
+// popcount
 uint64_t EwahBackend::Cardinality(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
     return h.btv.numberOfOnes();
 }
 
+// expand positions
 std::vector<uint32_t> EwahBackend::Decode(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
     auto positions = h.btv.toArray();
@@ -42,6 +44,7 @@ std::unique_ptr<BitmapHandle> EwahBackend::bitOr(const BitmapHandle& a, const Bi
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<EwahHandle>();
+    // OR kernel
     ha.btv.logicalor(hb.btv, res->btv);
     res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
@@ -51,6 +54,7 @@ std::unique_ptr<BitmapHandle> EwahBackend::bitAnd(const BitmapHandle& a, const B
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<EwahHandle>();
+    // AND kernel
     ha.btv.logicaland(hb.btv, res->btv);
     res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
@@ -79,6 +83,7 @@ std::unique_ptr<BitmapHandle> EwahBackend::Load(const std::string& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) return res;
     in.read(reinterpret_cast<char*>(&res->current_bits), sizeof(res->current_bits));
+    // decompress
     res->btv.read(in);
     return res;
 }

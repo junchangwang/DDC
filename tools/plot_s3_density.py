@@ -7,7 +7,7 @@ input density per backend.
 
 Per-row timing is op-only:
   - CR  : pairwise A & B + to-bitset conversion of result (apples-to-apples)
-  - CB  : decompressed output (combit_compress_results = false)
+  - CB  : decompressed output (ddc_compress_results = false)
   - WAH : copy + &=
   - EWAH/Concise : library fast_logicaland
 
@@ -36,7 +36,7 @@ GBITS_PER_MS = NUM_BITS / 1e6      # ≈ 67.1 — Gbit/s achieved at 1 ms-per-OR
 # Backend → (display label, colour, point type, line width).
 BACKENDS = [
     ("CR",              "CRoaring (pairwise+to-bitset)", "#d62728", 7,  3.0),
-    ("CB-decompressed", "ComBit (decompressed)",          "#1f77b4", 5,  2.4),
+    ("CB-decompressed", "DDC (decompressed)",          "#1f77b4", 5,  2.4),
     ("WAH",             "WAH (FastBit)",                  "#2ca02c", 9,  1.8),
     ("EWAH",            "EWAH",                           "#9467bd", 11, 1.8),
     ("Concise",         "Concise",                        "#8c564b", 13, 1.8),

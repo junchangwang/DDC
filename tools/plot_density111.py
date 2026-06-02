@@ -26,7 +26,7 @@ NUM_BITS = 100_000_000               # 100 M-row bitmaps
 GBITS_PER_MS = NUM_BITS / 1e6        # = 100.0
 
 D_MAX = 0.5      # leftmost (densest, c = 2)
-D_MIN = 0.00002     # rightmost (c = 50) — within this window ComBit sits above
+D_MIN = 0.00002     # rightmost (c = 50) — within this window DDC sits above
                  # CR across the entire sweep.  Past d < 0.02, CR catches up
                  # because disjoint AND on sparse inputs is essentially free
                  # for CR's array-array intersection.
@@ -43,7 +43,7 @@ TRANSITION_DENSITY = TRANSITION_COUNT_A / 65536.0   # ≈ 0.244
 # gnuplot point types: 5=square, 7=filled circle, 9=triangle, 11=down-triangle,
 #                      13=diamond, 15=pentagon, 4=hollow square, etc.
 BACKENDS = [
-    ("ComBIT (New)",     "ComBit",             "#1f4ed8", 7,  3.2),  # vivid blue, slightly thicker
+    ("DDC (New)",     "DDC",             "#1f4ed8", 7,  3.2),  # vivid blue, slightly thicker
     ("CRoaring",         "CRoaring",           "#dc2626", 5,  2.4),  # red
     ("Bitset (AVX512)",  "Bitset (AVX-512)",   "#0891b2", 9,  2.2),  # teal
     ("Bitset (Plain)",   "Bitset (scalar)",    "#7c3aed", 11, 2.2),  # purple
@@ -82,7 +82,7 @@ def load(csv_path: Path):
                 continue
             # Standard sweep — drop transition rows that share cardinality
             # values (8000/10000/20000):
-            #   ComBit/CR: res_card>0 means transition (real AND result).
+            #   DDC/CR: res_card>0 means transition (real AND result).
             #   Bitset/WAH/EWAH/Concise hardcode res_card=0, so first-wins
             #   (dirlist puts _c<N>_ before _t<N>_).
             if res_card > 0:
@@ -139,7 +139,7 @@ def write_gp(gp_path: Path, dat_path: Path, pdf_path: Path):
 set terminal pdfcairo size 10in,6in enhanced font 'DejaVu Sans,11'
 set output '{pdf_path.name}'
 
-set title "AND op-only: performance vs bitmap density\\n{{/*0.85 (100 M rows; disjoint bitmaps from bm\\\\_100m\\\\_c<c>\\\\_<algo>/; ComBit default = decompressed; CR includes pairwise + to-bitset)}}" font ',13'
+set title "AND op-only: performance vs bitmap density\\n{{/*0.85 (100 M rows; disjoint bitmaps from bm\\\\_100m\\\\_c<c>\\\\_<algo>/; DDC default = decompressed; CR includes pairwise + to-bitset)}}" font ',13'
 set xlabel "bitmap density  d = 1 / cardinality   (left = dense, right = sparse)"
 set ylabel "performance  (Gbit/s, 100 Mbits ÷ median AND time)"
 

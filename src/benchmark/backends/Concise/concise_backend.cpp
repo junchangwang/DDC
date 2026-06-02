@@ -36,6 +36,7 @@ std::vector<uint32_t> ConciseBackend::Decode(const BitmapHandle& handle) {
     return result;
 }
 
+// OR kernel
 std::unique_ptr<BitmapHandle> ConciseBackend::bitOr(const BitmapHandle& a, const BitmapHandle& b, uint32_t range) {
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
@@ -45,6 +46,7 @@ std::unique_ptr<BitmapHandle> ConciseBackend::bitOr(const BitmapHandle& a, const
     return res;
 }
 
+// AND kernel
 std::unique_ptr<BitmapHandle> ConciseBackend::bitAnd(const BitmapHandle& a, const BitmapHandle& b) {
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
@@ -54,6 +56,7 @@ std::unique_ptr<BitmapHandle> ConciseBackend::bitAnd(const BitmapHandle& a, cons
     return res;
 }
 
+// XOR kernel
 std::unique_ptr<BitmapHandle> ConciseBackend::bitXor(const BitmapHandle& a, const BitmapHandle& b) {
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
@@ -63,6 +66,7 @@ std::unique_ptr<BitmapHandle> ConciseBackend::bitXor(const BitmapHandle& a, cons
     return res;
 }
 
+// serialize words
 void ConciseBackend::Serialize(const BitmapHandle& handle, const std::string& path) {
     auto& h = getHandle(handle);
     std::ofstream out(path, std::ios::binary);
@@ -77,6 +81,7 @@ void ConciseBackend::Serialize(const BitmapHandle& handle, const std::string& pa
     }
 }
 
+// load words
 std::unique_ptr<BitmapHandle> ConciseBackend::Load(const std::string& path) {
     auto res = std::make_unique<ConciseHandle>();
     std::ifstream in(path, std::ios::binary);

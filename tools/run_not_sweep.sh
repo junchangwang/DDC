@@ -32,7 +32,7 @@ ENG_DIRS="bm_100m_t3500 bm_100m_A2500_B100 bm_100m_o2200"
 
 # (algo_dir_suffix, backend_name)
 declare -a BACKENDS=(
-    "combit_w8:combit"
+    "ddc_w8:ddc"
     "roaring:croaring"
     "wah:wah"
     "ewah:ewah"

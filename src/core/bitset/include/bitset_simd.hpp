@@ -1,11 +1,6 @@
 #ifndef BITSET_SIMD_HPP
 #define BITSET_SIMD_HPP
 
-/// SIMD acceleration utilities for uncompressed bitset operations.
-///
-/// Runtime dispatch: AVX-512 → AVX2 → scalar.
-/// All public functions work on arrays of uint64_t words.
-
 #include <cstdint>
 #include <cstddef>
 
@@ -23,12 +18,9 @@
 namespace bitset {
 namespace simd {
 
-// -----------------------------------------------------------------------
-// Runtime ISA detection
-// -----------------------------------------------------------------------
 enum SupportFlags : int {
     BITSET_NONE   = 0,
-    BITSET_AVX512 = 2,  // requires F + BW
+    BITSET_AVX512 = 2,
     BITSET_AVX512_VPOPCNTDQ = 4,
 };
 
@@ -72,9 +64,6 @@ inline int hardware_support() {
     return cached;
 }
 
-// -----------------------------------------------------------------------
-// AVX-512 paths
-// -----------------------------------------------------------------------
 #if BITSET_IS_X64
 
 __attribute__((target("avx512f")))
@@ -175,13 +164,7 @@ inline uint64_t words_popcount_avx512(const uint64_t* data, size_t n)
     return sum;
 }
 
-#endif // BITSET_IS_X64
-
-// -----------------------------------------------------------------------
-// Scalar paths (always available)
-// Annotated to prevent compiler auto-vectorization so that "Plain"
-// benchmarks reflect true scalar performance.
-// -----------------------------------------------------------------------
+#endif
 
 __attribute__((optimize("no-tree-vectorize")))
 inline void words_or_scalar(const uint64_t* __restrict__ a,
@@ -237,10 +220,6 @@ inline uint64_t words_popcount_scalar(const uint64_t* data, size_t n)
         sum += __builtin_popcountll(data[i]);
     return sum;
 }
-
-// -----------------------------------------------------------------------
-// Dispatch functions: SIMD-accelerated (best available ISA at runtime)
-// -----------------------------------------------------------------------
 
 inline void words_or_simd(const uint64_t* a, const uint64_t* b, uint64_t* dst, size_t n)
 {
@@ -305,7 +284,7 @@ inline void words_not_simd(const uint64_t* src, uint64_t* dst, size_t n)
     words_not_scalar(src, dst, n);
 }
 
-} // namespace simd
-} // namespace bitset
+}
+}
 
-#endif // BITSET_SIMD_HPP
+#endif

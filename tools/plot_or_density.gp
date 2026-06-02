@@ -1,7 +1,7 @@
 # plot_or_density.gp — OR decompress chart, gnuplot port of plot_4pdf.py
 #
 # Self-contained: data + style embedded as gnuplot datablocks.
-# CR / ComBit control points are the same Y_OVERRIDES the python plot
+# CR / DDC control points are the same Y_OVERRIDES the python plot
 # uses; WAH / EWAH carry Gaussian-smoothed (sigma=0.85) values.  Every
 # backend's main datablock includes the three engineered densities
 # (t3500 / A2500_B100 / o2200) so csplines passes exactly through the
@@ -55,7 +55,7 @@ set samples 600
 # Trailing 0.0005 row is OFF the visible range; it anchors the right
 # boundary of csplines so the line doesn't curl away at the edge.
 
-$combit << EOD
+$ddc << EOD
 0.5         60
 0.2         62
 0.1         63
@@ -131,23 +131,23 @@ keep(d) = (abs(d - 0.05) < 1e-9 || d < 0.0008) ? NaN : d
 # to the legend per backend.
 
 # Wider line widths so the chart reads at presentation scale.
-LW_COMBIT = 3.5
+LW_DDC = 3.5
 LW_CR     = 3.2
 LW_WAH    = 2.9
 LW_EWAH   = 2.9
 
 plot \
-    $combit u 1:2 w l smooth csplines  lw LW_COMBIT lc rgb '#1f4ed8' notitle, \
+    $ddc u 1:2 w l smooth csplines  lw LW_DDC lc rgb '#1f4ed8' notitle, \
     $cr     u 1:2 w l smooth mcsplines lw LW_CR     lc rgb '#16a34a' notitle, \
     $wah    u 1:2 w l smooth csplines  lw LW_WAH    lc rgb '#dc2626' notitle, \
     $ewah   u 1:2 w l smooth csplines  lw LW_EWAH   lc rgb '#1e3a8a' notitle, \
     \
-    $combit u (keep($1)):2                  w p pt 2  ps 1.5 lw 2.0 lc rgb '#1f4ed8' notitle, \
+    $ddc u (keep($1)):2                  w p pt 2  ps 1.5 lw 2.0 lc rgb '#1f4ed8' notitle, \
     $cr     u (keep($1)):($2 - 0.55)        w p pt 10 ps 1.8 lw 2.0 lc rgb '#16a34a' notitle, \
     $wah    u (keep($1)):($2 + 0.55)        w p pt 8  ps 1.6 lw 2.0 lc rgb '#dc2626' notitle, \
     $ewah   u (keep($1)):2                  w p pt 4  ps 1.5 lw 2.0 lc rgb '#1e3a8a' notitle, \
     \
-    NaN w lp pt 2  ps 1.5 lw LW_COMBIT lc rgb '#1f4ed8' title 'ComBit', \
+    NaN w lp pt 2  ps 1.5 lw LW_DDC lc rgb '#1f4ed8' title 'DDC', \
     NaN w lp pt 10 ps 1.8 lw LW_CR     lc rgb '#16a34a' title 'CRoaring', \
     NaN w lp pt 8  ps 1.6 lw LW_WAH    lc rgb '#dc2626' title 'WAH (FastBit)', \
     NaN w lp pt 4  ps 1.5 lw LW_EWAH   lc rgb '#1e3a8a' title 'EWAH'

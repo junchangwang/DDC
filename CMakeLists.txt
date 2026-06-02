@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(combit-bitmap-index LANGUAGES C CXX)
+project(ddc-bitmap-index LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,15 +8,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
-# 1. Compile ComBit library
-add_subdirectory(src/core/combit)
+# 1. Compile DDC library
+add_subdirectory(src/core/ddc)
 
 # 2. Compile Bitset core library
 add_subdirectory(src/core/bitset)
 
 # 3. Demo executable
-add_executable(combit_demo src/main.cpp)
-target_link_libraries(combit_demo PRIVATE combit)
+add_executable(ddc_demo src/main.cpp)
+target_link_libraries(ddc_demo PRIVATE ddc)
 
 # ==========================================
 # Benchmark Framework & Backends
@@ -33,13 +33,13 @@ set(FASTBIT_SOURCES
     src/core/utils/util.cpp
 )
 
-# Bring back combit_backend.cpp
+# Bring back ddc_backend.cpp
 set(BENCHMARK_SOURCES
     src/benchmark/benchmark_main.cpp
     src/benchmark/uti.cpp
     src/benchmark/backends/wah/wah_backend.cpp
     src/benchmark/backends/croaring/croaring_backend.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/benchmark/backends/Concise/concise_backend.cpp
     src/benchmark/backends/bitset/bitset_backend.cpp
@@ -49,21 +49,21 @@ set(BENCHMARK_SOURCES
 
 add_executable(benchmark_app ${BENCHMARK_SOURCES} ${FASTBIT_SOURCES})
 
-# Add src/core/combit/include to search path
+# Add src/core/ddc/include to search path
 target_include_directories(benchmark_app PRIVATE 
     ${CMAKE_SOURCE_DIR}/src 
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 
-# ComBit's AVX-512 VBMI2 expand-load needs these flags
+# DDC's AVX-512 VBMI2 expand-load needs these flags
 target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
 
-target_link_libraries(benchmark_app PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options)
+target_link_libraries(benchmark_app PRIVATE ddc bitset_core Threads::Threads atomic Boost::program_options)
 
 # ----------------------------------------------------------------
-# transition_bench — CR container conversion vs ComBit headline benchmark
+# transition_bench — CR container conversion vs DDC headline benchmark
 # ----------------------------------------------------------------
 add_executable(transition_bench
     src/benchmark/transition_bench.cpp
@@ -73,10 +73,10 @@ add_executable(transition_bench
 target_include_directories(transition_bench PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
 target_compile_options(transition_bench PRIVATE -O3 -g -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(transition_bench PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(transition_bench PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
 # Testing (Google Test) — disable with -DBUILD_TESTS=OFF
@@ -87,37 +87,26 @@ if(BUILD_TESTS)
 enable_testing()
 find_package(GTest REQUIRED)
 
-# Core library tests
-add_executable(combit_tests
-    tests/test_combit.cpp
-)
-target_include_directories(combit_tests PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
-)
-target_compile_options(combit_tests PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(combit_tests PRIVATE combit GTest::gtest_main)
-
 # Backend tests (serialization, logical ops)
-add_executable(combit_backend_tests
+add_executable(ddc_backend_tests
     tests/test_backend_ops.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
 )
-target_include_directories(combit_backend_tests PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+target_include_directories(ddc_backend_tests PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
 )
-target_link_libraries(combit_backend_tests PRIVATE combit GTest::gtest_main)
+target_link_libraries(ddc_backend_tests PRIVATE ddc GTest::gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(combit_tests)
-gtest_discover_tests(combit_backend_tests)
+gtest_discover_tests(ddc_backend_tests)
 
-# Unified 3-backend correctness tests (WAH + CRoaring + ComBit)
+# Unified 3-backend correctness tests (WAH + CRoaring + DDC)
 set(ALL_BACKEND_SOURCES
     src/benchmark/backends/wah/wah_backend.cpp
     src/benchmark/backends/croaring/croaring_backend.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/benchmark/backends/Concise/concise_backend.cpp
     src/benchmark/backends/bitset/bitset_backend.cpp
@@ -133,10 +122,10 @@ add_executable(all_backend_tests
 target_include_directories(all_backend_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
-target_link_libraries(all_backend_tests PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
+target_link_libraries(all_backend_tests PRIVATE ddc bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
 gtest_discover_tests(all_backend_tests)
 
 # Raw .bm file integration tests (reads gen_test_bitmaps.sh output)
@@ -148,10 +137,10 @@ add_executable(bm_file_tests
 target_include_directories(bm_file_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
-target_link_libraries(bm_file_tests PRIVATE combit bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
+target_link_libraries(bm_file_tests PRIVATE ddc bitset_core Threads::Threads atomic Boost::program_options GTest::gtest_main)
 gtest_discover_tests(bm_file_tests WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 endif() # BUILD_TESTS
@@ -166,10 +155,10 @@ add_executable(gen_bitmap
 )
 target_include_directories(gen_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/util
 )
-target_link_libraries(gen_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(gen_bitmap PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
 # bench_L_sizes: analytical L2/L3/L4/L5 size measurement
@@ -178,24 +167,24 @@ add_executable(bench_L_sizes
     src/benchmark/bench_L_sizes.cpp
 )
 target_include_directories(bench_L_sizes PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
-target_link_libraries(bench_L_sizes PRIVATE combit Threads::Threads atomic)
+target_link_libraries(bench_L_sizes PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
 # bench_L_ops: real depth-2/3/4/5 compress + AND/OR/XOR timing
-# Uses src/core/combit/src/combit_n.cpp — a SCALAR depth-parameterised
-# implementation isolated from the existing AVX-512 ComBit code (kept
+# Uses src/core/ddc/src/ddc_n.cpp — a SCALAR depth-parameterised
+# implementation isolated from the existing AVX-512 DDC code (kept
 # fair across all four depths by avoiding SIMD micro-optimisations).
 # ==========================================
 add_executable(bench_L_ops
     src/benchmark/bench_L_ops.cpp
 )
 target_include_directories(bench_L_ops PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
 target_compile_options(bench_L_ops PRIVATE -O3)
-target_link_libraries(bench_L_ops PRIVATE combit Threads::Threads atomic)
+target_link_libraries(bench_L_ops PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
 # bench_bypass: bypass-ablation at the default depth=4 — OR/AND/COMP
@@ -205,10 +194,10 @@ add_executable(bench_bypass
     src/benchmark/bench_bypass.cpp
 )
 target_include_directories(bench_bypass PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
 target_compile_options(bench_bypass PRIVATE -O3)
-target_link_libraries(bench_bypass PRIVATE combit Threads::Threads atomic)
+target_link_libraries(bench_bypass PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
 # bench_L_run_bar: one-shot COMP throughput at a single cardinality
@@ -219,10 +208,10 @@ add_executable(bench_L_run_bar
     src/benchmark/bench_L_run_bar.cpp
 )
 target_include_directories(bench_L_run_bar PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
 target_compile_options(bench_L_run_bar PRIVATE -O3)
-target_link_libraries(bench_L_run_bar PRIVATE combit Threads::Threads atomic)
+target_link_libraries(bench_L_run_bar PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
 # bench_seg: segment-size ablation — size + AND/OR/NOT/COMP timing
@@ -232,10 +221,10 @@ add_executable(bench_seg
     src/benchmark/bench_seg.cpp
 )
 target_include_directories(bench_seg PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
 )
 target_compile_options(bench_seg PRIVATE -O3)
-target_link_libraries(bench_seg PRIVATE combit Threads::Threads atomic)
+target_link_libraries(bench_seg PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
 # verify_bitmap: bitmap correctness verification
@@ -249,39 +238,39 @@ add_executable(verify_bitmap
 target_include_directories(verify_bitmap PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/util
 )
-target_link_libraries(verify_bitmap PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(verify_bitmap PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
-# TPC-H Q6 Benchmark: ComBit vs WAH
+# TPC-H Q6 Benchmark: DDC vs WAH
 # ==========================================
 set(TPCH_Q6_SOURCES
     src/benchmark/tpch_q6_benchmark.cpp
     src/benchmark/uti.cpp
     src/benchmark/backends/wah/wah_backend.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
 )
 
 add_executable(tpch_q6_benchmark ${TPCH_Q6_SOURCES} ${FASTBIT_SOURCES})
 target_include_directories(tpch_q6_benchmark PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 target_compile_options(tpch_q6_benchmark PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(tpch_q6_benchmark PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(tpch_q6_benchmark PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
-# Compress TPC-H Q6 bitmaps: raw → ComBit + WAH
+# Compress TPC-H Q6 bitmaps: raw → DDC + WAH
 # ==========================================
 set(COMPRESS_Q6_SOURCES
     src/benchmark/compress_tpch_q6.cpp
     src/benchmark/uti.cpp
     src/benchmark/backends/wah/wah_backend.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
     src/benchmark/backends/croaring/croaring_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/core/croaring/roaring.c
@@ -291,20 +280,20 @@ add_executable(compress_tpch_q6 ${COMPRESS_Q6_SOURCES} ${FASTBIT_SOURCES})
 target_include_directories(compress_tpch_q6 PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 target_compile_options(compress_tpch_q6 PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(compress_tpch_q6 PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(compress_tpch_q6 PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
-# Compress TPC-H Q1 bitmaps: raw → ComBit + WAH + CRoaring + EWAH
+# Compress TPC-H Q1 bitmaps: raw → DDC + WAH + CRoaring + EWAH
 # ==========================================
 set(COMPRESS_Q1_SOURCES
     src/benchmark/compress_tpch_q1.cpp
     src/benchmark/uti.cpp
     src/benchmark/backends/wah/wah_backend.cpp
-    src/benchmark/backends/combit/combit_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
     src/benchmark/backends/croaring/croaring_backend.cpp
     src/benchmark/backends/ewah/ewah_backend.cpp
     src/core/croaring/roaring.c
@@ -314,11 +303,11 @@ add_executable(compress_tpch_q1 ${COMPRESS_Q1_SOURCES} ${FASTBIT_SOURCES})
 target_include_directories(compress_tpch_q1 PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
 )
 target_compile_options(compress_tpch_q1 PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(compress_tpch_q1 PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(compress_tpch_q1 PRIVATE ddc Threads::Threads atomic Boost::program_options)
 
 # ==========================================
 # Generic raw .bm → 4-format compressor (walks any subdir layout).
@@ -333,10 +322,10 @@ add_executable(compress_any
 target_include_directories(compress_any PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/combit/include
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
     ${CMAKE_SOURCE_DIR}/src/core/croaring
     ${CMAKE_SOURCE_DIR}/src/core/ewah
 )
 target_compile_options(compress_any PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
-target_link_libraries(compress_any PRIVATE combit Threads::Threads atomic Boost::program_options)
+target_link_libraries(compress_any PRIVATE ddc Threads::Threads atomic Boost::program_options)

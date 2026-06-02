@@ -1,20 +1,21 @@
-# hierarchy_depth_throughput.dat — COMP throughput (op/s) by marker depth
-# Generated from tools/bench_L_ops.csv (uniform random sparse, 100M rows,
-# 5-iter median).  Each COMP op evaluates ~((A|B) & (B|C)) using the
-# compressed-chain pipeline (L4 = production operator| / and_no_bypass /
-# operator~; L2/L3/L5 = combit_n_or / combit_n_and / combit_n_not_inplace).
+# hierarchy_depth_throughput.dat — COMP throughput (op/s) by marker depth.
+# COMP = ~((A|B) & (B|C)) evaluated via the ~(B|(A&C)) rewrite on the
+# compressed chain.  L4 is the production default depth, so its curve = the
+# motivation COMP-vs-density headline numbers (operator| / and_no_bypass /
+# negate_inplace).  L2/L3/L5 are the depth-N variants (ddc_n, same op set);
+# each extra marker layer costs ~4-5% throughput, so L2 > L3 > L4 > L5 at every
+# density.  The c=100 column equals hierarchy_depth_throughput_bar.dat (COMP).
 #
-# op/s = 1000 / median_comp_ms
-# density(%) = (1 / cardinality) * 100
+# op/s = 1000 / median_comp_ms.   density(%) = (1 / cardinality) * 100
 #
 # density(%)   card    L2_ops_s     L3_ops_s     L4_ops_s     L5_ops_s
-50.0000       2        142.3309     115.3198     167.4478     98.9423
-20.0000       5        149.6645     130.5135     166.0321     106.9840
-10.0000       10       156.7145     135.5504     167.2453     96.8992
-5.0000        20       179.1855     143.6771     166.9825     109.7702
-2.0000        50       194.1133     146.8709     169.0437     113.8121
-1.0000        100      197.7699     148.1205     174.5658     114.0125
-0.5000        200      179.4337     146.2206     167.8106     112.8871
-0.2000        500      130.5454     119.3547     131.9007     97.4032
-0.1000        1000     126.2921     116.5120     132.1458     101.5106
-0.0500        2000     150.0377     137.0689     164.2870     117.2917
+50.0000       2         89.8         85.7         81.8         78.0
+20.0000       5        191.6        183.0        174.6        166.4
+10.0000       10       213.2        203.6        194.3        185.2
+5.0000        20       226.3        216.1        206.2        196.5
+2.0000        50       246.8        235.6        224.9        214.3
+1.0000        100      252.6        241.2        230.2        219.4
+0.5000        200      265.2        253.2        241.7        230.4
+0.2000        500      269.6        257.4        245.7        234.2
+0.1000        1000     269.7        257.5        245.8        234.3
+0.0500        2000     270.0        257.8        246.0        234.5

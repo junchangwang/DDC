@@ -27,7 +27,7 @@ from openpyxl.utils import get_column_letter
 # ============================================================
 NAVY        = "1F4E78"    # title bar
 LIGHT_BLUE  = "DCE6F1"    # subtitle / section row
-HIGHLIGHT   = "FFF2CC"    # ComBit highlight row
+HIGHLIGHT   = "FFF2CC"    # DDC highlight row
 ACCENT_GREEN = "C6EFCE"   # winner cell
 ACCENT_RED   = "FFC7CE"   # loser cell
 
@@ -92,7 +92,7 @@ def write_summary_sheet(ws, rows):
     set_widths(ws, {"A": 5, "B": 14, "C": 16, "D": 14, "E": 14,
                     "F": 16, "G": 16, "H": 20})
 
-    title_cell(ws.cell(1, 1), "ComBit vs CRoaring — Container-Transition Benchmark", size=15)
+    title_cell(ws.cell(1, 1), "DDC vs CRoaring — Container-Transition Benchmark", size=15)
     ws.merge_cells("A1:H1")
     ws.row_dimensions[1].height = 30
 
@@ -111,11 +111,11 @@ def write_summary_sheet(ws, rows):
         "S1_OR_a2b":  ("Scenario 1 — OR  (CR: array → bitset transition)",
                        "Each input segment: ~3000 set bits → array container (density 4.6%)\n"
                        "OR result: ~6000 set bits → bitset container (density 9.2%, > 4096 threshold)\n"
-                       "CR must allocate 8 KB bitset and re-emit data; ComBit byte-ORs L1 streams directly."),
+                       "CR must allocate 8 KB bitset and re-emit data; DDC byte-ORs L1 streams directly."),
         "S2_AND_b2a": ("Scenario 2 — AND (CR: bitset → array transition)",
                        "Each input segment: ~16000 set bits → bitset container (density 24%)\n"
                        "AND result: ~3900 set bits → array container (density 6%, < 4096 threshold)\n"
-                       "CR must extract set-bit positions from bitset into uint16 array; ComBit byte-ANDs L1 streams."),
+                       "CR must extract set-bit positions from bitset into uint16 array; DDC byte-ANDs L1 streams."),
         "S3_OR_worst": ("Scenario 3 — OR  WORST PATH  array → bitset → array  (CR longest path)",
                        "Each input segment: 3500 set bits with 95% overlap (both array, just under threshold)\n"
                        "|A|+|B|=7000>4096 triggers bitset allocation, but actual |A∪B|≈3675 ≤ 4096,\n"
@@ -154,32 +154,32 @@ def write_summary_sheet(ws, rows):
         scen_rows = sorted(by_scen[scen_key], key=lambda r: float(r["median_ms"]))
         fastest_ms = float(scen_rows[0]["median_ms"])
         # Show name + highlight: CB-decompressed (yellow), CB-compressed (orange).
-        CB_NAMES = {"CB-decompressed": "ComBit (decompressed out)",
-                    "CB-compressed":   "ComBit (compressed out, apples-to-apples)",
-                    "CB":              "ComBit"}
+        CB_NAMES = {"CB-decompressed": "DDC (decompressed out)",
+                    "CB-compressed":   "DDC (compressed out, apples-to-apples)",
+                    "CB":              "DDC"}
         CB_FG    = {"CB-decompressed": "FFF2CC",
                     "CB-compressed":   "FCE4D6",
                     "CB":              HIGHLIGHT}
         cr_ms = next((float(r["median_ms"]) for r in scen_rows if r["backend"] == "CR"), None)
         for idx, r in enumerate(scen_rows, start=1):
-            is_combit_family = r["backend"].startswith("CB")
-            base_fg = CB_FG.get(r["backend"]) if is_combit_family else None
+            is_ddc_family = r["backend"].startswith("CB")
+            base_fg = CB_FG.get(r["backend"]) if is_ddc_family else None
             row = hdr_row + idx
             data_cell(ws.cell(row, 1), idx, number_format="0", fg=base_fg)
             display_name = CB_NAMES.get(r["backend"], r["backend"])
             data_cell(ws.cell(row, 2), display_name,
-                      bold=is_combit_family, fg=base_fg, align="center")
+                      bold=is_ddc_family, fg=base_fg, align="center")
             med = float(r["median_ms"])
             fg = ACCENT_GREEN if med == fastest_ms else (
                  ACCENT_RED if r == scen_rows[-1] else base_fg)
-            data_cell(ws.cell(row, 3), med, bold=is_combit_family, fg=fg, number_format="0.000")
+            data_cell(ws.cell(row, 3), med, bold=is_ddc_family, fg=fg, number_format="0.000")
             data_cell(ws.cell(row, 4), float(r["min_ms"]), fg=base_fg, number_format="0.000")
             data_cell(ws.cell(row, 5), float(r["max_ms"]), fg=base_fg, number_format="0.000")
             data_cell(ws.cell(row, 6), float(r["stddev_ms"]), fg=base_fg, number_format="0.000")
             data_cell(ws.cell(row, 7), int(r["result_card"]), fg=base_fg, number_format="#,##0")
             data_cell(ws.cell(row, 8), float(r["result_size_mb"]), fg=base_fg, number_format="0.00")
 
-        # Footer: ratios for both ComBit modes
+        # Footer: ratios for both DDC modes
         footer = hdr_row + len(scen_rows) + 1
         cb_d = next((float(r["median_ms"]) for r in scen_rows if r["backend"] == "CB-decompressed"), None)
         cb_c = next((float(r["median_ms"]) for r in scen_rows if r["backend"] == "CB-compressed"), None)
@@ -222,8 +222,8 @@ def write_chart_sheet(ws, rows):
     for r in rows:
         by_backend.setdefault(r["backend"], {})[r["scenario"]] = float(r["median_ms"])
 
-    order = ["CB", "CR", "WAH", "EWAH", "Concise"]   # ComBit first
-    pretty = {"CB": "ComBit"}
+    order = ["CB", "CR", "WAH", "EWAH", "Concise"]   # DDC first
+    pretty = {"CB": "DDC"}
     header_row = 3
     header_cell(ws.cell(header_row, 1), "Backend")
     header_cell(ws.cell(header_row, 2), "Scenario 1\n(OR  array→bitset)")
@@ -319,17 +319,17 @@ def write_howitworks_sheet(ws):
            "(second 8 KB scan).",
            "src/core/croaring/roaring.c : 17260")],
          ),
-        ("Why ComBit avoids the cost",
+        ("Why DDC avoids the cost",
          [("4-level fill hierarchy",
-           "ComBit segments are described by L4/L3/L2 markers + L1 "
+           "DDC segments are described by L4/L3/L2 markers + L1 "
            "literal bytes.  Whether a segment is 'sparse' or 'dense' is "
            "encoded by the fill-polarity bits; the same data layout "
            "handles both regimes — no container-type concept.",
-           "src/core/combit/include/combit.h"),
+           "src/core/ddc/include/ddc.h"),
           ("Byte-level scatter",
            "OR / AND traverse L1 literal byte streams with AVX-512; "
            "no allocation per segment, no post-op conversion.",
-           "src/core/combit/src/or.cpp / and.cpp")],
+           "src/core/ddc/src/or.cpp / and.cpp")],
          ),
     ]
 

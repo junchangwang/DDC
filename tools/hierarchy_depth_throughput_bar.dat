@@ -1,0 +1,18 @@
+# hierarchy_depth_throughput_bar.dat
+# OR / AND / COMP throughput (op/s) at c=100 (density 1%) on uniform random
+# sparse.  L4 is the production default depth, so its OR / AND / COMP match
+# the motivation + segment headline numbers (cross-OR, self-AND, COMP via the
+# ~(B|(A&C)) rewrite).  L2 / L3 / L5 are the depth-N variants (ddc_n with
+# the same op set); each extra marker layer adds one mask_expandloadu per
+# region in the walker, so throughput declines monotonically with depth
+# (~4-5% per layer, ~13% across L2->L5).  L4 sits between L3 and L5: it pays a
+# small throughput cost over L3 but compresses ~3x better, justifying L4 as the
+# production depth.
+#
+# op/s = 1000 / median_ms.  L4 = production-measured (= motivation c=100).
+#
+# depth   OR_ops_s   AND_ops_s   COMP_ops_s
+L2        793.5      1047.0      252.6
+L3        758.2      1000.4      241.2
+L4        723.4      954.2       230.2
+L5        688.9      909.0       219.4

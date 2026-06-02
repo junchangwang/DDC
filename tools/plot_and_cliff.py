@@ -29,7 +29,7 @@ C_MIN = 4500
 C_MAX = 24000
 
 BACKENDS = [
-    ("ComBIT (New)",     "ComBit",             "#1f4ed8", 7,  3.2),
+    ("DDC (New)",     "DDC",             "#1f4ed8", 7,  3.2),
     ("CRoaring",         "CRoaring",           "#dc2626", 5,  2.6),
     ("Bitset (AVX512)",  "Bitset (AVX-512)",   "#0891b2", 9,  2.2),
     ("Bitset (Plain)",   "Bitset (scalar)",    "#7c3aed", 11, 2.2),

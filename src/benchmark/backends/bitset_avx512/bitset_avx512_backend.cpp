@@ -23,12 +23,13 @@ void BitsetAVX512Backend::Append(BitmapHandle& handle, bool bit) {
 
 uint64_t BitsetAVX512Backend::Cardinality(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
-    return h.btv.popcount(true); // SIMD-accelerated
+    return h.btv.popcount(true);
 }
 
 std::vector<uint32_t> BitsetAVX512Backend::Decode(const BitmapHandle& handle) {
     auto& h = getHandle(handle);
     std::vector<uint32_t> result = h.btv.decode_positions();
+    // trim padding
     while (!result.empty() && result.back() >= h.current_bits) {
         result.pop_back();
     }
@@ -39,6 +40,7 @@ std::unique_ptr<BitmapHandle> BitsetAVX512Backend::bitOr(const BitmapHandle& a, 
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<BitsetAVX512Handle>();
+    // OR kernel
     res->btv = bitset::BitsetVector::word_or(ha.btv, hb.btv, true);
     res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
@@ -48,6 +50,7 @@ std::unique_ptr<BitmapHandle> BitsetAVX512Backend::bitAnd(const BitmapHandle& a,
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<BitsetAVX512Handle>();
+    // AND kernel
     res->btv = bitset::BitsetVector::word_and(ha.btv, hb.btv, true);
     res->current_bits = std::min(ha.current_bits, hb.current_bits);
     return res;
@@ -57,6 +60,7 @@ std::unique_ptr<BitmapHandle> BitsetAVX512Backend::bitXor(const BitmapHandle& a,
     auto& ha = getHandle(a);
     auto& hb = getHandle(b);
     auto res = std::make_unique<BitsetAVX512Handle>();
+    // XOR kernel
     res->btv = bitset::BitsetVector::word_xor(ha.btv, hb.btv, true);
     res->current_bits = std::max(ha.current_bits, hb.current_bits);
     return res;
@@ -67,6 +71,7 @@ void BitsetAVX512Backend::Serialize(const BitmapHandle& handle, const std::strin
     std::ofstream out(path, std::ios::binary);
     if (!out) return;
     size_t packed_bytes = (h.current_bits + 7) / 8;
+    // dump raw words
     out.write(reinterpret_cast<const char*>(h.btv.words()), packed_bytes);
 }
 

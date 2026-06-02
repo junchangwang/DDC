@@ -10,7 +10,7 @@ set -e
 INPUT_DIR="${1:-bitmap/tpch_q3}"
 OUTPUT_BASE="${2:-bitmap/tpch_q3}"
 NUM_ROWS="${3:-12002430}"
-COMBIT_DIR="${OUTPUT_BASE}_combit"
+DDC_DIR="${OUTPUT_BASE}_ddc"
 WAH_DIR="${OUTPUT_BASE}_wah"
 CROARING_DIR="${OUTPUT_BASE}_croaring"
 EWAH_DIR="${OUTPUT_BASE}_ewah"
@@ -38,7 +38,7 @@ mkdir -p "$TMPDIR/shipdate"  # empty shipdate so the tool doesn't fail
 rm -rf "$TMPDIR"
 
 # Now symlink shipdate from Q1 compressed dirs
-for fmt in combit wah croaring ewah; do
+for fmt in ddc wah croaring ewah; do
     DST="${OUTPUT_BASE}_${fmt}/shipdate"
     SRC="$(realpath ${Q1_BASE}_${fmt}/shipdate)"
     rm -rf "$DST"
@@ -47,4 +47,4 @@ for fmt in combit wah croaring ewah; do
 done
 
 echo ""
-echo "  Done! Output dirs: ${OUTPUT_BASE}_{combit,wah,croaring,ewah}"
+echo "  Done! Output dirs: ${OUTPUT_BASE}_{ddc,wah,croaring,ewah}"

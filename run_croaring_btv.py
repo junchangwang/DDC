@@ -9,7 +9,7 @@ with --backend croaring and collects storage + operation timing (including
 the to-bitset conversion overhead).
 
 Usage (on server):
-    cd ~/lee/thesis/combit
+    cd ~/lee/thesis/ddc
     python3 ../run_croaring_btv.py                        # default: all cards
     python3 ../run_croaring_btv.py --regen                # force regenerate .bm files
     python3 ../run_croaring_btv.py -o my_results.csv      # custom output filename
@@ -259,7 +259,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="CRoaring-bitvector benchmark runner (op + forced to-bitset conversion)")
     parser.add_argument("--base-dir", default=".",
-                        help="combit project root (default: .)")
+                        help="ddc project root (default: .)")
     parser.add_argument("-o", "--output", default="results_croaring_btv.csv",
                         help="output CSV filename (default: results_croaring_btv.csv)")
     parser.add_argument("--regen", action="store_true",

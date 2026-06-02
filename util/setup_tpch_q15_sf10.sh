@@ -27,7 +27,7 @@
 # the full TPC-H shipdate domain [date_min..date_max].  This script
 # simply creates Q15 bitmap directories whose `shipdate/` subdirectory
 # is a symlink to the corresponding Q6 directory — both raw and the
-# four compressed formats (combit/wah/croaring/ewah).
+# four compressed formats (ddc/wah/croaring/ewah).
 #
 # l_suppkey, l_extendedprice and l_discount are read directly from
 # DuckDB storage at query time (mirrors Q1's per-row column load) and
@@ -40,7 +40,7 @@
 #   bash util/setup_tpch_q15_sf10.sh /home/lichenhang/lee/thesis/check/lee/duckdb-dev
 #
 # After running this, the Q15 benchmark (`PRAGMA bm_tpch(15);`) will
-# find its bitmaps under tpch_q15{,_combit,_wah,_croaring,_ewah}/shipdate/.
+# find its bitmaps under tpch_q15{,_ddc,_wah,_croaring,_ewah}/shipdate/.
 # =============================================================================
 set -euo pipefail
 
@@ -53,7 +53,7 @@ echo "==========================================="
 echo "  Base dir: $BASE_DIR"
 
 # All five flavors: raw + 4 compressed formats
-FORMATS=("" "_combit" "_wah" "_croaring" "_ewah")
+FORMATS=("" "_ddc" "_wah" "_croaring" "_ewah")
 
 for fmt in "${FORMATS[@]}"; do
     Q6_DIR="${BASE_DIR}/tpch_q6${fmt}"

@@ -1,11 +1,11 @@
 ######################## hierarchy_depth_throughput ##########################
 # COMP throughput (op/s) for ~((A|B) & (B|C)) vs density.
-# L4 uses the production ComBit compressed-chain (operator| / and_no_bypass /
-# operator~).  L2/L3/L5 use the depth-parameterised combit_n_or / combit_n_and
-# / combit_n_not_inplace which share the same per-segment scratch + SIMD
+# L4 uses the production DDC compressed-chain (operator| / and_no_bypass /
+# operator~).  L2/L3/L5 use the depth-parameterised ddc_n_or / ddc_n_and
+# / ddc_n_not_inplace which share the same per-segment scratch + SIMD
 # layer-compress fusion as production L4 — no decompress/recompress detour.
 # X axis: density (= 1/cardinality), log scale, dense -> sparse (left -> right).
-# Y axis: COMP throughput in op/s (linear, ~95-200 range).
+# Y axis: COMP throughput in op/s (linear, ~80-270 range).
 ###############################################################################
 reset
 
@@ -16,8 +16,8 @@ set logscale x 10
 set xrange [80:0.03]
 set xtics ("50%%" 50, "10%%" 10, "1%%" 1, "0.1%%" 0.1) font ',23' offset 0,0.4,0
 
-set yrange [80:230]
-set ytics 30 font ',25'
+set yrange [70:285]
+set ytics 60 font ',25'
 
 set xlabel "Density" offset 0,1.2 font ',25'
 set ylabel "COMP throughput (op/s)" offset 1.3,-0.9 font ',25'

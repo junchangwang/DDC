@@ -1,22 +1,18 @@
 #include <gtest/gtest.h>
-#include "benchmark/backends/combit/combit_backend.h"
+#include "benchmark/backends/ddc/ddc_backend.h"
 #include <cstdio>
 #include <filesystem>
 #include <set>
 
 namespace fs = std::filesystem;
 
-// ===================================================================
-// Backend operations tests: Serialize/Load, OR/AND/XOR, Cardinality
-// ===================================================================
-
 class BackendTest : public ::testing::Test {
 protected:
-    CombitBackend backend;
+    DDCBackend backend;
     std::string tmp_dir;
 
     void SetUp() override {
-        tmp_dir = fs::temp_directory_path() / "combit_test";
+        tmp_dir = fs::temp_directory_path() / "ddc_test";
         fs::create_directories(tmp_dir);
     }
 
@@ -24,10 +20,9 @@ protected:
         fs::remove_all(tmp_dir);
     }
 
-    // Helper: create a bitmap with specific bit positions set
     std::unique_ptr<BitmapHandle> make_bitmap(const std::vector<uint64_t>& positions, uint64_t total_bits) {
         auto h = backend.Create();
-        // Append bit by bit up to total_bits
+
         std::set<uint64_t> pos_set(positions.begin(), positions.end());
         for (uint64_t i = 0; i < total_bits; ++i) {
             backend.Append(*h, pos_set.count(i) > 0);
@@ -35,8 +30,6 @@ protected:
         return h;
     }
 };
-
-// ======================== Cardinality ========================
 
 TEST_F(BackendTest, CardinalityEmpty) {
     auto h = backend.Create();
@@ -57,13 +50,11 @@ TEST_F(BackendTest, CardinalityAfterAppend) {
 TEST_F(BackendTest, CardinalityLarge) {
     auto h = backend.Create();
     for (int i = 0; i < 10000; ++i) {
-        backend.Append(*h, i % 3 == 0);  // every 3rd bit
+        backend.Append(*h, i % 3 == 0);
     }
-    // ceil(10000/3) = 3334
+
     EXPECT_EQ(backend.Cardinality(*h), 3334u);
 }
-
-// ======================== Decode ========================
 
 TEST_F(BackendTest, DecodeEmpty) {
     auto h = backend.Create();
@@ -93,8 +84,6 @@ TEST_F(BackendTest, DecodeAllOnes) {
         EXPECT_EQ(result[i], i);
     }
 }
-
-// ======================== Serialize / Load ========================
 
 TEST_F(BackendTest, SerializeAndLoadEmpty) {
     auto h = backend.Create();
@@ -150,24 +139,21 @@ TEST_F(BackendTest, SerializeAndLoadLarge) {
 }
 
 TEST_F(BackendTest, SerializeFileSize) {
-    // Sparse bitmap: file should be small
+
     auto h = make_bitmap({0, 9999}, 10000);
     std::string path = tmp_dir + "/sparse.bm";
 
     backend.Serialize(*h, path);
     auto file_size = fs::file_size(path);
 
-    // 2 indices * 4 bytes + 8 bytes (current_bits) + 8 bytes (size) = ~24 bytes
     EXPECT_LT(file_size, 100u);
 }
 
 TEST_F(BackendTest, LoadNonexistentFile) {
     auto loaded = backend.Load(tmp_dir + "/does_not_exist.bm");
-    // Should return empty bitmap, not crash
+
     EXPECT_EQ(backend.Cardinality(*loaded), 0u);
 }
-
-// ======================== Bitwise OR ========================
 
 TEST_F(BackendTest, OrDisjoint) {
     auto a = make_bitmap({0, 2, 4}, 8);
@@ -237,8 +223,6 @@ TEST_F(BackendTest, OrSelf) {
     EXPECT_EQ(decoded[2], 10u);
 }
 
-// ======================== Bitwise AND ========================
-
 TEST_F(BackendTest, AndOverlapping) {
     auto a = make_bitmap({0, 1, 2, 3, 4}, 8);
     auto b = make_bitmap({2, 3, 4, 5, 6}, 8);
@@ -281,8 +265,6 @@ TEST_F(BackendTest, AndSelf) {
     EXPECT_EQ(decoded[2], 10u);
 }
 
-// ======================== Bitwise XOR ========================
-
 TEST_F(BackendTest, XorDisjoint) {
     auto a = make_bitmap({0, 2}, 4);
     auto b = make_bitmap({1, 3}, 4);
@@ -311,7 +293,6 @@ TEST_F(BackendTest, XorPartialOverlap) {
     auto result = backend.bitXor(*a, *b);
     auto decoded = backend.Decode(*result);
 
-    // XOR: {0,1} union {4,5}
     ASSERT_EQ(decoded.size(), 4u);
     EXPECT_EQ(decoded[0], 0u);
     EXPECT_EQ(decoded[1], 1u);
@@ -319,10 +300,8 @@ TEST_F(BackendTest, XorPartialOverlap) {
     EXPECT_EQ(decoded[3], 5u);
 }
 
-// ======================== Multi-way OR ========================
-
 TEST_F(BackendTest, MultiWayOr) {
-    // Simulate range query: OR of multiple bitmaps
+
     auto b1 = make_bitmap({0, 10, 20}, 32);
     auto b2 = make_bitmap({5, 15, 25}, 32);
     auto b3 = make_bitmap({3, 13, 23}, 32);
@@ -339,10 +318,8 @@ TEST_F(BackendTest, MultiWayOr) {
     }
 }
 
-// ======================== Full pipeline: Create → Append → Serialize → Load → Query ========================
-
 TEST_F(BackendTest, FullPipeline) {
-    // 1. Create and populate
+
     auto h = backend.Create();
     std::vector<uint32_t> expected_positions;
     for (int i = 0; i < 1000; ++i) {
@@ -351,57 +328,44 @@ TEST_F(BackendTest, FullPipeline) {
         if (bit) expected_positions.push_back(i);
     }
 
-    // 2. Check cardinality
     EXPECT_EQ(backend.Cardinality(*h), expected_positions.size());
 
-    // 3. Serialize to .bm file
     std::string path = tmp_dir + "/pipeline.bm";
     backend.Serialize(*h, path);
     EXPECT_TRUE(fs::exists(path));
 
-    // 4. Load from .bm file
     auto loaded = backend.Load(path);
     EXPECT_EQ(backend.Cardinality(*loaded), expected_positions.size());
 
-    // 5. Decode and verify all positions
     auto decoded = backend.Decode(*loaded);
     ASSERT_EQ(decoded.size(), expected_positions.size());
     for (size_t i = 0; i < expected_positions.size(); ++i) {
         EXPECT_EQ(decoded[i], expected_positions[i]) << "index " << i;
     }
 
-    // 6. OR with itself should be identical
     auto or_result = backend.bitOr(*loaded, *loaded);
     EXPECT_EQ(backend.Cardinality(*or_result), expected_positions.size());
 
-    // 7. AND with itself should be identical
     auto and_result = backend.bitAnd(*loaded, *loaded);
     EXPECT_EQ(backend.Cardinality(*and_result), expected_positions.size());
 
-    // 8. XOR with itself should be empty
     auto xor_result = backend.bitXor(*loaded, *loaded);
     EXPECT_EQ(backend.Cardinality(*xor_result), 0u);
 }
 
-// ======================== Generate .bm file and verify ========================
-
 TEST_F(BackendTest, GenerateBmFile) {
-    // Simulate what gen_bitmap.sh does: create bitmap for a column value
-    // Column with 1000 rows, value "42" appears at positions divisible by 10
+
     auto h = backend.Create();
     for (int row = 0; row < 1000; ++row) {
         backend.Append(*h, row % 10 == 0);
     }
 
-    // Save as .bm file
     std::string bm_path = tmp_dir + "/42.bm";
     backend.Serialize(*h, bm_path);
 
-    // Check file was created
     EXPECT_TRUE(fs::exists(bm_path));
     EXPECT_GT(fs::file_size(bm_path), 0u);
 
-    // Reload and verify
     auto loaded = backend.Load(bm_path);
     EXPECT_EQ(backend.Cardinality(*loaded), 100u);
 

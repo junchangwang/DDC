@@ -1,4 +1,4 @@
-// Quick EWAH-only compressor: reads raw .bm → EWAH, skipping already-done files
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,7 +12,7 @@
 namespace fs = std::filesystem;
 
 static void compress_one(const std::string& raw_path, const std::string& out_path, size_t num_rows) {
-    if (fs::exists(out_path)) return;  // skip if already done
+    if (fs::exists(out_path)) return;
 
     std::ifstream in(raw_path, std::ios::binary);
     if (!in) { std::cerr << "Error: " << raw_path << "\n"; return; }
@@ -40,17 +40,16 @@ int main(int argc, char* argv[]) {
     std::string ewah_dir = argv[2];
     size_t num_rows = std::stoull(argv[3]);
 
-    // Discount
     for (int v = 0; v <= 10; v++) {
         std::string rel = "discount/" + std::to_string(v) + ".bm";
         compress_one(raw_dir + "/" + rel, ewah_dir + "/" + rel, num_rows);
     }
-    // Quantity
+
     for (int v = 1; v <= 50; v++) {
         std::string rel = "quantity/" + std::to_string(v) + ".bm";
         compress_one(raw_dir + "/" + rel, ewah_dir + "/" + rel, num_rows);
     }
-    // Shipdate
+
     std::vector<int> ids;
     for (auto& e : fs::directory_iterator(raw_dir + "/shipdate")) {
         if (e.path().extension() == ".bm") {

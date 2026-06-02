@@ -22,7 +22,7 @@ if [ ! -f "$OUT" ];  then echo "ERROR: $OUT missing";   exit 1; fi
 CARDS_STD="2 5 10 20 50 100 200 500 1000"
 
 declare -a BACKENDS=(
-    "combit_w8:combit"
+    "ddc_w8:ddc"
     "roaring:croaring"
     "wah:wah"
     "ewah:ewah"
