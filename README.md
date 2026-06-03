@@ -20,18 +20,10 @@ The bitmap index-powered DuckDB implementation using these compression mechanism
 
 ### How is this project organized?
 
-- `src/core/ddc/` — the DDC compression library (a git submodule; see its own 
-  README). `DDCBtv` is one compressed segment (L1 literal bytes / L2 word-control
-  bits / L3 byte-control bits / L4 top-control bits); `DDC` is the whole
-  bitvector; `DDCN` is the depth-parameterised variant (L2–L5) used by the
-  hierarchy-depth study.
-- `src/core/{croaring,fastbit,ewah,Concise}/` — unmodified third-party baseline
-  libraries.
-- `src/benchmark/` — the micro-benchmark framework and the baseline backends
-  (WAH, EWAH, CONCISE, Roaring, bitset) under `backends/`. Each experiment in
-  the paper has a dedicated driver:
-- `util/` — dataset and bitmap generation (`gen_bitmap`, `gen_dataset.sh`,
-  `gen_test_bitmaps.sh`).
+- `src/core/ddc/`: the DDC compression library (a git submodule; see its own README). `DDCBtv` is one compressed segment (L1 literal bytes / L2 word-control bits / L3 byte-control bits / L4 top-control bits). `DDC` is the whole bitvector. `DDCN` is the depth-parameterised variant (L2-L5) used by the hierarchy-depth study.
+- `src/core/{croaring,fastbit,ewah,Concise}/`: unmodified third-party baseline libraries.
+- `src/benchmark/`: the micro-benchmark framework and the baseline backends (WAH, EWAH, CONCISE, Roaring, bitset) under `backends/`. Each experiment in the paper has a dedicated driver.
+- `util/`: dataset and bitmap generation (`gen_bitmap`, `gen_dataset.sh`, `gen_test_bitmaps.sh`).
 
 ### How to build and run the experiments?
 
