@@ -35,8 +35,8 @@ git submodule update --init --recursive   # fetch the DDC core (src/core/ddc)
 ./build.sh                                 # CMake Release -> build/
 ```
 
-Run the synthetic experiments on a generated bitmap root (see *Data
-preparation*). The depth / segment / bypass drivers take `<bitmap_root> <out_csv>`:
+Run the synthetic experiments on a generated bitmap directory (see *Data preparation*).
+The hierarchy-depth, segment-size, and bypass evaluations accept parameters in the form of `<bitmap_root> <out_csv>`:
 
 ```sh
 # OR/AND/NOT/COMP throughput + size, all backends (Fig. 8-9)
@@ -56,7 +56,7 @@ preparation*). The depth / segment / bypass drivers take `<bitmap_root> <out_csv
 ### Data preparation
 
 By default, our evaluation uses bitmaps with 100M rows, varying bit density by setting different cardinalities in a 100M-integer array.
-The generated bitmaps are placed under `bitmap/`. Forexample:
+The generated bitmaps are placed under `bitmap/`. For example:
 
 ```sh
 # one bitmap set per cardinality, per scheme, written under ./bitmap/
@@ -71,8 +71,7 @@ done
 
 ### DuckDB integration
 
-The end-to-end TPC-H evaluation inside DuckDB is in the companion DuckDB
-repository at https://github.com/junchangwang/duckdb-DDC .
+The end-to-end TPC-H evaluation inside DuckDB using bitmap indexing can be found at https://github.com/junchangwang/duckdb-DDC .
 
 ### Reference
 
