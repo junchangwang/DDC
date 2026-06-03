@@ -43,7 +43,7 @@ Requires C++17, CMake, Boost, and a CPU/compiler with AVX-512 (F, BW, VBMI2).
 
 ### Data preparation
 
-The experiments run on `.bm` bitmap files. `gen_bitmap` builds them automatically, and generating the full set for every scheme and cardinality takes a long time, so we also provide a pre-generated set for download at <DOWNLOAD_LINK>.
+The experiments run on `.bm` bitmap files. `gen_bitmap` builds them automatically, and generating the full set for every scheme and cardinality takes a long time, so we also provide a pre-generated set for download at <DOWNLOAD_LINK>. A full set with every scheme would be very large, because the baseline schemes hardly compress the dense low-cardinality bitvectors, so the download holds only the DDC bitmaps for the cardinality sweep (plus CRoaring at a few special comparison points). Generate the baseline schemes with the commands below.
 
 To build the base set yourself (every scheme, cardinalities 2 to 2000), run the following. All bitmaps are written under `bitmap/`.
 
@@ -52,17 +52,6 @@ for c in 2 5 10 20 50 100 200 500 1000 2000; do
   for s in ddc wah roaring ewah concise; do
     ./build/gen_bitmap -n 100000000 -c $c $s -d .
   done
-done
-```
-
-The hierarchy-depth and segment-size experiments need extra DDC variants, which are also in the download set. To build them, add the depth variants (`-L 2` through `-L 5`) and the segment variants (`-S` at 4096, 16384, 262144).
-
-```sh
-for c in 2 5 10 20 50 100 200 500 1000 2000 3000 5000 10000 20000 50000; do
-  for L in 2 3 4 5; do ./build/gen_bitmap -n 100000000 -c $c ddc -L $L -d .; done
-done
-for c in 10 100 1000; do
-  for S in 4096 16384 262144; do ./build/gen_bitmap -n 100000000 -c $c ddc -S $S -d .; done
 done
 ```
 
