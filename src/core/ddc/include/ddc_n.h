@@ -66,7 +66,7 @@ DDCN ddc_n_or (const DDCN& a, const DDCN& b);
 DDCN ddc_n_and(const DDCN& a, const DDCN& b);
 
 // bypass config
-enum class BypassCfg { BP_ALL, BP_NO_L4, BP_NO_L3, BP_NONE };
+enum class BypassCfg { BP_ALL, BP_NO_L4, BP_NO_L3, BP_NONE, BP_BRANCHLESS, BP_BL_ALL };
 
 std::vector<uint8_t> ddc_n_or_dec_l4_cfg (const DDCN& a, const DDCN& b, BypassCfg cfg);
 std::vector<uint8_t> ddc_n_and_dec_l4_cfg(const DDCN& a, const DDCN& b, BypassCfg cfg);

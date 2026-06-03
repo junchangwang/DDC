@@ -46,7 +46,6 @@ static inline uint8_t bits_to_l1_byte(const std::vector<bool>& bits,
     return v;
 }
 
-// pick fill 0/FF
 static uint8_t pick_fill(const std::vector<uint8_t>& bytes, bool& fill_ones) {
     size_t nonzero = 0, non_ff = 0;
 #ifdef __AVX512VBMI2__
@@ -73,14 +72,12 @@ static uint8_t pick_fill(const std::vector<uint8_t>& bytes, bool& fill_ones) {
     return fill_ones ? 0xFF : 0x00;
 }
 
-// compress one layer
 static size_t compress_layer(const uint8_t* src, size_t src_count,
                              uint8_t fill_val,
                              uint8_t* lits_out,
                              uint8_t* marker_bits) {
     size_t lits_off = 0;
 #ifdef __AVX512VBMI2__
-    // SIMD compressstore
     const __m512i fill_vec = _mm512_set1_epi8(static_cast<char>(fill_val));
     size_t i = 0;
     for (; i + 64 <= src_count; i += 64) {
@@ -108,7 +105,6 @@ static size_t compress_layer(const uint8_t* src, size_t src_count,
     return lits_off;
 }
 
-// build segment, fold L1..L5
 static DDCNSeg
 ddc_n_compress_seg_from_l1(const uint8_t* l1_full, size_t l2_count,
                               size_t seg_bit_count, int depth,
@@ -125,10 +121,12 @@ ddc_n_compress_seg_from_l1(const uint8_t* l1_full, size_t l2_count,
     const uint8_t l1_fill_val = l1_fill_ones ? 0xFF : 0x00;
     size_t l2_byte_count = (s.l2_count + 7) / 8;
     std::vector<uint8_t> l2_flat(l2_byte_count, 0);
-    s.l1_lits.assign(s.l2_count, 0);
+
+    static thread_local std::vector<uint8_t> lit_scratch;
+    if (lit_scratch.size() < s.l2_count) lit_scratch.resize(s.l2_count);
     size_t lit_n = compress_layer(l1_full, s.l2_count, l1_fill_val,
-                                  s.l1_lits.data(), l2_flat.data());
-    s.l1_lits.resize(lit_n);
+                                  lit_scratch.data(), l2_flat.data());
+    s.l1_lits.assign(lit_scratch.begin(), lit_scratch.begin() + lit_n);
 
     if (depth == 2) {
         s.top_raw = std::move(l2_flat);
@@ -186,7 +184,6 @@ ddc_n_compress_seg(const std::vector<bool>& bits,
                                          seg_bit_count, depth, l1_fill_ones);
 }
 
-// compress: per-segment
 DDCN ddc_n_compress(const std::vector<bool>& bits, int depth,
                           size_t segment_bits, bool l1_fill_ones) {
     assert(depth >= 2 && depth <= 5);
@@ -205,7 +202,6 @@ DDCN ddc_n_compress(const std::vector<bool>& bits, int depth,
     return cb;
 }
 
-// expand L5->L1
 static std::vector<uint8_t> expand_l1_stream(const DDCNSeg& s) {
 
     std::vector<uint8_t> l4_flat;
@@ -308,7 +304,6 @@ size_t ddc_n_popcount(const DDCN& cb) {
 
 enum class Op { AND, OR, XOR };
 
-// scalar AND/OR/XOR
 static std::vector<uint8_t> apply_op_dec(const DDCN& a, const DDCN& b, Op op) {
     assert(a.depth == b.depth);
     assert(a.bit_count == b.bit_count);
@@ -436,7 +431,6 @@ static DDCNSeg deserialize_seg(std::istream& is) {
     return s;
 }
 
-// serialize
 void ddc_n_serialize(const DDCN& cb, std::ostream& os) {
     wval<uint8_t> (os, DDC_N_FMT_V1);
     wval<uint8_t> (os, uint8_t(cb.depth));
@@ -468,7 +462,6 @@ enum class OpKind { AND, OR, XOR };
 
 static constexpr size_t PF_DIST = 256;
 
-// 64-byte region op (L3-driven expand)
 template <OpKind OP>
 static inline void region_op_avx(
     uint8_t l3a, uint8_t l3b,
@@ -559,7 +552,6 @@ static inline SideAvx make_side_avx(const DDCNSeg& s) {
     return a;
 }
 
-// depth-2 segment op
 template <OpKind OP>
 static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     SideAvx A = make_side_avx(sa), B = make_side_avx(sb);
@@ -588,7 +580,7 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
                 && _mm512_test_epi8_mask(vb_chunk, vb_chunk) == 0;
             if constexpr (OP == OpKind::AND) {
                 if (a_batch_zero || b_batch_zero) {
-                    // batch bypass: advance offsets, emit zeros
+
                     if (!a_batch_zero) {
                         for (size_t r = r_start; r < r_end; r++) {
                             uint64_t ma; std::memcpy(&ma, A.top_raw + r * 8, 8);
@@ -606,8 +598,6 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
                 }
             } else {
                 if (a_batch_zero && b_batch_zero) {
-                    if constexpr (OP == OpKind::OR)
-                        g_ddc_n_path_counts.zz += batch_size;
                     std::memset(dst + r_start * 64, 0, batch_size * 64);
                     continue;
                 }
@@ -619,13 +609,11 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
             std::memcpy(&ma, A.top_raw + r * 8, 8);
             std::memcpy(&mb, B.top_raw + r * 8, 8);
             if constexpr (has_region_bypass) {
-                // per-region bypass
+
                 if (fills_zero && ma == 0) {
                     if (mb == 0) {
-                        if constexpr (OP == OpKind::OR) g_ddc_n_path_counts.zz++;
                         _mm512_storeu_si512(dst + r * 64, _mm512_setzero_si512());
                     } else {
-                        if constexpr (OP == OpKind::OR) g_ddc_n_path_counts.az++;
                         __m512i vb = _mm512_mask_expandloadu_epi8(B.l1_fill_vec,
                             static_cast<__mmask64>(mb), B.l1_lits + B.l1_off);
                         B.l1_off += __builtin_popcountll(mb);
@@ -634,7 +622,6 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
                     continue;
                 }
                 if (fills_zero && mb == 0) {
-                    if constexpr (OP == OpKind::OR) g_ddc_n_path_counts.bz++;
                     __m512i va = _mm512_mask_expandloadu_epi8(A.l1_fill_vec,
                         static_cast<__mmask64>(ma), A.l1_lits + A.l1_off);
                     A.l1_off += __builtin_popcountll(ma);
@@ -642,7 +629,6 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
                     continue;
                 }
             }
-            if constexpr (OP == OpKind::OR) g_ddc_n_path_counts.full++;
 
             _mm_prefetch(reinterpret_cast<const char*>(A.l1_lits + A.l1_off + PF_DIST), _MM_HINT_T0);
             _mm_prefetch(reinterpret_cast<const char*>(B.l1_lits + B.l1_off + PF_DIST), _MM_HINT_T0);
@@ -653,7 +639,6 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
         }
     }
 
-    // scalar tail
     if (avx_regions * 64 < total_words) {
         size_t tail_words = total_words - avx_regions * 64;
         uint8_t l1_fill_a = sa.l1_fill_ones ? 0xFF : 0x00;
@@ -673,7 +658,6 @@ static void seg_op_l2(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     }
 }
 
-// depth-3 segment op
 template <OpKind OP>
 static void seg_op_l3(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     SideAvx A = make_side_avx(sa), B = make_side_avx(sb);
@@ -818,7 +802,6 @@ static void seg_op_l3(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     }
 }
 
-// depth-4 segment op (configurable bypass)
 template <OpKind OP, bool HAS_BATCH_BYPASS = true,
           bool HAS_REGION_BYPASS = (OP != OpKind::AND)>
 static void seg_op_l4(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
@@ -1004,13 +987,187 @@ static void seg_op_l4(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     }
 }
 
-// depth-5 segment op
+template <bool B_BP, bool R_BP>
+static void seg_self_dec(const DDCNSeg& sa, uint8_t* dst) {
+    SideAvx A = make_side_avx(sa);
+    const bool fills_zero = !sa.l1_fill_ones && !sa.l2_fill_ones && !sa.l3_fill_ones;
+    __m512i l3_fill_a_vec = sa.l3_fill_ones
+        ? _mm512_set1_epi8(static_cast<char>(-1)) : _mm512_setzero_si512();
+
+    size_t total_words = sa.l2_count;
+    size_t avx_regions = total_words / 64;
+    size_t l3a_lit_off = 0;
+    size_t batch_count = (avx_regions + 63) / 64;
+
+    for (size_t batch = 0; batch < batch_count; batch++) {
+        size_t batch_start = batch * 64;
+        size_t batch_end   = std::min(batch_start + 64, avx_regions);
+        size_t batch_size  = batch_end - batch_start;
+
+        uint64_t a_l4_mask = 0;
+        std::memcpy(&a_l4_mask, sa.top_raw.data() + batch_start / 8, (batch_size + 7) / 8);
+        uint64_t valid = (batch_size < 64) ? ((uint64_t(1) << batch_size) - 1)
+                                           : ~uint64_t(0);
+        a_l4_mask &= valid;
+
+        if constexpr (B_BP) {
+            if (fills_zero && a_l4_mask == 0) continue;
+        }
+
+        __m512i l3a_chunk = _mm512_mask_expandloadu_epi8(l3_fill_a_vec,
+            static_cast<__mmask64>(a_l4_mask), sa.l3_lits.data() + l3a_lit_off);
+        l3a_lit_off += __builtin_popcountll(a_l4_mask);
+        alignas(64) uint8_t l3a_buf[64];
+        _mm512_store_si512(reinterpret_cast<__m512i*>(l3a_buf), l3a_chunk);
+
+        uint64_t nz_a = (R_BP && fills_zero)
+            ? static_cast<uint64_t>(_mm512_test_epi8_mask(l3a_chunk, l3a_chunk))
+            : valid;
+        uint64_t work = nz_a & valid;
+
+        auto emit = [&](size_t r) {
+            uint8_t l3a = l3a_buf[r];
+            __m512i l2a = _mm512_mask_expandloadu_epi8(A.l2_fill_vec,
+                static_cast<__mmask64>(l3a), A.l2_lits + A.l2_off);
+            A.l2_off += __builtin_popcount(l3a);
+            __mmask64 ma = static_cast<__mmask64>(
+                _mm_cvtsi128_si64(_mm512_castsi512_si128(l2a)));
+            __m512i va = _mm512_mask_expandloadu_epi8(A.l1_fill_vec,
+                ma, A.l1_lits + A.l1_off);
+            A.l1_off += __builtin_popcountll(static_cast<uint64_t>(ma));
+            _mm512_storeu_si512(dst + (batch_start + r) * 64, va);
+        };
+
+        if (work == valid) {
+            for (size_t r = 0; r < batch_size; r++) emit(r);
+        } else {
+            while (work) { size_t r = __builtin_ctzll(work); work &= work - 1; emit(r); }
+        }
+    }
+
+    if (avx_regions * 64 < total_words) {
+        auto la_full = expand_l1_stream(sa);
+        for (size_t i = avx_regions * 64; i < total_words; i++) dst[i] = la_full[i];
+    }
+}
+
+static std::vector<uint8_t> self_and_dec_l4(const DDCN& a, BypassCfg c) {
+    size_t total = 0;
+    for (const auto& sg : a.segments) total += sg.l2_count;
+    std::vector<uint8_t> out(total);
+    size_t off = 0;
+    for (const auto& sg : a.segments) {
+        uint8_t* d = out.data() + off;
+        switch (c) {
+            case BypassCfg::BP_ALL:
+            case BypassCfg::BP_BL_ALL:     seg_self_dec<true,  true >(sg, d); break;
+            case BypassCfg::BP_NO_L4:
+            case BypassCfg::BP_BRANCHLESS: seg_self_dec<false, true >(sg, d); break;
+            case BypassCfg::BP_NO_L3:      seg_self_dec<true,  false>(sg, d); break;
+            case BypassCfg::BP_NONE:       seg_self_dec<false, false>(sg, d); break;
+        }
+        off += sg.l2_count;
+    }
+    return out;
+}
+
+template <OpKind OP, bool HAS_BATCH = false>
+static void seg_op_l4_branchless(const DDCNSeg& sa, const DDCNSeg& sb,
+                                 uint8_t* dst) {
+
+    SideAvx A = make_side_avx(sa), B = make_side_avx(sb);
+
+    const bool fills_zero = !sa.l1_fill_ones && !sb.l1_fill_ones
+                         && !sa.l2_fill_ones && !sb.l2_fill_ones
+                         && !sa.l3_fill_ones && !sb.l3_fill_ones;
+    __m512i l3_fill_a_vec = sa.l3_fill_ones
+        ? _mm512_set1_epi8(static_cast<char>(-1)) : _mm512_setzero_si512();
+    __m512i l3_fill_b_vec = sb.l3_fill_ones
+        ? _mm512_set1_epi8(static_cast<char>(-1)) : _mm512_setzero_si512();
+
+    size_t total_words = sa.l2_count;
+    size_t avx_regions = total_words / 64;
+    size_t l3a_lit_off = 0, l3b_lit_off = 0;
+    size_t batch_count = (avx_regions + 63) / 64;
+
+    for (size_t batch = 0; batch < batch_count; batch++) {
+        size_t batch_start = batch * 64;
+        size_t batch_end   = std::min(batch_start + 64, avx_regions);
+        size_t batch_size  = batch_end - batch_start;
+
+        uint64_t a_l4_mask = 0, b_l4_mask = 0;
+        std::memcpy(&a_l4_mask, sa.top_raw.data() + batch_start / 8, (batch_size + 7) / 8);
+        std::memcpy(&b_l4_mask, sb.top_raw.data() + batch_start / 8, (batch_size + 7) / 8);
+        uint64_t valid = (batch_size < 64) ? ((uint64_t(1) << batch_size) - 1)
+                                           : ~uint64_t(0);
+        a_l4_mask &= valid;
+        b_l4_mask &= valid;
+
+        if constexpr (HAS_BATCH) {
+            if (fills_zero && (a_l4_mask | b_l4_mask) == 0) continue;
+        }
+
+        __m512i l3a_chunk = _mm512_mask_expandloadu_epi8(l3_fill_a_vec,
+            static_cast<__mmask64>(a_l4_mask), sa.l3_lits.data() + l3a_lit_off);
+        __m512i l3b_chunk = _mm512_mask_expandloadu_epi8(l3_fill_b_vec,
+            static_cast<__mmask64>(b_l4_mask), sb.l3_lits.data() + l3b_lit_off);
+        l3a_lit_off += __builtin_popcountll(a_l4_mask);
+        l3b_lit_off += __builtin_popcountll(b_l4_mask);
+
+        alignas(64) uint8_t l3a_buf[64], l3b_buf[64];
+        _mm512_store_si512(reinterpret_cast<__m512i*>(l3a_buf), l3a_chunk);
+        _mm512_store_si512(reinterpret_cast<__m512i*>(l3b_buf), l3b_chunk);
+
+        uint64_t nz_a = fills_zero
+            ? static_cast<uint64_t>(_mm512_test_epi8_mask(l3a_chunk, l3a_chunk))
+            : valid;
+        uint64_t nz_b = fills_zero
+            ? static_cast<uint64_t>(_mm512_test_epi8_mask(l3b_chunk, l3b_chunk))
+            : valid;
+        uint64_t work = (nz_a | nz_b) & valid;
+
+        if (work == valid) {
+            for (size_t r = 0; r < batch_size; r++) {
+                _mm_prefetch(reinterpret_cast<const char*>(A.l1_lits + A.l1_off + PF_DIST), _MM_HINT_T0);
+                _mm_prefetch(reinterpret_cast<const char*>(B.l1_lits + B.l1_off + PF_DIST), _MM_HINT_T0);
+                region_op_avx<OP>(l3a_buf[r], l3b_buf[r],
+                    A.l2_lits, B.l2_lits, A.l1_lits, B.l1_lits,
+                    A.l2_off, B.l2_off, A.l1_off, B.l1_off,
+                    A.l2_fill_vec, B.l2_fill_vec, A.l1_fill_vec, B.l1_fill_vec,
+                    dst + (batch_start + r) * 64);
+            }
+        } else {
+
+            while (work) {
+                size_t r = __builtin_ctzll(work);
+                work &= work - 1;
+                _mm_prefetch(reinterpret_cast<const char*>(A.l1_lits + A.l1_off + PF_DIST), _MM_HINT_T0);
+                _mm_prefetch(reinterpret_cast<const char*>(B.l1_lits + B.l1_off + PF_DIST), _MM_HINT_T0);
+                region_op_avx<OP>(l3a_buf[r], l3b_buf[r],
+                    A.l2_lits, B.l2_lits, A.l1_lits, B.l1_lits,
+                    A.l2_off, B.l2_off, A.l1_off, B.l1_off,
+                    A.l2_fill_vec, B.l2_fill_vec, A.l1_fill_vec, B.l1_fill_vec,
+                    dst + (batch_start + r) * 64);
+            }
+        }
+    }
+
+    if (avx_regions * 64 < total_words) {
+        auto la_full = expand_l1_stream(sa);
+        auto lb_full = expand_l1_stream(sb);
+        for (size_t i = avx_regions * 64; i < total_words; i++) {
+            uint8_t va = la_full[i], vb = lb_full[i];
+            dst[i] = (OP == OpKind::AND) ? (va & vb)
+                   : (OP == OpKind::OR)  ? (va | vb) : (va ^ vb);
+        }
+    }
+}
+
 template <OpKind OP>
 static void seg_op_l5(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     SideAvx A = make_side_avx(sa), B = make_side_avx(sb);
     constexpr bool has_region_bypass = (OP != OpKind::AND);
 
-    // expand L4 into buf
     constexpr size_t MAX_L4 = 256;
     alignas(64) uint8_t l4a_buf[MAX_L4] = {0}, l4b_buf[MAX_L4] = {0};
     size_t l4_byte_count = (sa.l4_count + 7) / 8;
@@ -1187,7 +1344,6 @@ static void seg_op_l5(const DDCNSeg& sa, const DDCNSeg& sb, uint8_t* dst) {
     }
 }
 
-// self-AND = decompress, depth 2
 static void seg_self_and_l2(const DDCNSeg& sa, uint8_t* dst) {
     SideAvx A = make_side_avx(sa);
     size_t total_words = sa.l2_count;
@@ -1433,7 +1589,6 @@ static void seg_self_and_l5(const DDCNSeg& sa, uint8_t* dst) {
     }
 }
 
-// AVX dispatch by depth -> decompressed bytes
 template <OpKind OP>
 static std::vector<uint8_t> apply_op_dec_avx(const DDCN& a, const DDCN& b) {
     assert(a.depth == b.depth);
@@ -1473,7 +1628,6 @@ std::vector<uint8_t> ddc_n_xor_dec_avx(const DDCN& a, const DDCN& b) {
     return apply_op_dec_avx<OpKind::XOR>(a, b);
 }
 
-// op then re-compress result
 template <OpKind OP>
 static DDCN apply_op_compressed_avx(const DDCN& a, const DDCN& b) {
     assert(a.depth == b.depth);
@@ -1513,7 +1667,6 @@ static DDCN apply_op_compressed_avx(const DDCN& a, const DDCN& b) {
         if constexpr (OP == OpKind::AND) fill_ones = sa.l1_fill_ones && sb.l1_fill_ones;
         else                             fill_ones = sa.l1_fill_ones || sb.l1_fill_ones;
 
-        // whole-segment bypass
         const bool a_zero = seg_struct_zero(sa);
         const bool b_zero = seg_struct_zero(sb);
         if (a_zero && b_zero) {
@@ -1562,21 +1715,41 @@ static std::vector<uint8_t> dec_l4_cfg(const DDCN& a, const DDCN& b) {
     return out;
 }
 
+template <OpKind OP, bool HAS_BATCH = false>
+static std::vector<uint8_t> dec_l4_branchless(const DDCN& a, const DDCN& b) {
+    assert(a.depth == 4 && b.depth == 4);
+    size_t total = 0;
+    for (const auto& sg : a.segments) total += sg.l2_count;
+    std::vector<uint8_t> out(total);
+    size_t off = 0;
+    for (size_t s = 0; s < a.segments.size(); s++) {
+        seg_op_l4_branchless<OP, HAS_BATCH>(a.segments[s], b.segments[s], out.data() + off);
+        off += a.segments[s].l2_count;
+    }
+    return out;
+}
+
 std::vector<uint8_t> ddc_n_or_dec_l4_cfg(const DDCN& a, const DDCN& b, BypassCfg c) {
     switch (c) {
         case BypassCfg::BP_ALL:   return dec_l4_cfg<OpKind::OR, true,  true >(a, b);
         case BypassCfg::BP_NO_L4: return dec_l4_cfg<OpKind::OR, false, true >(a, b);
         case BypassCfg::BP_NO_L3: return dec_l4_cfg<OpKind::OR, true,  false>(a, b);
         case BypassCfg::BP_NONE:  return dec_l4_cfg<OpKind::OR, false, false>(a, b);
+        case BypassCfg::BP_BRANCHLESS: return dec_l4_branchless<OpKind::OR, false>(a, b);
+        case BypassCfg::BP_BL_ALL:     return dec_l4_branchless<OpKind::OR, true >(a, b);
     }
     return {};
 }
 std::vector<uint8_t> ddc_n_and_dec_l4_cfg(const DDCN& a, const DDCN& b, BypassCfg c) {
+
+    if (&a == &b) return self_and_dec_l4(a, c);
     switch (c) {
         case BypassCfg::BP_ALL:   return dec_l4_cfg<OpKind::AND, true,  true >(a, b);
         case BypassCfg::BP_NO_L4: return dec_l4_cfg<OpKind::AND, false, true >(a, b);
         case BypassCfg::BP_NO_L3: return dec_l4_cfg<OpKind::AND, true,  false>(a, b);
         case BypassCfg::BP_NONE:  return dec_l4_cfg<OpKind::AND, false, false>(a, b);
+        case BypassCfg::BP_BRANCHLESS: return dec_l4_branchless<OpKind::AND, false>(a, b);
+        case BypassCfg::BP_BL_ALL:     return dec_l4_branchless<OpKind::AND, true >(a, b);
     }
     return {};
 }
@@ -1609,6 +1782,8 @@ DDCN ddc_n_or_l4_cfg(const DDCN& a, const DDCN& b, BypassCfg c) {
         case BypassCfg::BP_NO_L4: return compressed_l4_cfg<OpKind::OR, false, true >(a, b);
         case BypassCfg::BP_NO_L3: return compressed_l4_cfg<OpKind::OR, true,  false>(a, b);
         case BypassCfg::BP_NONE:  return compressed_l4_cfg<OpKind::OR, false, false>(a, b);
+        case BypassCfg::BP_BRANCHLESS: return compressed_l4_cfg<OpKind::OR, false, false>(a, b);
+        case BypassCfg::BP_BL_ALL:     return compressed_l4_cfg<OpKind::OR, false, false>(a, b);
     }
     return {};
 }
@@ -1618,11 +1793,12 @@ DDCN ddc_n_and_l4_cfg(const DDCN& a, const DDCN& b, BypassCfg c) {
         case BypassCfg::BP_NO_L4: return compressed_l4_cfg<OpKind::AND, false, true >(a, b);
         case BypassCfg::BP_NO_L3: return compressed_l4_cfg<OpKind::AND, true,  false>(a, b);
         case BypassCfg::BP_NONE:  return compressed_l4_cfg<OpKind::AND, false, false>(a, b);
+        case BypassCfg::BP_BRANCHLESS: return compressed_l4_cfg<OpKind::AND, false, false>(a, b);
+        case BypassCfg::BP_BL_ALL:     return compressed_l4_cfg<OpKind::AND, false, false>(a, b);
     }
     return {};
 }
 
-// NOT: flip fill + XOR lits
 void ddc_n_not_inplace(DDCN& a) {
     const __m512i ones = _mm512_set1_epi8(static_cast<char>(-1));
 
@@ -1665,7 +1841,7 @@ void ddc_n_not_inplace(DDCN& a) {
 }
 
 #else
-// scalar fallback (no AVX512)
+
 std::vector<uint8_t> ddc_n_and_dec_avx(const DDCN& a, const DDCN& b) { return ddc_n_and_dec(a, b); }
 std::vector<uint8_t> ddc_n_or_dec_avx (const DDCN& a, const DDCN& b) { return ddc_n_or_dec (a, b); }
 std::vector<uint8_t> ddc_n_xor_dec_avx(const DDCN& a, const DDCN& b) { return ddc_n_xor_dec(a, b); }
