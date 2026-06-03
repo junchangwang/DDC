@@ -125,7 +125,7 @@ std::string algo_to_backend_key(const std::string& algo) {
     if (algo == "ewah") return "ewah";
     if (algo == "concise") return "concise";
     if (algo == "ddc") return "ddc";
-    if (algo.substr(0, 8) == "ddc_w") return "ddc";
+    if (algo.rfind("ddc", 0) == 0) return "ddc";
     if (algo == "bitset") return "bitset";
     if (algo == "bitset_avx512") return "bitset_avx512";
     return "";

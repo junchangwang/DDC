@@ -12,8 +12,8 @@ hierarchy, and reuses that hierarchy as a skip index. The decoupled layout maps
 each bitwise operation onto a branch-free AVX-512 expand-load / SIMD-op /
 compress-store kernel that runs at density-independent throughput.
 
-This is the core library only; it is consumed as a submodule by the DDC project
-(synthetic micro-benchmarks) and by the DuckDB integration.
+This is the core library only; the DDC project (synthetic micro-benchmarks) and
+the DuckDB integration build on top of it.
 
 ## How is this project organized?
 
@@ -35,7 +35,7 @@ src/or.cpp / xor.cpp   AVX-512 OR / XOR kernels
 src/not.cpp            NOT (metadata flip + SIMD XOR over L1 literals)
 src/ddc_n.cpp          DDCN depth-2..5 kernels (hierarchy-depth study)
 src/ddc_eval.cpp       standalone correctness + micro-benchmark driver
-CMakeLists.txt         standalone build (also builds when used as a submodule)
+CMakeLists.txt         standalone build (also builds within the parent project)
 ```
 
 ## How to build and run?

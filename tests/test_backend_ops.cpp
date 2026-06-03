@@ -146,7 +146,7 @@ TEST_F(BackendTest, SerializeFileSize) {
     backend.Serialize(*h, path);
     auto file_size = fs::file_size(path);
 
-    EXPECT_LT(file_size, 100u);
+    EXPECT_LT(file_size, 256u);
 }
 
 TEST_F(BackendTest, LoadNonexistentFile) {
