@@ -2,23 +2,31 @@
 
 ### Motivation
 
-Bitmap indexing accelerates analytical workloads by replacing storage scans with bitwise operations over precomputed bitvectors. 
-To control storage, the bitvectors are compressed with RLE-based (WAH, EWAH, CONCISE) or hybrid (Roaring) mechanisms. 
-However, at the *moderate-to-dense* bit densities (0.1%–50%) where bitmap indexes for analytical workloads actually operate, bitwise operations on these compressed forms become extremely slow, often slower than merging two uncompressed bitvectors.
+Bitmap indexing is increasingly pushed into the core of analytical DBMSs [1,2,3], where a query is evaluated by merging precomputed bitvectors with bitwise operations (AND/OR/NOT).
+This line of work shows that bitmap indexing is promising for analytical workloads, but it also reveals one critical performance bottleneck: bitvectors are usually compressed to save storage, but bitwise operations on the compressed form are very slow.
 
-To address this merging critical performance issue in using bitmap indexing
-for analytical DBMS, we propose **DDC**, a bitvector compression mechanism that **D**ecouples **D**ata and **C**ontrol bits to deliver high compression while sustaining efficient bitwise operations across the full density range.
-It (1) separates control flags from data payloads so bitwise operations map directly onto AVX-512 expand-load/compress-store, 
-(2) recursively compresses the control flags into a multi-layer hierarchy adapted to the bit density, 
-and (3) reuses that hierarchy as a coarse-to-fine skip index that bypasses fill regions with simple mask tests.
-DDC eliminates the throughput-degradation window that WAH, EWAH, CONCISE, and
-Roaring all exhibit, while remaining the smallest at moderate densities.
+The root cause is that existing bitvector compression schemes (WAH, EWAH, CONCISE, CRoaring, and others) target sparse bitvectors.
+WAH, for example, was motivated by physical-energy use cases where the indexed attribute has very high cardinality (millions of distinct values), producing sparse bitvectors.
+Analytical workloads such as TPC-H instead produce bitvectors with moderate-to-dense bit densities for two reasons.
+First, attributes typically have small cardinality (fewer than a thousand distinct values).
+Second, encoding schemes such as Range Encoding and Group Encoding [3] generate and rely on dense bitvectors to accelerate queries.
+On these dense bitvectors, traditional compression schemes are very slow and become a severe bottleneck for bitmap indexing.
+A bitmap-indexed plan can end up slower than a native columnar scan.
 
-This repository contains our implementation of DDC and state-of-the-art baseline compression algorithms (including WAH, EWAH, CONCISE, and CRoaring),
-along with a microbenchmark framework that evaluates these algorithms.
-The bitmap index-powered DuckDB implementation using these compression mechanisms is in another repository (see *DuckDB integration* below).
+To address this critical performance issue in using bitmap indexing for analytical DBMS, we propose **DDC**, a bitvector compression mechanism that **D**ecouples **D**ata and **C**ontrol bits to deliver high compression while sustaining efficient bitwise operations across the full density range.
+It (1) separates control flags from data payloads so bitwise operations map directly onto AVX-512 expand-load/compress-store, (2) recursively compresses the control flags into a multi-layer hierarchy adapted to the bit density, and (3) reuses that hierarchy as a coarse-to-fine skip index that bypasses fill regions with simple mask tests.
+DDC eliminates the throughput-degradation window that WAH, EWAH, CONCISE, and Roaring all exhibit, while remaining the smallest at moderate densities.
+
+
+- [1] UpBit: Scalable In-Memory Updatable Bitmap Indexing. In SIGMOD'16
+- [2] CUBIT: Concurrent Updatable Bitmap Indexing. In VLDB'25
+- [3] RABIT: Efficient Range Queries with Bitmap Indexing. In SIGMOD'26
+
 
 ### How is this project organized?
+
+This repository contains our implementation of DDC and state-of-the-art baseline compression algorithms (including WAH, EWAH, CONCISE, and CRoaring), along with a microbenchmark framework that evaluates these algorithms.
+The bitmap index-powered DuckDB implementation using these compression mechanisms is in another repository (see *DuckDB integration* below).
 
 - `src/core/ddc/`: the DDC compression library (a git submodule; see its own README). `DDCBtv` is one compressed segment (L1 literal bytes / L2 word-control bits / L3 byte-control bits / L4 top-control bits). `DDC` is the whole bitvector. `DDCN` is the depth-parameterised variant (L2-L5) used by the hierarchy-depth study.
 - `src/core/{croaring,fastbit,ewah,Concise}/`: unmodified third-party baseline libraries.
