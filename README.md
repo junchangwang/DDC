@@ -31,7 +31,6 @@ DDC requires C++17, CMake, the Boost library, and a CPU/compiler with AVX-512
 (AVX-512F, BW, VBMI2). Build everything with:
 
 ```sh
-git submodule update --init --recursive   # fetch the DDC core (src/core/ddc)
 ./build.sh                                 # CMake Release -> build/
 ```
 
