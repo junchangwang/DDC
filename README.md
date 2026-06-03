@@ -28,35 +28,32 @@ Requires C++17, CMake, Boost, and a CPU/compiler with AVX-512 (F, BW, VBMI2).
 Experiments use 100M-row bitmaps; bit density is set by the cardinality. All bitmaps are written under `bitmap/`.
 
 ```sh
+# Fig. 8-9: every scheme, cardinalities 2..2000
 for c in 2 5 10 20 50 100 200 500 1000 2000; do
-  for s in ddc wah roaring ewah concise; do            # Fig. 8-9 (size + throughput)
+  for s in ddc wah roaring ewah concise; do
     ./build/gen_bitmap -n 100000000 -c $c $s -d .
   done
-  for L in 2 3 4 5; do                                 # Fig. 10 (hierarchy depth L2-L5)
-    ./build/gen_bitmap -n 100000000 -c $c ddc -L $L -d .
-  done
 done
-for c in 10 100 1000; do                               # Fig. 11 (segment size; 2^16 = default above)
-  for S in 4096 16384 262144; do
-    ./build/gen_bitmap -n 100000000 -c $c ddc -S $S -d .
-  done
+# Fig. 10: DDC at hierarchy depths L2-L5 (the size sweep extends to higher cardinalities)
+for c in 2 5 10 20 50 100 200 500 1000 2000 3000 5000 10000 20000 50000; do
+  for L in 2 3 4 5; do ./build/gen_bitmap -n 100000000 -c $c ddc -L $L -d .; done
+done
+# Fig. 11: DDC at segment sizes 2^12,2^14,2^18 (2^16 = the default _ddc_w8 above)
+for c in 10 100 1000; do
+  for S in 4096 16384 262144; do ./build/gen_bitmap -n 100000000 -c $c ddc -S $S -d .; done
 done
 ```
 
-Directory names: `bm_100m_c<c>_<scheme>` (DDC is `bm_100m_c<c>_ddc_w8`), depth variants `…_ddc_L<2-5>`, segment variants `…_ddc_w8_S<bits>`.
+Directory names: `bm_100m_c<c>_<scheme>` (DDC is `bm_100m_c<c>_ddc_w8`), depth variants `…_ddc_L<2-5>`, segment variants `…_ddc_w8_S<bits>`. Generation also writes the raw uncompressed bitmaps under `bitmap/bitmaps_100m_c*/` (tens of GB); delete them once the compressed sets exist with `util/del_bitmap.sh`.
 
 ### Running the experiments
 
 `benchmark_app` takes one scheme and one bitmap directory per run (the scheme must match the directory format).
 
 ```sh
-# Fig. 8-9: size + OR/AND/NOT/COMP throughput, all schemes, per cardinality
-for c in 2 5 10 20 50 100 200 500 1000 2000; do
-  ./build/benchmark_app --backend ddc      --compressed-dir bitmap/bm_100m_c${c}_ddc_w8 --num-rows 100000000 --csv results.csv
-  ./build/benchmark_app --backend wah      --compressed-dir bitmap/bm_100m_c${c}_wah     --num-rows 100000000 --csv results.csv
-  ./build/benchmark_app --backend croaring --compressed-dir bitmap/bm_100m_c${c}_roaring --num-rows 100000000 --csv results.csv
-  ./build/benchmark_app --backend ewah     --compressed-dir bitmap/bm_100m_c${c}_ewah    --num-rows 100000000 --csv results.csv
-  ./build/benchmark_app --backend concise  --compressed-dir bitmap/bm_100m_c${c}_concise --num-rows 100000000 --csv results.csv
+# Fig. 8-9: size + OR/AND/NOT/COMP throughput (one run per scheme directory; backend auto-detected)
+for d in bitmap/bm_100m_c*_ddc_w8 bitmap/bm_100m_c*_{wah,roaring,ewah,concise}; do
+  ./build/benchmark_app --backend all --compressed-dir "$d" --num-rows 100000000 --csv results.csv
 done
 
 # Fig. 10: hierarchy depth L2-L5
