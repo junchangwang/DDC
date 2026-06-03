@@ -1,52 +1,39 @@
-# DDC: Decoupling Data and Control for Bitmap Compression
+## DDC: Decoupling Data and Control for Bitmap Compression
 
-## Motivation
+### Motivation
 
-Bitmap indexing accelerates analytical workloads by replacing storage scans
-with bitwise operations over precomputed bitvectors. To control storage, the
-bitvectors are compressed with RLE-based (WAH, EWAH, CONCISE) or hybrid
-(Roaring) mechanisms. However, at the *moderate-to-dense* bit densities
-(0.1%–50%) where bitmap indexes for analytical workloads actually operate —
-e.g., the mid-range bitvectors produced by range and group encoding — bitwise
-operations on these compressed forms become extremely slow, often slower than
-merging two uncompressed bitvectors.
+Bitmap indexing accelerates analytical workloads by replacing storage scans with bitwise operations over precomputed bitvectors. 
+To control storage, the bitvectors are compressed with RLE-based (WAH, EWAH, CONCISE) or hybrid (Roaring) mechanisms. 
+However, at the *moderate-to-dense* bit densities (0.1%–50%) where bitmap indexes for analytical workloads actually operate, bitwise operations on these compressed forms become extremely slow, often slower than merging two uncompressed bitvectors.
 
-**DDC** is a bitvector compression mechanism that **D**ecouples **D**ata and
-**C**ontrol bits to deliver high compression while sustaining efficient bitwise
-operations across the full density range. It (1) separates control flags from
-data payloads so bitwise operations map directly onto AVX-512 expand-load /
-compress-store, (2) recursively compresses the control flags into a multi-layer
-hierarchy adapted to the bit density, and (3) reuses that hierarchy as a
-coarse-to-fine skip index that bypasses fill regions with simple mask tests.
+To address this merging critical performance issue in using bitmap indexing
+for analytical DBMS, we propose **DDC**, a bitvector compression mechanism that **D**ecouples **D**ata and **C**ontrol bits to deliver high compression while sustaining efficient bitwise operations across the full density range.
+It (1) separates control flags from data payloads so bitwise operations map directly onto AVX-512 expand-load/compress-store, 
+(2) recursively compresses the control flags into a multi-layer hierarchy adapted to the bit density, 
+and (3) reuses that hierarchy as a coarse-to-fine skip index that bypasses fill regions with simple mask tests.
 DDC eliminates the throughput-degradation window that WAH, EWAH, CONCISE, and
 Roaring all exhibit, while remaining the smallest at moderate densities.
 
-This repository holds the standalone DDC library and the synthetic
-micro-benchmarks. The end-to-end DuckDB integration lives in a separate
-repository (see *DuckDB integration* below).
+This repository contains our implementation of DDC and state-of-the-art baseline compression algorithms (including WAH, EWAH, CONCISE, and CRoaring),
+along with a microbenchmark framework that evaluates these algorithms.
+The bitmap index-powered DuckDB implementation using these compression mechanisms is in another repository (see *DuckDB integration* below).
 
-## How is this project organized?
+### How is this project organized?
 
-- `src/core/ddc/` — the DDC compression library (a git submodule; see its own
-  README). `DDCBtv` is one compressed segment (L1 literal bytes / L2 word-marker
-  bits / L3 byte-marker bits / L4 top-marker bits); `DDC` is the segmented
+- `src/core/ddc/` — the DDC compression library (a git submodule; see its own 
+  README). `DDCBtv` is one compressed segment (L1 literal bytes / L2 word-control
+  bits / L3 byte-control bits / L4 top-control bits); `DDC` is the whole
   bitvector; `DDCN` is the depth-parameterised variant (L2–L5) used by the
   hierarchy-depth study.
-- `src/benchmark/` — the micro-benchmark harness and the baseline backends
-  (WAH, EWAH, CONCISE, Roaring, bitset) under `backends/`. Each experiment in
-  the paper has a dedicated driver:
-  - `benchmark_main.cpp` (`benchmark_app`) — OR/AND/NOT/COMP throughput vs. bit
-    density, and compressed size (Fig. 8–9).
-  - `bench_L_ops.cpp` / `bench_L_sizes.cpp` — hierarchy depth L2–L5: throughput
-    and size (Fig. 10).
-  - `bench_seg.cpp` — segment-size ablation (Fig. 11).
-  - `bench_bypass.cpp` — skip-index bypass ablation (Fig. 12).
-- `util/` — dataset and bitmap generation (`gen_bitmap`, `gen_dataset.sh`,
-  `gen_test_bitmaps.sh`).
 - `src/core/{croaring,fastbit,ewah,Concise}/` — unmodified third-party baseline
   libraries.
+- `src/benchmark/` — the micro-benchmark framework and the baseline backends
+  (WAH, EWAH, CONCISE, Roaring, bitset) under `backends/`. Each experiment in
+  the paper has a dedicated driver:
+- `util/` — dataset and bitmap generation (`gen_bitmap`, `gen_dataset.sh`,
+  `gen_test_bitmaps.sh`).
 
-## How to build and run the experiments?
+### How to build and run the experiments?
 
 DDC requires C++17, CMake, the Boost library, and a CPU/compiler with AVX-512
 (AVX-512F, BW, VBMI2). Build everything with:
@@ -74,11 +61,10 @@ preparation*). The depth / segment / bypass drivers take `<bitmap_root> <out_csv
 ./build/bench_bypass  bitmap  bench_bypass.csv
 ```
 
-## Data preparation
+### Data preparation
 
-The experiments run over 100M-row synthetic bitmaps spanning the full density
-range (cardinality 2–2000, uniform distribution — the worst case for
-compression). Generate the per-scheme bitmap directories with `gen_bitmap`:
+By default, our evaluation uses bitmaps with 100M rows, varying bit density by setting different cardinalities in a 100M-integer array.
+The generated bitmaps are placed under `bitmap/`. Forexample:
 
 ```sh
 # one bitmap set per cardinality, per scheme, written under ./bitmap/
@@ -91,18 +77,12 @@ for c in 2 5 10 20 50 100 200 500 1000 2000; do
 done
 ```
 
-`gen_bitmap` options: `-c` cardinality (column-style disjoint bitmaps), `-t`/`-o`
-the transition / overlap stress sets, `-w` DDC word size, `-L` DDCN depth (2–5),
-`-S` DDC segment size. Generating the full 100M set takes a while; a small
-correctness set can be produced with `util/gen_test_bitmaps.sh`.
-
-## DuckDB integration
+### DuckDB integration
 
 The end-to-end TPC-H evaluation inside DuckDB is in the companion DuckDB
-repository: the `extension/debit` extension swaps the underlying compression
-mechanism under a shared bitmap-operator harness. See that repository's README.
+repository at https://github.com/junchangwang/duckdb-DDC .
 
-## Reference
+### Reference
 
-DDC: Decoupling Data and Control for Bitmap Compression. *PVLDB* (under
+DDC: Decoupling Data and Control for Bitmap Compression. (under
 submission).
