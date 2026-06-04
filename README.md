@@ -43,9 +43,10 @@ Requires C++17, CMake, Boost, and a CPU/compiler with AVX-512 (F, BW, VBMI2).
 
 ### Data preparation
 
-The experiments run on `.bm` bitmap files. `gen_bitmap` builds them automatically, and generating the full set for every scheme and cardinality takes a long time, so we also provide a pre-generated set for download at <DOWNLOAD_LINK>. A full set with every scheme would be very large, because the baseline schemes hardly compress the dense low-cardinality bitvectors, so the download holds only the DDC bitmaps for the cardinality sweep (plus CRoaring at a few special comparison points). Generate the baseline schemes with the commands below.
-
-To build the base set yourself (every scheme, cardinalities 2 to 2000), run the following. All bitmaps are written under `bitmap/`.
+The experiments run on pre-built bitmaps in the format of `.bm`. 
+`gen_bitmap` builds them automatically, and generating the full set for every encoding scheme and cardinality.
+To build the complete bitmap set (every scheme, cardinalities 2 to 2000), run the following command.
+All bitmaps will be written to `bitmap/`.
 
 ```sh
 for c in 2 5 10 20 50 100 200 500 1000 2000; do
@@ -55,7 +56,8 @@ for c in 2 5 10 20 50 100 200 500 1000 2000; do
 done
 ```
 
-Directory names follow `bm_100m_c<c>_<scheme>`, with DDC at `bm_100m_c<c>_ddc_w8`, depth variants `…_ddc_L<2-5>`, and segment variants `…_ddc_w8_S<bits>`. Generation also writes the raw uncompressed bitmaps under `bitmap/bitmaps_100m_c*/`, which can be large, so delete them once the compressed sets exist with `util/del_bitmap.sh`.
+Notet that building the whole bitmap set would take a long time, so we also provide a pre-generated set for evaluating DDC. Please check it at https://1drv.ms/u/c/4f1a15e54aa03b95/IQAF6kOEX0QuSozMCcHo5N67AbvZOqjlNJprn80V2F74mvw?e=nKIVsl
+
 
 ### Running the experiments
 
