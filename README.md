@@ -9,7 +9,7 @@ The root cause is that existing bitvector compression schemes (WAH, EWAH, CONCIS
 WAH, for example, was motivated by physical-energy use cases where the indexed attribute has very high cardinality (millions of distinct values), producing sparse bitvectors.
 Analytical workloads such as TPC-H instead produce bitvectors with moderate-to-dense bit densities for two reasons.
 First, attributes typically have small cardinality (fewer than a thousand distinct values).
-Second, encoding schemes such as Range Encoding and Group Encoding [3] generate and rely on dense bitvectors to accelerate queries.
+Second, encoding schemes such as Range Encoding and Group Encoding [2] generate and rely on dense bitvectors to accelerate queries.
 On these bitvectors, traditional compression schemes are very slow and become a severe bottleneck for bitmap indexing.
 A bitmap-indexed plan can end up slower than a native columnar scan.
 
@@ -18,9 +18,9 @@ It (1) separates control flags from data payloads so bitwise operations map dire
 DDC eliminates the throughput-degradation window that WAH, EWAH, CONCISE, and Roaring all exhibit, while remaining the smallest at moderate densities.
 
 
-- [1] UpBit: Scalable In-Memory Updatable Bitmap Indexing. In SIGMOD'16
-- [2] CUBIT: Concurrent Updatable Bitmap Indexing. In VLDB'25
-- [3] RABIT: Efficient Range Queries with Bitmap Indexing. In SIGMOD'26
+- [1] CUBIT: Concurrent Updatable Bitmap Indexing. In VLDB'25
+- [2] RABIT: Efficient Range Queries with Bitmap Indexing. In SIGMOD'26
+- [3] BitEngine: Query Engines Using Bitmap Indexing. [Preprint](https://github.com/junchangwang/DDC/blob/main/doc/BitEngine.pdf)
 
 
 ### How is this project organized?
