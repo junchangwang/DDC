@@ -22,10 +22,7 @@ debug/
 /storage_info/
 
 # Figures, plots, and measurement data (never tracked)
-*.pdf
 *.png
-*.dat
 *.gp
-*.gnuplot
 *.log
 *.tgz
