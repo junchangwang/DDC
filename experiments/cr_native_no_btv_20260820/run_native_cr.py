@@ -38,6 +38,7 @@ class Case:
     rows: int
     bitmap_dir: str
     pair_and: bool
+    outer_iterations: int
 
 
 def sha256(path: Path) -> str:
@@ -59,6 +60,7 @@ def earth_cases() -> list[Case]:
             str(WORKSPACE / "combit" / "earthdata" / field / "bitmap" /
                 f"bm_21844315_c{cardinality}_roaring"),
             True,
+            100,
         )
         for field, cardinality in specs
     ]
@@ -82,6 +84,7 @@ def job_cases() -> list[Case]:
             str(WORKSPACE / "combit" / "realdata" / field / "bitmap" /
                 f"bm_{rows}_c{cardinality}_roaring"),
             True,
+            100,
         )
         for field, rows, cardinality in old_specs
     ]
@@ -100,6 +103,7 @@ def job_cases() -> list[Case]:
                     "job_unified10" / "logical_top3_datasets" / field /
                     "bitmap" / f"bm_{rows}_c3_roaring"),
                 True,
+                1,
             )
         )
     return result
@@ -116,6 +120,7 @@ def cluster_cases() -> list[Case]:
             str(WORKSPACE / "R2W1_clustering_micro_100m_20260813" /
                 "data" / factor / "bitmap" / "bm_100m_c100_roaring"),
             False,
+            1,
         )
         for factor in factors
     ]
@@ -133,6 +138,7 @@ def density_cases() -> list[Case]:
                     str(WORKSPACE / "combit" / "gridindep" / "bitmap" /
                         f"bm_100m_A{count_a}_B{count_b}_roaring"),
                     True,
+                    100,
                 )
             )
     return result
@@ -213,7 +219,8 @@ def main() -> None:
             "MALLOC_MMAP_THRESHOLD_": "1073741824",
         },
     }
-    (HERE / "run_metadata.json").write_text(
+    metadata_name = "run_metadata_" + "_".join(args.groups) + ".json"
+    (HERE / metadata_name).write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
     )
 
@@ -246,7 +253,7 @@ def main() -> None:
                 "--backend", "croaring",
                 "--compressed-dir", case.bitmap_dir,
                 "--num-rows", str(case.rows),
-                "--iterations", "100",
+                "--iterations", str(case.outer_iterations),
                 "--csv", str(csv_path),
             ]
             with log_path.open("w", encoding="utf-8") as log:

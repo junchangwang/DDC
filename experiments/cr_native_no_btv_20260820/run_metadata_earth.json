@@ -1,0 +1,57 @@
+{
+  "binary": "/home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/build-native/benchmark_app",
+  "binary_sha256": "af743f536dcd553f889d06704dd33297c3be04e7987b8d3410e1742eaeb4ad66",
+  "git_commit": "2ad3d979f02ba8ce03c37bfedf6ee917ba158f57",
+  "cpu": 14,
+  "reps": 3,
+  "density_reps": 1,
+  "groups": [
+    "earth"
+  ],
+  "cases": [
+    {
+      "group": "earth",
+      "label": "month",
+      "rows": 21844315,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/earthdata/month/bitmap/bm_21844315_c12_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "earth",
+      "label": "qflag",
+      "rows": 21844315,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/earthdata/qflag/bitmap/bm_21844315_c17_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "earth",
+      "label": "decade",
+      "rows": 21844315,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/earthdata/decade/bitmap/bm_21844315_c33_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "earth",
+      "label": "temp_bin",
+      "rows": 21844315,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/earthdata/temp_bin/bitmap/bm_21844315_c232_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "earth",
+      "label": "year",
+      "rows": 21844315,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/earthdata/year/bitmap/bm_21844315_c325_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    }
+  ],
+  "allocator_env": {
+    "MALLOC_TRIM_THRESHOLD_": "1073741824",
+    "MALLOC_MMAP_THRESHOLD_": "1073741824"
+  }
+}

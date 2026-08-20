@@ -47,3 +47,22 @@ python3 experiments/cr_native_no_btv_20260820/run_table4_cr_sizes.py
 python3 experiments/cr_native_no_btv_20260820/run_native_cr.py \
   --groups earth job cluster density --reps 3 --density-reps 1 --cpu 2
 ```
+
+## Measured results
+
+- Table 4 CRoaring run payload: 218.628477 MiB, 25% above DDC; the
+  non-run CRoaring total was 291.233639 MiB.
+- Earth OR+COMP CRoaring/DDC geometric mean: 1.1375x after removing dense
+  delivery, versus 2.0635x in the selected-delivery figure. CRoaring wins
+  5 of the 10 OR+COMP cells under the native boundary.
+- JOB COMP CRoaring/DDC geometric mean: 7.4602x, versus 23.6225x with dense
+  delivery. This remains a sensitivity result because the frozen DDC baseline
+  used its shorter equivalent COMP plan.
+- Clustering all-operation CRoaring/DDC geometric mean: 0.8137x across the
+  complete 11-point sweep.
+- Density-grid OR CRoaring/DDC geometric mean: 1.3730x.
+
+Compact results are in `results/`; the 12 PDF and 12 PNG visualizations are in
+`figures/`. Formal raw CSVs and logs are retained on this branch. The aborted
+outer-iteration mismatch is kept locally outside Git tracking and is never read
+by the analyzer.

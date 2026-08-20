@@ -1,0 +1,19 @@
+{
+  "binary": "/home/lichenhang/lee/thesis/check/lee/JOB_R3W1_20260807_v2/size/build/measure_job_sizes",
+  "binary_sha256": "29ce86345ffdcf1d15d3dbdfe4a863c6f6451e2cefb81b30436112582e6c9246",
+  "source": "/home/lichenhang/lee/thesis/check/lee/JOB_R3W1_20260807_v2/size/measure_job_sizes.cpp",
+  "source_sha256": "8758dca25084cf41811df07589191a20c104cfdb02be86141b6303de614bb1a7",
+  "memberships": {
+    "mc_ctype.jobcsr": "2d8a2047cf1dfa0c7273f71bea5e5b2ccd34cbd4a7fd6be610c84ac7833b6a43",
+    "kind.jobcsr": "0608bc5f6c1993e845f43e949a213402ec8a9e82b437f30ffa94f0aa349aae50",
+    "role.jobcsr": "04375d43cc9b08f245e87175c17c0b8bdeb1be86c4cf2d1671cbae487e0d821a",
+    "pi_itype.jobcsr": "324a4da2375feb4379f7982d1a88c3f9ff5a8375ba620cb8ab9d8d5c2b03d094",
+    "mi_itype.jobcsr": "a79eb89bc0007d87ff6737449a03dbdcec55a447afe2461489704ad3a749cbeb",
+    "year.jobcsr": "1a37448b5b36a578d1a13e92e497076c0a9bcaaff94669f5a9016f49f91f86f1",
+    "country.jobcsr": "3395345502b6e24f83f9366364ce7727d4dbdddbb3314d38c89e21a4c0109e0f",
+    "movie_keyword_movie_id.jobcsr": "7c741f1a0a31220a5c233032eeceaaf14c6bc21b9ac0501e3c13e027be557bd1",
+    "cast_info_movie_id.jobcsr": "debebb0cad3c4e07b0f71f22594a4171fa91f9d94a2a7adaf374dbbe03d3b126",
+    "cast_info_person_id.jobcsr": "1f01c7a881232320ba92c08384f156cded30b1746abdc8554cf0b4f8bd74393f"
+  },
+  "measurement": "CRoaring getSizeInBytes(false), before and after runOptimize()"
+}

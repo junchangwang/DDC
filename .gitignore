@@ -39,3 +39,10 @@ debug/
 !experiments/cr_native_no_btv_20260820/figures/*.png
 !experiments/cr_native_no_btv_20260820/figures/*.data
 !experiments/cr_native_no_btv_20260820/figures/*.gnuplot
+!experiments/cr_native_no_btv_20260820/raw/
+!experiments/cr_native_no_btv_20260820/raw/**/
+!experiments/cr_native_no_btv_20260820/raw/**/*.csv
+!experiments/cr_native_no_btv_20260820/logs/
+!experiments/cr_native_no_btv_20260820/logs/**/
+!experiments/cr_native_no_btv_20260820/logs/**/*.log
+/experiments/cr_native_no_btv_20260820/protocol_mismatch_outer100/

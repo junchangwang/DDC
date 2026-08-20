@@ -1,0 +1,627 @@
+{
+  "binary": "/home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/build-native/benchmark_app",
+  "binary_sha256": "af743f536dcd553f889d06704dd33297c3be04e7987b8d3410e1742eaeb4ad66",
+  "git_commit": "2ad3d979f02ba8ce03c37bfedf6ee917ba158f57",
+  "cpu": 14,
+  "reps": 3,
+  "density_reps": 1,
+  "groups": [
+    "job",
+    "cluster",
+    "density"
+  ],
+  "cases": [
+    {
+      "group": "job",
+      "label": "mc_ctype",
+      "rows": 2609129,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "kind",
+      "rows": 2528312,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "role",
+      "rows": 36244344,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "pi_itype",
+      "rows": 2963664,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "mi_itype",
+      "rows": 14835720,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "year",
+      "rows": 2528312,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "country",
+      "rows": 234997,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "job",
+      "label": "movie_keyword_movie_id",
+      "rows": 4523930,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_roaring",
+      "pair_and": true,
+      "outer_iterations": 1
+    },
+    {
+      "group": "job",
+      "label": "cast_info_movie_id",
+      "rows": 36244344,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_roaring",
+      "pair_and": true,
+      "outer_iterations": 1
+    },
+    {
+      "group": "job",
+      "label": "cast_info_person_id",
+      "rows": 36244344,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_roaring",
+      "pair_and": true,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "iid",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/iid/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f2",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f2/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f4",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f4/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f8",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f8/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f16",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f16/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f32",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f32/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f64",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f64/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f128",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f128/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f256",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f256/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "f1024",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f1024/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "cluster",
+      "label": "sorted",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/sorted/bitmap/bm_100m_c100_roaring",
+      "pair_and": false,
+      "outer_iterations": 1
+    },
+    {
+      "group": "density",
+      "label": "A66_B66",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B66_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B328",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B328_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B655",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B655_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B1311",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B1311_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B3277",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B3277_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A66_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B328",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B328_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B655",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B655_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B1311",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B1311_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B3277",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B3277_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A328_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B655",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B655_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B1311",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B1311_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B3277",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B3277_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A655_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B1311",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B1311_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B3277",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B3277_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A1311_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B3277",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B3277_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A3277_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A6554_B6554",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B6554_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A6554_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A6554_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A6554_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A6554_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A13107_B13107",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A13107_B13107_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A13107_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A13107_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A13107_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A13107_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A13107_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A13107_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A19661_B19661",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A19661_B19661_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A19661_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A19661_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A19661_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A19661_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A26214_B26214",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A26214_B26214_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A26214_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A26214_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    },
+    {
+      "group": "density",
+      "label": "A32768_B32768",
+      "rows": 100000000,
+      "bitmap_dir": "/home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A32768_B32768_roaring",
+      "pair_and": true,
+      "outer_iterations": 100
+    }
+  ],
+  "allocator_env": {
+    "MALLOC_TRIM_THRESHOLD_": "1073741824",
+    "MALLOC_MMAP_THRESHOLD_": "1073741824"
+  }
+}

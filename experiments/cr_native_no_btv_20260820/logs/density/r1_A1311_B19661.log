@@ -1,0 +1,41 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B19661.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B19661_roaring
+Rows: 100000000 | Cardinality: 1311
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A1311_B19661_roaring
+Rows: 100000000 | Cardinality: 1311 | Loaded: 2 | Iterations: 100
+=======================================
+[Warm-up] Running 1 warm-up iteration...
+[Load] Loaded 2 compressed bitmaps: 8.28077 ms
+  1.bm → cardinality: 2000409
+  2.bm → cardinality: 30000288
+
+[Storage] Total compressed: 16526250 bytes (16138.9 KB) | Ratio: 0.66105x
+[CRoaring Storage] array=1526 (3.81548 MB) | run=0 (0 MB) | bitset=1526 (11.9219 MB) | total_bytes=16501810
+
+[Summary] Median over 100 iterations:
+  Load:      3.67303 ms
+  bitOr:     3.71235 ms (card: 31400811)
+  bitAnd:    2.68685 ms (card: 599886)
+  bitXor:    5.31851 ms (card: 30800925)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 2.67195 ms (card: 599886)
+  OR:  3.70596 ms (card: 31400811)
+  OR (CR internal only, no to-btv): 2.28073 ms
+  XOR: 5.29713 ms (card: 30800925)
+  NOT: 3.78639 ms (card: 97999591)
+  AND (in-place): 10.0033 ms
+  [AND result containers] array=1526 (1.14419 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1199772
+  [OR  result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [XOR result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (3.81548 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=4000818
+  [Input B containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  COMP native (~((A|B)&(B|C))): 6.67304 ms
+  COMP (~((A|B)&(B|C))): 8.09225 ms
+---------------------------------------

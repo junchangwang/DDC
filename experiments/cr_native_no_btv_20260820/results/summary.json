@@ -1,0 +1,1296 @@
+{
+  "anchor_comparison": {
+    "cluster": {
+      "native_over_same_run_delivered_geomean": 0.2417158892424618,
+      "native_speedup_from_removing_delivery_geomean": 4.137088393874324,
+      "rows": 44,
+      "same_run_delivered_over_historical_geomean": 1.0025235751505244
+    },
+    "density": {
+      "native_over_same_run_delivered_geomean": 0.5535030221581478,
+      "native_speedup_from_removing_delivery_geomean": 1.8066748689120586,
+      "rows": 55,
+      "same_run_delivered_over_historical_geomean": 1.0162524633240742
+    },
+    "earth": {
+      "native_over_same_run_delivered_geomean": 0.5289908098723869,
+      "native_speedup_from_removing_delivery_geomean": 1.8903920093455666,
+      "rows": 20,
+      "same_run_delivered_over_historical_geomean": 1.0016675769341583
+    },
+    "job": {
+      "native_over_same_run_delivered_geomean": 0.11424541929113648,
+      "native_speedup_from_removing_delivery_geomean": 8.75308617364918,
+      "rows": 40,
+      "same_run_delivered_over_historical_geomean": 0.981139293669809
+    }
+  },
+  "groups": {
+    "cluster": {
+      "cells": 44,
+      "geometric_mean_latency_over_ddc": {
+        "CRoaring": 0.8137223124978712,
+        "DDC": 1.0,
+        "EWAH": 0.9835082619092147,
+        "WAH": 0.6181050002075315
+      },
+      "rows": 176,
+      "wins": {
+        "CRoaring": 18,
+        "DDC": 11,
+        "EWAH": 6,
+        "WAH": 9
+      }
+    },
+    "density": {
+      "cells_per_backend": 100,
+      "geometric_mean_or_latency_over_ddc": {
+        "Bitset-AVX512": 0.9556611268049966,
+        "CRoaring": 1.3730366164312553,
+        "Concise": 23.584188512935945,
+        "DDC": 1.0,
+        "EWAH": 5.723492825196903,
+        "WAH": 4.856034361144018
+      },
+      "rows": 600
+    },
+    "earth": {
+      "cells": 20,
+      "geometric_mean_latency_over_ddc": {
+        "CRoaring": 1.346289086943507,
+        "DDC": 1.0,
+        "EWAH": 4.881211508362959,
+        "WAH": 3.2302101814285367
+      },
+      "rows": 80,
+      "wins": {
+        "CRoaring": 7,
+        "DDC": 10,
+        "WAH": 3
+      }
+    },
+    "job": {
+      "cells": 40,
+      "geometric_mean_latency_over_ddc": {
+        "CRoaring": 3.7175972237317474,
+        "DDC": 1.0,
+        "EWAH": 1.5530678287213646,
+        "WAH": 2.2702849854062137
+      },
+      "rows": 160,
+      "wins": {
+        "CRoaring": 8,
+        "DDC": 16,
+        "EWAH": 14,
+        "WAH": 2
+      }
+    }
+  },
+  "measurement_contract": "Backend-native result sensitivity: CRoaring uses OR_op, AND_op, NOT_op, and COMP_op_native; frozen non-CR baselines retain their native result representations.",
+  "row_counts": {
+    "anchors": 159,
+    "cluster": 176,
+    "density": 600,
+    "earth": 80,
+    "job": 160,
+    "table4": 11
+  },
+  "schema_version": 1,
+  "sources": [
+    {
+      "path": "AAA/heatmap_or_data.csv",
+      "sha256": "0fa9c73b62ad35342a84263fe167a05ca6cd800552e52372b105c5412abcd7e0"
+    },
+    {
+      "path": "R2W1_clustering_ops_v2_20260813/results/operation_sweep_crrun.csv",
+      "sha256": "4680397d091d2cf9625f9e5f9e27225276d3136a359678443d03c411d3ef038d"
+    },
+    {
+      "path": "R3W1_realworld_excel_20260809/earth_adaptive_single_replay_20260809/results_earth_adaptive_single_20260809.csv",
+      "sha256": "39a00cec246b75284b1e8ec5a17947213e3735b12f9d34e847e4d889c3c306a2"
+    },
+    {
+      "path": "R3W1_realworld_excel_20260809/earth_final5/results_earth_final5_20260809.csv",
+      "sha256": "5c706ae799e74a8969ad564d5182c1932e44591d2ec795e68ef23da9923b1d9c"
+    },
+    {
+      "path": "R3W1_realworld_excel_20260809/ewah_corrected/earth/results_earth_ewah_corrected_20260809.csv",
+      "sha256": "b084843323311176a09d0cdbfd5adb9c0e2a666280db1c8584aef503b8664e8a"
+    },
+    {
+      "path": "R3W1_realworld_excel_20260809/job_unified10/job-unified10-logical.csv",
+      "sha256": "6ffcea0846c5a8681871f9573542f0f54fd16749a34a457d46e9ea4aeae31529"
+    },
+    {
+      "path": "R3W1_realworld_excel_20260809/job_unified10/job-unified10-size.csv",
+      "sha256": "ac6598ee991619059536814c2844a460d965302850a6248c8591b7b497820ed3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f1024.log",
+      "sha256": "4f3c8f63aa40d20009bfc9255953f895e338ec70a2fe30fca60840ec75f69b8b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f128.log",
+      "sha256": "782a89a715469ae640173b02a7426b6456a8614768aa9a883bca1a8cfeae0e26"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f16.log",
+      "sha256": "af93957971babcc9320812ea1fe7ee6c52a71ee4fa3a08eaad4695c3e21f9c88"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f2.log",
+      "sha256": "45b779d15bec52d48d46796b5b17d6bd0bb6f69c354174c145effc6dcbd5de5c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f256.log",
+      "sha256": "aa926fa3ba25959a75b4c407dd8bcde09d08b108d8a14bef56abe1d847628574"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f32.log",
+      "sha256": "b42d8d0e897cb1b37c45a8f236d4cc028227d47cd7e16f966fe88b013b8eeb49"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f4.log",
+      "sha256": "ee566d98c36869c9220f92e0aff683beecb8dcb63aa18577a3d3ce3e6d252af9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f64.log",
+      "sha256": "578d1215edbbea0554beb215791226f9491d890a41c18fbd3a72c2a88fec2bf4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_f8.log",
+      "sha256": "1938ebb90f3165a8101a80f03e9f094ef6ee3630b253f8bc2dc1d92b716208cc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_iid.log",
+      "sha256": "5dcb9579e3be26356ba54cf019b580f6326c580811c5f784ae2645808dd2a6d2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r1_sorted.log",
+      "sha256": "7d1147b2cc57f067e17ebd327a7a9a8ec6689374eec9e934e69bc7b11f8c00e2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f1024.log",
+      "sha256": "331918cb8f8621b39dcf37279f2c303cfc08ec9ea3448bacc3c4b430e04506c2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f128.log",
+      "sha256": "a32bd5e96d0402d7efb53a27369474cc99f5940c65590514da0eb6129d38aaf1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f16.log",
+      "sha256": "5093751b50819356d69f0a61ea74b11b28ae4045cec981d36c23a6f54b3174c5"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f2.log",
+      "sha256": "93c2e9d38530d26ae19155f119c0e9f0ff8b6b5f10679a5f14f4a205b11b963a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f256.log",
+      "sha256": "499ee9ca6c2e803af4bc0e103ea63bbd68900bd4dd88899fa828d9016c550ab6"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f32.log",
+      "sha256": "56b56eb9915cde4b4a3650230b394203e76d7afcdf75dc0610ed542cb31769d9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f4.log",
+      "sha256": "374dc81d44a6d3c29aee4769234e18d1a3942c057d625d785a93f49d5e4ec5c0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f64.log",
+      "sha256": "1d516e30714dead0163ee20aa354adebd9380e14d362d4b493b05d50b74729dc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_f8.log",
+      "sha256": "13b197b10db86b70570d1432689fa47c23a07fb8f7a42489a0a2835305c542c0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_iid.log",
+      "sha256": "8d9f5d9d66c1f8da4ed4c4f234bc98404c88cbe5af9b008d8b75775acad90eb8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r2_sorted.log",
+      "sha256": "849d94cc57c8f04676887785529c935b39f0b27a9540a2aed05edbdc5c21a2b2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f1024.log",
+      "sha256": "0476a0dc79a60f58622e55d1fc9e7dc7ac4cca96471cab80d0ef95c84f4d979d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f128.log",
+      "sha256": "b376b602733f00f7551ad5256dac4643efbe4b48b7c675fd26f23bf28519ebda"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f16.log",
+      "sha256": "a99f9f9c7fb63aa72db782aba160b7abc13d3842e499889d453c65293add49ad"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f2.log",
+      "sha256": "4cc34a47eb980b2ec262ff5e8cdb58ef230ace43a5fe5ba2ce33bebecaba79dc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f256.log",
+      "sha256": "ce7eaf160514b048b4f3c9169ca2cb2dd2600eba0da3b6416f92fccf2a3fec8d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f32.log",
+      "sha256": "55384c4a966f52746b3d4c4fc20387e23da2d23e8c51ed66b13bd4e76b8aff99"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f4.log",
+      "sha256": "2cf788c05448d0ec204aef398fb16caa26e10eb68af84c11e22ca723ff21b241"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f64.log",
+      "sha256": "7ebad12234e2e6d83d6d6498bb27c7d1a2e391d0a8b10fd6e71ee90bca3980bd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_f8.log",
+      "sha256": "b929d843767277ad59867dcc00b8cd37c7a9bc5a0422f783a760a221b480ea11"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_iid.log",
+      "sha256": "3d4018cdf4c0ea65792bff1acbd67f22b98a41110772611ffd9821ff95373902"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/cluster/r3_sorted.log",
+      "sha256": "d9c4f5e69d62de6f3598a5b53190f5efd9f14d3cd6591ba1023c00c3a7b3edfd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A13107_B13107.log",
+      "sha256": "a31e2a7003877354fa6f9212df0358a719554b18d540be12f3a9dc61ca9edf77"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A13107_B19661.log",
+      "sha256": "9004b70a6ce3693d2e6fce874796109c8624c7f47e73091fdc74c7ac6c9121a4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A13107_B26214.log",
+      "sha256": "79fca20ffff890d63e8137c25c174883bc252617308993a180388962c724cdf1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A13107_B32768.log",
+      "sha256": "5b379162695a414f340448fa18e04b5cd0ca8dbd162420180245766ca377eaf8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B13107.log",
+      "sha256": "a1a5916aa61eed4e8818b4c74ac1b735cce74d27c381b11558695147105c1506"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B1311.log",
+      "sha256": "4705cf7c7592c5a31661ef7fc056e6f001294907239d7e369b0217c5b1e34123"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B19661.log",
+      "sha256": "2d3c3b4d043873bb0409463bd7c0d2d5dadcac183f3fe0c6295ba5fbbdef2f24"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B26214.log",
+      "sha256": "1640f10a28982fd846bb41341628efa694dd3ce3382c502cd63807113107c548"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B32768.log",
+      "sha256": "7a401821ae2d5c834e20cff8d566f55295619dbe1e047839edce1226192a34af"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B3277.log",
+      "sha256": "b6d1a5a83d159ab7bf54af62ec2084ba1d311dae68d381db263f1644d4900ab4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A1311_B6554.log",
+      "sha256": "39ca486595f58e09fce58662175cd882b6278173808b16f4c7e03c6827f5877b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A19661_B19661.log",
+      "sha256": "0b2abb1f82a2cb10001b8ef57a82c903435c447c7d2ea4c193fa61966f30796e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A19661_B26214.log",
+      "sha256": "e58af6ffac2a6467cb0feef6fc1f4e997e4054a53f39cc6c3eba731578ee5687"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A19661_B32768.log",
+      "sha256": "73c01af3930d0b260f5526a83500a4e41a742afd5d7e605306d4cb4835029e3b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A26214_B26214.log",
+      "sha256": "2b5e95e1d40701fee83b402bc00541066ea88945537318df67dc3229bc872174"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A26214_B32768.log",
+      "sha256": "1103816fcdf36bc5b58c9e306ee1c671cca21eb7a31fdb2d84627cfed52db9fa"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A32768_B32768.log",
+      "sha256": "de97fdee3199d02c6393f06097afa9af0136a4f4cadf7e124a653f614d61a47a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B13107.log",
+      "sha256": "350a93d05b3475ac1608a4767688f28f73ba9d0cb4810fb835fcfe12ac999c33"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B19661.log",
+      "sha256": "59c551c7cb2829d6fb5a8c794465fb4f08f908ac3efcb75e5a69c0cffaf76ef2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B26214.log",
+      "sha256": "e88384d863226d90fb979cc4ad95623337ff48798838dadbc98f32485c3c11a4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B32768.log",
+      "sha256": "4259e19dc5295cdc61a0924584cd3db099934b68285fd1c36a07350f4c4be12c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B3277.log",
+      "sha256": "203cfdc448cd30d4195524516e2547863db2eb0aa87b4c8020aea0fb51f1df1a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A3277_B6554.log",
+      "sha256": "0662e5b0676ba0e1fd4b759fbbb4861e328101d8610bd3ffa17c8e8c53bf2664"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B13107.log",
+      "sha256": "9c84b4c12b771a3ff95ffd935bc8e885948b61cc8453be08c51c68125569146d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B1311.log",
+      "sha256": "d29418352494f5188049922799e2ed421b1512187207bb7d9a8c9c3a776dcb23"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B19661.log",
+      "sha256": "6888387cdcb39e40a6c856ee80fcdd71c73e689967d45ac71216458d2ac8f4dd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B26214.log",
+      "sha256": "3783980b04e35275df43089343367b554d55b18c05c38a284747bb0daec34f61"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B32768.log",
+      "sha256": "7767aa531dc92567aa80a8df274fe590f9ada50246b636f2d59f9549a88d3ec3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B3277.log",
+      "sha256": "6b839943bc2be52fe323902990cd2ba52ac4dbc999c04d38cd900dc62204fd2b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B328.log",
+      "sha256": "f82e791db01402ad463a415f1ad02deb527f56087361bd564bb8401c0e50eedc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B655.log",
+      "sha256": "d45116f519fd1848d1eafcb6474b46cebb5fc8d95fe255bb88b089d0ecb0ad87"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A328_B6554.log",
+      "sha256": "1ff19af8368c9cd7f5f818cc4c07a4ee5032926a78946464dbc54da5c7bb320b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A6554_B13107.log",
+      "sha256": "cfa7c0ffa0f3e32214e4410c465bea28e1b63e55ac08ff9daf236f34fef67070"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A6554_B19661.log",
+      "sha256": "ef53e1874aeaaa7b95aced9040f0c7e96d73f2dd1dbc1b334f335d24355b6e0d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A6554_B26214.log",
+      "sha256": "639c4c50cb850a1fac1b8d523d2bfcdeed4c56f4661dd5493262b497e70d0788"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A6554_B32768.log",
+      "sha256": "8182f5ca74dc6807b09ff4ccffd45132f95c3e4c359eb4e62a1bfd7c41550659"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A6554_B6554.log",
+      "sha256": "7e892850d04ded717f356978c5f1ff44beab3359544bc7f13769a01f8dc71fc2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B13107.log",
+      "sha256": "e59777a5f47035f7c6f211c150bc4e7df90cd68b8e06360ca8b39da7324a896b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B1311.log",
+      "sha256": "d6a2aa04c2ec4bd5d731f7e8787ace0d046d922789c81ef4afff3148f2c92a66"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B19661.log",
+      "sha256": "cb396f173ced45db00ae0dbbfe709cec2d9fc7bacefd46b267a5d7f93f74f00f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B26214.log",
+      "sha256": "2f2f8025f54ffadcc533300700d5ea93f99b6d107f52fc3e7d694234682046dd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B32768.log",
+      "sha256": "70c57c15a8aacfd34f3f1253e1d012a038f50ae8a74aa9920b9175828b201a59"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B3277.log",
+      "sha256": "873066638f92033381c7dd0ee6235ebfc34eb315fa3f3b4c424b50a23cfa1a17"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B655.log",
+      "sha256": "d7762351e20c44b08b5dc861191ca4af0fcfe4033fde3d5f161be67b800833b5"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A655_B6554.log",
+      "sha256": "b012a5143d561c0857183f971680aaef38be1c7201fc5b034d85af1578f2496f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B13107.log",
+      "sha256": "04c4de8a22deb72a0449b68a928f9ecd108b79ffd9be7b7653b8fb63650e7c28"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B1311.log",
+      "sha256": "ecfd58eb4a66620a0720cad2472923471a26cdd0a3d36807ea0bab006e83a8d5"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B19661.log",
+      "sha256": "dc90ae46d920b9c47cdda6b623d306c7d13a99225ab61effdc6ab26912e72d3d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B26214.log",
+      "sha256": "f3411063d2824bc0964c9b65ce57ff0245123c0155ac20389330008f502434c8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B32768.log",
+      "sha256": "a0dfa6ec810461c81deddb5e4f65c58f957222bece430fd59e270723caec674e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B3277.log",
+      "sha256": "d438aef216c9e805f7210d535172518976abfd372925752eb4c6c31660652785"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B328.log",
+      "sha256": "cdc3b694df4026f563c80a2020cb31fee841ea68a39d43d8a555a072123c66af"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B655.log",
+      "sha256": "2a20335106d5e4433aded4588fe35d8b0475913077d7f992efc39e65cc3f0b47"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B6554.log",
+      "sha256": "993e1c0de99712cd3c999e1ed7482cd5e293567debfbd88e5a894cde8af77569"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/density/r1_A66_B66.log",
+      "sha256": "63f189ffba17c92369ee3c7f7f3a1d6591994fc06ba6ff1f3acdbec2a1a26e30"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r1_decade.log",
+      "sha256": "6642fd135609b5dcf652bb2b956d10e9391e845afe140d6e90385c90a926defe"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r1_month.log",
+      "sha256": "29e1d211ff8b2b2c94c47f7d408c098bdbbea854f4025953a4949db5f2d74444"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r1_qflag.log",
+      "sha256": "2538830747c444ce5ed689e4d277d3af273c4e336706e0a8bb7bd737d263bd73"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r1_temp_bin.log",
+      "sha256": "47bdc72d161bec643a7f61fcbc3cb00efabc9f0b9dee925d88b286077b1e68cb"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r1_year.log",
+      "sha256": "c304970ed75dbf92c16465589550d13d324087d074cb6c4488e898808f7e54a6"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r2_decade.log",
+      "sha256": "4555ed1c7beb7f867b565b8ef88cd8ee6d7e099bfc9f1f677fb700336f9844cc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r2_month.log",
+      "sha256": "f174fdf6d9239e938b2c03ecd310ac85ba87642b337dcfe06c56a15221253786"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r2_qflag.log",
+      "sha256": "4db6ee23bfd2ba2aea18b4c4c4af50236938e47b66cdf055f09c942c5a0a4c53"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r2_temp_bin.log",
+      "sha256": "35e5eba9c51a84b2143349ebbb0ba3a5b5469b6e2639d0590cab96acc423c9e4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r2_year.log",
+      "sha256": "970bcf553ed8161566ff40f393e4b49f38d9442082fd750dc9855dcfb0fd96a1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r3_decade.log",
+      "sha256": "641a1896137918d8ee8555d45d4f34b176237936143c14b44865ce58b07aa335"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r3_month.log",
+      "sha256": "fb70514e1a19b3c1bae1162e25cc7f93134a214505aa3ffde5322ff10c0d7e67"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r3_qflag.log",
+      "sha256": "53d8ee473a388f7e2560df92a8e7e4cc86b77f2903f02b24fe05fff45422cee8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r3_temp_bin.log",
+      "sha256": "eec2d11a89fd188ffa116e93d71fdd6a525771d90e4640f94377350ac8f97c4d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/earth/r3_year.log",
+      "sha256": "98b19d9a9373309f3fd8891d6b2a4ae3fce6712ecb829383d891a23bbbf3fb43"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_cast_info_movie_id.log",
+      "sha256": "78bc5b9b640a0587073156997850d8a55ca3c0536cf1cb302634caf9f2219d79"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_cast_info_person_id.log",
+      "sha256": "75f79a0bb1bfac3fd20a49e726137301a74f18c3b7ec5b827a9bb21ba8ec58e9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_country.log",
+      "sha256": "6d657a08a8f7d375a2890e88cb7f84df44260a6d9b739da923f8363dd8088a9e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_kind.log",
+      "sha256": "4f52dc86487dff4a1164ba81350499daa112622ca0c4ef5069debf459dc0ac0f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_mc_ctype.log",
+      "sha256": "a0837b1bbce48916ec37d83852dfd22b16ae08d48732d0ed8a346aaf3f114ee6"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_mi_itype.log",
+      "sha256": "8a4782c921391d60469f4857b26051932b64c7f4f65ebaf483a8be715d3326ac"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_movie_keyword_movie_id.log",
+      "sha256": "b1edadd800867d2fbf3fe392c09dcab0e75edae44ce6294c58c5a2fd748a77cf"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_pi_itype.log",
+      "sha256": "ae928cf8324050452a819a117add4b0beaf2db07097a016e223e2a8c58dfc291"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_role.log",
+      "sha256": "fddf000031f6d3e33a56385acd511140974104d94b557f16e168f2ee362bcc14"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r1_year.log",
+      "sha256": "9422f5aa92fa31811e92b2266550e176e6536046e5aa1d10a8a720e8ba492bce"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_cast_info_movie_id.log",
+      "sha256": "4ab59fe4dbbf8288e73b64c49fee91da2a1b6e6e74abad08029e113d24c095d0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_cast_info_person_id.log",
+      "sha256": "0cb5d9048f3a05c09ea5fe7c0002a0e8ebe95bcec24c03abe796d9a732c05d20"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_country.log",
+      "sha256": "ac158ee4e977841735256045f0601f08f665ab9c1065683065bb0713a0466bd4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_kind.log",
+      "sha256": "414822d847430ba08ce36531dc703273c3ae909c45e7003d1dbbf01df4a2f56a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_mc_ctype.log",
+      "sha256": "6051a11935ec7bf380ed1c1145c0e72f077bcfaddeafeb9a14da5a139f91321e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_mi_itype.log",
+      "sha256": "398dff87b03a0034281a920879b2d4dfca1322b8e4d759803166cb27fe648eca"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_movie_keyword_movie_id.log",
+      "sha256": "f886114c900e413e22de27b591a5f4a48ecc7d32591fbae6e2ffb6c3214bc092"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_pi_itype.log",
+      "sha256": "6818f186ad332a29efdc5567950d5f8fbd8bc00c19d712fe5a30e9e3d03c9b85"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_role.log",
+      "sha256": "ed3ef937c3ace32650c04398a3d6a6012a7c1bb2de666630db9d1daa01d35286"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r2_year.log",
+      "sha256": "f190992ff3f77a052d6f2568ab2491dc90ba13b65e6611b4460f1c0fb6c91251"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_cast_info_movie_id.log",
+      "sha256": "62f2e9b335a4254362fe1fab166a464520f4dc6360203ea2defa52919da50d83"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_cast_info_person_id.log",
+      "sha256": "1c6b1396bfbbb11c770517f380bb1890d5ea743ae9db43aa37e905e8f574116c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_country.log",
+      "sha256": "1b34dc6c895e8051d2b65ae9d913b7556e0d13cec60472df7e3f7647955d575c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_kind.log",
+      "sha256": "c5b0bf83a3c2216647fb8623bc479b90dddcdfc25edda2c164b3e872e9f411dc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_mc_ctype.log",
+      "sha256": "7e5e697d8201ed003fb9fcaf2f3194577533d28ce3ae5f252b0e61cbf40a5870"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_mi_itype.log",
+      "sha256": "93f8df3cfe24d47de40864d3b542f195c9824c112cd9102482c424e7df9fa110"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_movie_keyword_movie_id.log",
+      "sha256": "64433649bbec370fdaf2ad7b73e177125c7f01fa78b6859d0ec7787a45077bf0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_pi_itype.log",
+      "sha256": "0fd7a841bded926931d7b300330d3a34cf5ece538cfe9680a150feb99af19454"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_role.log",
+      "sha256": "3279e8c667fbafd1b81bfb9de46453d22d610b91b476cbdff9bde3ef1c4b290a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/job/r3_year.log",
+      "sha256": "59d4c3fb881ab0619f03c5969088671c6fd55f8649e9f47bc528ca8705010a8a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/cast_info_movie_id.log",
+      "sha256": "47d3bf4bbdd8c57a0ea7e15b62f18f118bd7d5dadabd0438fe96d11de2fc41a0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/cast_info_person_id.log",
+      "sha256": "a8f9cd9cb5a5d1b4d87e62e3883415e805d3050e9207ea692b0a215e393ec705"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/country.log",
+      "sha256": "34ad64fa846137e50893e359d5a7d4704567748c7caf146e66cb853e03508d8f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/kind.log",
+      "sha256": "fe8f0d28fc80fdfbee07a17f89e890eb4405496979a994d06c8c88b1fa865b8d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/mc_ctype.log",
+      "sha256": "fe835da941dc3d90a8c5eaaa6db64372188b764f878685a5a9a2ed9efe3c80bc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/mi_itype.log",
+      "sha256": "c73471564ddba9d0d37b9b74dfff406f1acb7789311498363df6c563d53a87d3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/movie_keyword_movie_id.log",
+      "sha256": "4d2794be54ea70a3fd1c7a020ff6732ddb98a17f019f26755083830ec1b45576"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/pi_itype.log",
+      "sha256": "790109c55ada7720456b111824887533737b44311a1bf4c7fe8494b849cf55cd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/role.log",
+      "sha256": "672e2a95b454f458f966e1a0e12778701a89b8adb60285e4c351987750d63107"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/logs/table4_cr_run/year.log",
+      "sha256": "e0a9b2034e9eede7664c95cbe85743ff383f1d4b4d41293cf157c83f91863803"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f1024.csv",
+      "sha256": "854ef5023e05f6825e84833e7d4202ac488b1e6aaa265f788394671cf6bb2d83"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f128.csv",
+      "sha256": "3f40feedd7935179237af621940caf855770132bbf1e231991792760991706a3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f16.csv",
+      "sha256": "558bb9f45a2deebe732468f3a7b090db265706146908118e8ea4e345272dd53b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f2.csv",
+      "sha256": "a1250b1a94e7aa0778465dd4fe91332127917f896d58331f456139a63c390cc9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f256.csv",
+      "sha256": "1199c0ddadb36990f768b7ccdf29b43de8cb63e8cf215f7f94e12ca6ea8ee3c9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f32.csv",
+      "sha256": "d41634080a810794100d5aa5e2571ad9a47dfe19d65b034210c55c6572a6b32d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f4.csv",
+      "sha256": "9cc463d29190a79f80f7b84682e2ca6403420b3f3523e16ef71cbde56abed7ca"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f64.csv",
+      "sha256": "97244cab501f4593d530c07b9b3f0c666c554742822d150e34f5ab3c5ff85650"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_f8.csv",
+      "sha256": "4d4a8dcf18748514e40054e31c9468679d50dbf9955c1815379d5dbca5e55beb"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_iid.csv",
+      "sha256": "2b4bd38d9c60c8e1bd47489d068133b593af67621fd722cf0bd54d9cc91300fa"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r1_sorted.csv",
+      "sha256": "bec43923839b91481d962d8e74e60d593846e0e5e8b47ec0da901cefc30ca0db"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f1024.csv",
+      "sha256": "b64c63c1add13e42abc9df418da4d2b3972b3a793aa9162e38f82341272f7a65"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f128.csv",
+      "sha256": "53b5a21ff0de38cad9353dcb3c1141dddcc477ca04c78796bb6768e69bebf91a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f16.csv",
+      "sha256": "bb15e5f3f122986e3809567cc11539430b016bc5fa52aa32e79e2b05fd90eacd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f2.csv",
+      "sha256": "ea0bb60b5e8dbb9e84eceb6f10b5f9b387143106a2a1f8913b5c19bd9c58e83d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f256.csv",
+      "sha256": "fdc74d3e8c0f8b55f3343c01952292554a1875849b21805f2d2915d28313fba2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f32.csv",
+      "sha256": "dafa445cfaee48e72c81e9eaf3a5920a06d516b2e8195e2d53edf0431dc9687d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f4.csv",
+      "sha256": "0963b288949a28cc781fef03747b9ff65f67072a1e9a6d36d2b9b1207ca71fef"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f64.csv",
+      "sha256": "db70aa43bc25a2787f10262a14e128e58d9c146ce409cbf32a9cfadaa6d06be1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_f8.csv",
+      "sha256": "36163bd700e6ff44ecec4a7ff02fd555d50e499b541338c7c99529261e02fdc1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_iid.csv",
+      "sha256": "30155605b018103934bade523abeab67009e6e46def05e6e5e0039ae40dd4c76"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r2_sorted.csv",
+      "sha256": "a65327d6ddf6714675631cb5ae5ec0f231d2599613385c53d3e3b5ba29984e31"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f1024.csv",
+      "sha256": "f616d7417997fb43d36cfcfb3038abda7ed1969b05c0c6ecf6ae25a4c3b5f1a1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f128.csv",
+      "sha256": "748070c777bdc855d72f09c048f6ffa82298a4ce56e231fa810a0e08bed57232"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f16.csv",
+      "sha256": "b5bf33fc8b81a74b23f5695a75a0323fa165403ee473e6baa2777c927e42ee6a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f2.csv",
+      "sha256": "2d30f78d0b14127ae647158c264939559aea3db115de473196c46a23a057364a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f256.csv",
+      "sha256": "61f2212721cabbb3cf4a416bb4d834dbecb2c46922b3e287500adb7202d842c4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f32.csv",
+      "sha256": "48556c27d7b945bd0066fcb0cb18a963a8f847f9696d75b2c66d55fa4ef25ca7"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f4.csv",
+      "sha256": "891294f5c4bf292d76ffe0a1c2b279f3f9823578663788350274a77085be5e6d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f64.csv",
+      "sha256": "be26a65037941a7d5cf7d7d71c75f9e5370eea40c3dac3345275fdf6a701e38d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_f8.csv",
+      "sha256": "72a23b80a8b3cac169468ab860d86d69b0f267dc1aebd9c0c5de76fc5d955ac7"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_iid.csv",
+      "sha256": "055362308db704e4c96efd919bfb980b909b873e89252341342e7623e5f1a0b7"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/cluster/r3_sorted.csv",
+      "sha256": "a6e719a50f47cfc9d1b44d86e539b7ebabadd0e93e30aa9741b150d07ea30660"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A13107_B13107.csv",
+      "sha256": "72167bcf20c1836cad6b9790324a52a0b7602c069b159d4e8ac67ddd3261fc98"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A13107_B19661.csv",
+      "sha256": "693ddd17bab7c589920a3087f93184c9f4f350953a262b9288d46405b402f1ec"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A13107_B26214.csv",
+      "sha256": "da05aaf125563397d61f605fec73e750cb4d9e2e8dc52b09f858736869a7cdfc"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A13107_B32768.csv",
+      "sha256": "f7f82b2f9e43356076474a2fdf61fb5328521bc5e1604541c1fc5f442ead1f1b"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B13107.csv",
+      "sha256": "28cfd8160e76739b4db0514b44c8187cf4c2c8f24a31b51a15504cd22873f0bd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B1311.csv",
+      "sha256": "c7471f7cf363a92328670997e3e9c5da8a6b89e5bbbe0c3e7efc3d259234101f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B19661.csv",
+      "sha256": "4e1dc4dd60c210b2259c5fb901a50a65630e6b4f4f55b4053170aa1efd97f874"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B26214.csv",
+      "sha256": "6d423c37ac4c2f4213cd5ae3fb9f698af9f16a472e254d097e5e4bf32ec3c3f0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B32768.csv",
+      "sha256": "560fbdb8458362909d6c365e74f9639c3d67c73ee73050186622f916a62bb9af"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B3277.csv",
+      "sha256": "f6d21ac6e0c86895a7592fcee06088027aae4f06e51411e804d52e28db151062"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A1311_B6554.csv",
+      "sha256": "4c1234c5501fc2ebffa7f2ba6851114e286bdfaafa556e3d1da5c7e844e5e0c7"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A19661_B19661.csv",
+      "sha256": "9f92c5e8455757117d56e62a7878c3770fd4a9ff35fd068e7af084c139f7a956"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A19661_B26214.csv",
+      "sha256": "f2ea6eb3e707adec1ea5cf26ada02bb87d358d149477df4eec0222122073c564"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A19661_B32768.csv",
+      "sha256": "8b806244547db4c899dc7216bc84ec60f460d99a4e7e0516a2ddced687332b71"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A26214_B26214.csv",
+      "sha256": "078d3eb053fb485e879bb37dbadb73a85a3ef520befa2049e18183b988844db3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A26214_B32768.csv",
+      "sha256": "37a1f482559b31a0bb8035c8c03698a3e0910f372c2e3d223ab8c895385fa71c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A32768_B32768.csv",
+      "sha256": "8db10a66aa260066bd658e7dc018cf83f73aefb067598bf3aac9d419493dd4e4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B13107.csv",
+      "sha256": "ebfb3bf1d7d2bca429c52eac009d2bd930cb06813062372fdc3f76d8e8dbcb97"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B19661.csv",
+      "sha256": "3acc1bf2b45b91f1faedc23a2b3967519bcecf87287d9ac8f84853758f908239"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B26214.csv",
+      "sha256": "7891d04593007b0348442cb2041f218aa70628065e211f9c3de2240f89d1e28f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B32768.csv",
+      "sha256": "0907b7398482b2a54861c27207e20322366993ba7096a64003596e958180b296"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B3277.csv",
+      "sha256": "804118a0c60dda306bb0cba540e9a377c785a698648e57550ba1bf28dcea3040"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A3277_B6554.csv",
+      "sha256": "bb2ee61929c0d0db6f3dadb4997099ca18f03112b26d9a6aafff8b389ca6efaa"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B13107.csv",
+      "sha256": "ab850f77eb0e40d76edd4c3e88b58ccaff150dae147263d14193d6c09ea2aecd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B1311.csv",
+      "sha256": "5f9bbf079ca0d93b491fabb63ac949a14f07b82027b93763bff3f43ce80e4bf8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B19661.csv",
+      "sha256": "e92ca8309f57a57248b6920f3dfee6a155999017cecfbf9e826df58d7ddfddd2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B26214.csv",
+      "sha256": "f4405e4c52f8e48d9fc386a1890a33d8e23434fe7db9535c69c1bad5a04b75f9"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B32768.csv",
+      "sha256": "9887be1cfb7541064069b30220cd9599195685cb9b2d9ac4150c2f2c041b5f75"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B3277.csv",
+      "sha256": "5c26078efee3121323318a694230859e892dbf7a8013bbabe07a99583936ec28"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B328.csv",
+      "sha256": "1630027df58345280ca9c23c9538c3026338609e3766351e450d1b1e033dfef8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B655.csv",
+      "sha256": "608380c65d0e720fbeda15784727b4b1f48ab63b76e4303aa8f0f180629b1149"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A328_B6554.csv",
+      "sha256": "e6f1e78d6ba03103e334bcb85a9e424110b01c67e58db8b551253a8c1f76387e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A6554_B13107.csv",
+      "sha256": "fc094459af1d175b103a8b93666d5bb6375c13043ebf3d38c332856b5617b0c6"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A6554_B19661.csv",
+      "sha256": "18053a44f176f232d89fe11e6a32f850e77668d773862e8f88df26a412175986"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A6554_B26214.csv",
+      "sha256": "9019c1dec716daa2ec42df3b66236ceb3df0740e31af8e3b531a95b946d65431"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A6554_B32768.csv",
+      "sha256": "5beb2cf5e51b227a3ac02cd9ef9f040868ed160ae9cc2eb3dc2073cb481cfb11"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A6554_B6554.csv",
+      "sha256": "a24261ba789d4aaaa8beb0c02c6439dde2ed18a2f2010c0766b4dfb60e87fc9f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B13107.csv",
+      "sha256": "cf59ed1cfe56d2547c0ccc583d64c58bc1592b4cd50bdb9df0201e18ecf168c0"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B1311.csv",
+      "sha256": "a9a1ff9d8fa744f92b5ba040012bb8628c008d171f45658e10730e66a7b7593c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B19661.csv",
+      "sha256": "c89d6013a47edc05e994afa0f92fc2933e19aa1aa4bee335c4eeb940d37afe0f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B26214.csv",
+      "sha256": "711feb74f6bf620a75c5270092a406f701e7ab0e0ed02096d89a1fd86f93e621"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B32768.csv",
+      "sha256": "41091bb8737e4306b5be0e8ab0852bdd9ee62ff9e1fe8399fb81b878c29851ad"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B3277.csv",
+      "sha256": "92c09061c9db39dcb350506747ab6105a9634f2f454fc5dcd776859e47de8ed8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B655.csv",
+      "sha256": "a5ddab65c6896140e3916228a15a0fbda50fd60ce60f9444fbb1dc08b9f7fa49"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A655_B6554.csv",
+      "sha256": "07181c0367834f3dbb1e6e07dc33aae9944841246ba4792f7b27f1ecd813ecf1"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B13107.csv",
+      "sha256": "299149fcff6dc90c255d86536b231a977e8ebc2172e9329e6958681419f4b427"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B1311.csv",
+      "sha256": "e037c5fdaaf3f96781c00560aeeb80581b0910fd7cc28080166b38b8c41c0625"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B19661.csv",
+      "sha256": "5da59c1e028c627e332538f00e9a25e51983cc4b4b5410697662cea05786f4dd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B26214.csv",
+      "sha256": "9e97cfe49f405913a003fd5f333de28be6e684bdc547cd3788160faa96b45bd7"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B32768.csv",
+      "sha256": "894617c53ce38e1580f0b26397a2aad1a2966954b5141ae9ce078b06bde3ff53"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B3277.csv",
+      "sha256": "092f7aa0697467f90671df656db7a2f682418951f883f63892367ac5d5c1c4fd"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B328.csv",
+      "sha256": "84c03d00761622a362eda59f20717ba48c6d5ef7490db774e56972e7d0715636"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B655.csv",
+      "sha256": "4ea0e4d1d8302c70148d88090300852efe9f876d503f68d31e18892bfabe6092"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B6554.csv",
+      "sha256": "041d5b27932a1a27657b216fb050e219da886530565cef8b2a379f971a17779c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/density/r1_A66_B66.csv",
+      "sha256": "1c44b3d4407f55e67253b1003d62bdd697a3ac69bd617c1a3e7d56c7698b2666"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r1_decade.csv",
+      "sha256": "97fd2abbbda7a766b22949131cc9e85f59a0a73ade37191b0eb9f2491dce161e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r1_month.csv",
+      "sha256": "dc5a5208600422edcaf538f4cc1214d66bc705ce9d4c7122bae448e70467f39d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r1_qflag.csv",
+      "sha256": "585f12d1752061fdfc5c1b8f706e93ee713cfd8f7343bbe8684a9c2b3f0c6f57"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r1_temp_bin.csv",
+      "sha256": "f56d669a5bf74912cdd437a57110f86ba8fc9efac7cd0e565899f112c614c5ab"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r1_year.csv",
+      "sha256": "1b8191b1f01bec6259001f31203f4e36e75a15a5535a6db9e3f07148bc1a6e1c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r2_decade.csv",
+      "sha256": "387a9a4fdbff141fe35b6087fc43cf2c1ddfd7905ecf973b44886da4e801159c"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r2_month.csv",
+      "sha256": "5052302a3dd34fc8b4cf849725743b03377af44003efe31e1c284ee9f2dadec8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r2_qflag.csv",
+      "sha256": "3178aa1d96d00e43912f04325c1775f9f25d3175d6251c361ac040dfb12421e3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r2_temp_bin.csv",
+      "sha256": "b0b5c00df23da62a05a0b4aa1928dad364bb79aaf41bedc5cc0ba40927b978c5"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r2_year.csv",
+      "sha256": "05fc59027b234a8a1d6d7cb0beaa9b29e9c5a3517b4527a911272e11f54319c4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r3_decade.csv",
+      "sha256": "70078b26b3a1dfba7da92fba0538586b5beb3c85e96a891db9863f8e6e623130"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r3_month.csv",
+      "sha256": "1ea4467d1f31ac63de184519d85565f2b76ce9c9da58e869fe6dab3f0783c4ba"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r3_qflag.csv",
+      "sha256": "c579e84fe7a07c7f294d0a1c6dc3635bb0354b4a92524c308303afd00d2437ce"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r3_temp_bin.csv",
+      "sha256": "126eecd7ebf0ede6fd6873ab06fd57a27dca636cc95858c5770b09b989ffe3ac"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/earth/r3_year.csv",
+      "sha256": "470f0b8ad40f1ca34a78e666c7109093df30c4cc270ce4ce4afd1c1228118599"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_cast_info_movie_id.csv",
+      "sha256": "80277e21a7a2354644b77109c0c7b894ad989f732857b5acfe82d4c4f3812d96"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_cast_info_person_id.csv",
+      "sha256": "3458ab4ac7afb17c96ab1fa36a8215a54155a2de9583694d8b770fcd596d3a85"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_country.csv",
+      "sha256": "f48aed99375690a9a72f0f142ed515e88eaf4337434a31ff5bf5dcc477e8be4a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_kind.csv",
+      "sha256": "d2c00004edbe0be6438ff45a690a82eaaf86bdc6673d6a391a0019856a21d107"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_mc_ctype.csv",
+      "sha256": "0a58c26690f6e6cfed15c8d62942a13e4e8c5d5e96bf61a6e9fc3e7d6799149a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_mi_itype.csv",
+      "sha256": "43d76d1884795d41b0b1d6190c2585c056ddafa56261207b9b58816296751220"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_movie_keyword_movie_id.csv",
+      "sha256": "a0b452c0fc9cdef6cfb7f092f95e56ccf577cd6e20abf2fcf725eed9eeace522"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_pi_itype.csv",
+      "sha256": "ee0c87dcbd444537547cee3ee6f84d109dbc8a9c4162a6421af7d89bece7d629"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_role.csv",
+      "sha256": "5d6191854889195260701193c950302b2fa3d8c55f94ed7521334fa5502a2d2d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r1_year.csv",
+      "sha256": "7551e6fdca265d6d0c08bb0cf75862aaeae6a495caf6a4ca81804760e82d8d94"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_cast_info_movie_id.csv",
+      "sha256": "df852a5d9f546ec28937ef477f2215e25b95887e6e174c007f1d1c425710799e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_cast_info_person_id.csv",
+      "sha256": "1dd65df4bc698f618648897960ce6ffd267f9d0fc61420cae4a959f179481fe8"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_country.csv",
+      "sha256": "a75e4a15d566b4e277595a9a8c67852e0f975dd545de6c50b3049109efba7339"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_kind.csv",
+      "sha256": "05147d6855c7d12ea4f33281392473150ec2afd559b276d9049ed33c3fb7bd8e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_mc_ctype.csv",
+      "sha256": "1d8c3f47adca94912978859e19facb68898eaf15214b8a2d845cd3208cb9544e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_mi_itype.csv",
+      "sha256": "99f63567a954ba235b64e868bf140441680393a11bcd81d18e955734821079b3"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_movie_keyword_movie_id.csv",
+      "sha256": "1e3380282a1964ab48689cc661b52f8d49c7df4b66c84d92ad6710b197d9977e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_pi_itype.csv",
+      "sha256": "f60c0a2dd9d3dcacc4b21a431d4d7738c999117ac22c16c07939a30d4f4341af"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_role.csv",
+      "sha256": "885d5e3abe5af42303495f044a1779bb8493b13d14d3206e144a2f8e27d43d2e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r2_year.csv",
+      "sha256": "68bfb1891bc61e7d14e6efe644dd6fce4d37e27e8d46bae8b5b7d69207ad295a"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_cast_info_movie_id.csv",
+      "sha256": "636e97141b9af934506eeee06d837447cd2a9fdce64a21c364afeed97b2313d4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_cast_info_person_id.csv",
+      "sha256": "f62047a53a0755a38c02045135f16a939ae53fccab752418936b0e8e4af78a16"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_country.csv",
+      "sha256": "cd8bc5487bfa0df02033c638bec01186853b2f1610f9eb2a11bc2b6cedb0cace"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_kind.csv",
+      "sha256": "2090a726a0041d506e2242c18892c864c010afad8906fdb40f0fcc4261da0e65"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_mc_ctype.csv",
+      "sha256": "fb200082d490541e0adfaf62fb9c1795427cd8dab31b54213104a1fac133c41f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_mi_itype.csv",
+      "sha256": "19cac9124c904e1a43b53224c89f0b9546d414347451324ec1d6a2ed8bea9100"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_movie_keyword_movie_id.csv",
+      "sha256": "2f0ec0d8c1132f3cd7a91929b52eddd7f02950c84b83c679dd6e4c6dc97be0ea"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_pi_itype.csv",
+      "sha256": "b6bd104e51741413ac4545d51960a10bb02d240543e03b0b7f976e028092df86"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_role.csv",
+      "sha256": "451bacfd1a628ec5043ebcd8ab052f29fd30341a5a846fa4a5cd4c839cc937fb"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/job/r3_year.csv",
+      "sha256": "7e59313d8f2b6db5473cb5b306cbcf317e94b10ee99e711614cef01a2064113e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/cast_info_movie_id.csv",
+      "sha256": "1d9e2414ffd7e1d363c76d855b4f50ad990d4c3ce58c08e4c6b83d8e39419cb4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/cast_info_person_id.csv",
+      "sha256": "83e122ed94be23bf3b85c96ae96737b04df5c7cc1cc960be2f1aa97648a1d12e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/country.csv",
+      "sha256": "da3ebe2a8da0da94cbfe4463e3388676bd13ad725a349149b051a7d353996a85"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/kind.csv",
+      "sha256": "407dbe4d84f677961dd859bf86536ac820d5da9dd8676305c3caf3a861eacb10"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/mc_ctype.csv",
+      "sha256": "a86cdd9bbbd703713a6752807e63dadf58ece9f479cfb7b191819bc5d323daa2"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/mi_itype.csv",
+      "sha256": "628d9840d31d6e245a20ac3df36922d7e675c61792047ced302ac796d728e024"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/movie_keyword_movie_id.csv",
+      "sha256": "99a5e1a87347826e72f55bd0e38048db52c3010f1dd6c5aa2f196b25fb07a5d4"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/pi_itype.csv",
+      "sha256": "ba4679eba0e61aa2877d104081ff7d58b027ff5aa522d80da149ccbb8a537b87"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/role.csv",
+      "sha256": "a929cd9500989de3a3310ffad84a7b855bf97ec6ae701f49ae48c1de7ae9ef6e"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/raw/table4_cr_run/year.csv",
+      "sha256": "a0401a547b4d6a0f391c52b7fcd2706e00d036519f7c787812468ec371ccc85d"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/results/table4_cr_run_sizes.csv",
+      "sha256": "61f01e4bcd49bb66cff8c8427126a8e3c151ff7fde0ecb4e1ab9c8daf321f85f"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/run_metadata_earth.json",
+      "sha256": "ff28d2cb942c103155cade621222438875e7653ced916e00e3c463b8daf90363"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/run_metadata_job_cluster_density.json",
+      "sha256": "5a03e6f5c99692c856fc254d6a5c2521b0eb8f33c7c32785f6b49addb5997b38"
+    },
+    {
+      "path": "combit-cr-native-20260820/experiments/cr_native_no_btv_20260820/table4_run_metadata.json",
+      "sha256": "e329466ff78cc22ce1210694c2254b82217de04343556554b89d2f3946f2103e"
+    }
+  ],
+  "table4": {
+    "croaring_increase_over_ddc_fraction": 0.25026369769494305,
+    "croaring_run_total_mib": 218.62847709655762,
+    "croaring_run_wins": 3,
+    "ddc_total_mib": 174.86589229106903,
+    "ddc_wins": 7
+  }
+}
