@@ -2,6 +2,7 @@
 #define DDC_H
 
 #include <vector>
+#include <boost/container/small_vector.hpp>
 #include <cstdint>
 #include <cassert>
 #include <cstring>
@@ -86,8 +87,17 @@ public:
     size_t l2_lit_count() const { return l2_lit_count_; }
     size_t l3_lit_count() const { return l3_lit_count_; }
 
-    bool is_all_zero() const { return l1_lit_count_ == 0 && !l1_fill_ones_; }
-    bool is_all_ones() const { return l1_lit_count_ == 0 &&  l1_fill_ones_; }
+    bool is_all_zero() const { return !has_l2v_ && l1_lit_count_ == 0 && !l1_fill_ones_; }
+    bool is_all_ones() const { return !has_l2v_ && l1_lit_count_ == 0 &&  l1_fill_ones_; }
+
+    bool has_l2v() const { return has_l2v_; }
+    const uint8_t* l2v_data() const { return l2v_bits_.data(); }
+    static DDCBtv compress_dual(const std::vector<bool>& bits);
+    size_t collect_literals(uint32_t* words, uint8_t* vals, size_t cap) const;
+    DDCBtv to_decompressed() const;
+    DDCBtv dense_binop(const DDCBtv& other, char op) const;
+
+    int uniform_class() const;
 
     static DDCBtv make_all_fill(size_t bit_count, size_t l2_count, bool l1_fill_ones);
     static DDCBtv make_decompressed_zero(size_t bit_count, size_t l2_count);
@@ -155,12 +165,17 @@ public:
     void serialize_v4(std::ostream& os, bool is_last_seg) const;
     static DDCBtv deserialize_v4(std::istream& is, size_t segment_bits);
 
+    void serialize_v5(std::ostream& os, bool is_last_seg) const;
+    static DDCBtv deserialize_v5(std::istream& is, size_t segment_bits);
+
     void print(std::ostream& os = std::cout) const;
 
 private:
     // layout: keep field order
     // L1..L4 hierarchy
     State                   state_;
+    bool                    has_l2v_ = false;
+    std::vector<uint8_t>    l2v_bits_;   // l2v
     bool                    l1_fill_ones_;
     bool                    l2_fill_ones_;
     size_t                  bit_count_;
@@ -185,10 +200,25 @@ private:
     void compress_l3_to_l4();
     bool is_last_word_literal() const;
 
+    // Restore the canonical invariant "pad bits of the final partial byte are
+    // zero".  Kernel fill expansion writes whole 0xFF bytes into the result;
+    // decompress() ignores pad bits, but popcount()'s literal accounting must
+    // not see them.  Called at every kernel exit that writes l1 output.
+    void mask_tail_byte() {
+        if (bit_count_ % 8 == 0 || l1_lit_count_ == 0 || l1_lits_.empty()) return;
+        const uint8_t m = static_cast<uint8_t>(0xFF << (8 - bit_count_ % 8));
+        if (state_ == State::Decompressed) { l1_lits_[l1_lit_count_ - 1] &= m; return; }
+        if (state_ == State::Compressed && is_last_word_literal())
+            l1_lits_[l1_lit_count_ - 1] &= m;
+    }
+
     friend class DDC;
 };
 
 // segmented bitmap container
+bool ddc_dual_enabled();
+int ddc_dual_probe(char op, const DDCBtv& a, const DDCBtv& b);
+
 class DDC {
 public:
     static constexpr size_t default_segment_bits = size_t(1) << 16;
@@ -204,7 +234,8 @@ public:
 
     DDC() = default;
 
-    static DDC compress(const std::vector<bool>& bits, bool l1_fill_ones = false, size_t segment_bits = default_segment_bits);
+    static DDC compress(const std::vector<bool>& bits, bool l1_fill_ones = false, size_t segment_bits = default_segment_bits,
+                          bool adaptive_l1_polarity = false);
     static DDC from_sparse_positions(const std::vector<uint32_t>& positions, size_t num_rows, size_t segment_bits = default_segment_bits);
     std::vector<bool> decompress() const;
 
@@ -233,6 +264,7 @@ public:
     // iterate set literals
     template<typename Fn>
     void for_each_literal(Fn&& fn) const {
+        ensure_flat();
         size_t word_off = 0;
         for (const auto& seg : segments_) {
             const uint8_t* l1 = seg.l1_lit_data();
@@ -240,6 +272,22 @@ public:
 
             // skip empty
             if (seg.is_all_zero()) {
+                word_off += l2_total;
+                continue;
+            }
+
+            // all-ones fill (incl. hollow make_all_fill segments materialised
+            // by ensure_flat for virtual ones runs — they carry NO L2-L4
+            // arrays, so they must not reach the descent below): every word
+            // is 0xFF, tail byte masked to its valid bits
+            if (seg.is_all_ones()) {
+                const size_t nb = seg.bit_count();
+                for (size_t i = 0; i < l2_total; i++) {
+                    uint8_t v = 0xFF;
+                    if (i + 1 == l2_total && (nb % 8))
+                        v = static_cast<uint8_t>(0xFF << (8 - nb % 8));
+                    fn(static_cast<uint32_t>(word_off + i), v);
+                }
                 word_off += l2_total;
                 continue;
             }
@@ -383,16 +431,45 @@ public:
     double compression_ratio() const;
 
     size_t bit_count()     const { return bit_count_; }
-    size_t num_segments()  const { return segments_.size(); }
+    size_t num_segments()  const {
+        return sparse_form_ ? total_segments() : segments_.size();
+    }
     size_t segment_bits()  const { return segment_bits_; }
 
-    const std::vector<DDCBtv>& segments() const { return segments_; }
-    std::vector<DDCBtv>& segments() { return segments_; }
-    const DDCBtv& segment(size_t i) const { return segments_[i]; }
+    // gap-form
+    void ensure_flat() const;
+    bool sparse_form() const { return sparse_form_; }
+    bool gap_empty() const { return sparse_form_ && seg_ids_.empty() && ones_runs_.empty(); }
+    size_t total_segments() const {
+        return segment_bits_ ? (bit_count_ + segment_bits_ - 1) / segment_bits_
+                             : segments_.size();
+    }
+
+    using seg_vec_t  = boost::container::small_vector<DDCBtv, 1>;
+    using id_vec_t   = boost::container::small_vector<uint32_t, 8>;
+    using run_vec_t  = boost::container::small_vector<std::pair<uint32_t,uint32_t>, 8>;
+    using mask_vec_t = boost::container::small_vector<uint64_t, 16>;
+
+    const seg_vec_t& segments() const { ensure_flat(); return segments_; }
+    seg_vec_t& segments() { ensure_flat(); invalidate_masks(); return segments_; }
+    const DDCBtv& segment(size_t i) const { ensure_flat(); return segments_[i]; }
 
     // scatter set bits into segments
     void scatter_or_decompressed(const uint32_t* positions, size_t n) {
+        ensure_flat();   // gap-form results index by GLOBAL id below
+        invalidate_masks();
         const uint32_t seg_bits = static_cast<uint32_t>(segment_bits_);
+        if ((seg_bits & (seg_bits - 1)) == 0) {
+            // power-of-two segments: shift/mask instead of a per-position
+            // hardware division (the division halves scatter throughput)
+            const uint32_t shift = static_cast<uint32_t>(__builtin_ctz(seg_bits));
+            const uint32_t mask  = seg_bits - 1;
+            for (size_t i = 0; i < n; i++) {
+                uint32_t p = positions[i];
+                segments_[p >> shift].set_bit_decompressed(p & mask);
+            }
+            return;
+        }
         for (size_t i = 0; i < n; i++) {
             uint32_t p = positions[i];
             uint32_t seg = p / seg_bits;
@@ -410,12 +487,35 @@ public:
     void serialize_v4(std::ostream& os) const;
     static DDC deserialize_v4(std::istream& is);
 
+    void serialize_v5(std::ostream& os) const;
+    static DDC deserialize_v5(std::istream& is);
+
+    static DDC load_any(std::istream& is);
+
     void print(std::ostream& os = std::cout) const;
 
 private:
-    std::vector<DDCBtv> segments_;
+    // mutable: ensure_flat() is a const representation change (gap form ->
+    // canonical grid), logically state-preserving.
+    mutable seg_vec_t segments_;
     size_t bit_count_    = 0;
     size_t segment_bits_ = default_segment_bits;
+    mutable bool sparse_form_ = false;          // gap form active
+    mutable id_vec_t seg_ids_;     // global ids of segments_ rows
+    mutable run_vec_t ones_runs_;   // runs
+
+    // v3.1 (meeting 8/2): cached zero/ones segment masks.  Stage profiling
+    // showed the per-operator mask rebuild (a full walk over every stored
+    // segment object, both operands) was 42-59% of clustered OR time.  The
+    // masks depend only on this bitmap's content, so build once and reuse;
+    // every content-mutating entry point calls invalidate_masks().
+    // ensure_flat() is a pure representation change and KEEPS them valid.
+    // In-memory only — serialization format untouched.  Not thread-safe
+    // (matches the library's existing single-thread benchmark contract).
+    mutable bool masks_valid_ = false;
+    mutable mask_vec_t zmask_, omask_;
+    void ensure_masks() const;
+    void invalidate_masks() { masks_valid_ = false; }
 };
 
 // sparse staging for OR

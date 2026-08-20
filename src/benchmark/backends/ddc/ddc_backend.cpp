@@ -89,6 +89,6 @@ std::unique_ptr<BitmapHandle> DDCBackend::Load(const std::string& path) {
     auto res = std::make_unique<DDCHandle>();
     std::ifstream in(path, std::ios::binary);
     if (!in) return res;
-    res->compressed = DDC::deserialize(in);
+    res->compressed = DDC::load_any(in);
     return res;
 }

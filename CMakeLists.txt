@@ -14,6 +14,9 @@ add_subdirectory(src/core/ddc)
 # 2. Compile Bitset core library
 add_subdirectory(src/core/bitset)
 
+# 2b. Compile Wavelet-matrix column-index library (succinct range-analytics)
+add_subdirectory(src/core/wavelet)
+
 # 3. Demo executable
 add_executable(ddc_demo src/main.cpp)
 target_link_libraries(ddc_demo PRIVATE ddc)
@@ -44,21 +47,29 @@ set(BENCHMARK_SOURCES
     src/benchmark/backends/Concise/concise_backend.cpp
     src/benchmark/backends/bitset/bitset_backend.cpp
     src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
+    src/benchmark/backends/bsr/bsr_backend.cpp
+    src/benchmark/backends/hbi/hbi_backend.cpp
+    src/core/hbi/hbi.cpp
+    src/core/bsr/intersection_algos.cpp
+    src/core/bsr/util.cpp
     src/core/croaring/roaring.c
 )
 
 add_executable(benchmark_app ${BENCHMARK_SOURCES} ${FASTBIT_SOURCES})
 
 # Add src/core/ddc/include to search path
-target_include_directories(benchmark_app PRIVATE 
-    ${CMAKE_SOURCE_DIR}/src 
+target_include_directories(benchmark_app PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/hbi
+    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/ddc/include
     ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+    ${CMAKE_SOURCE_DIR}/src/core/bsr
 )
 
-# DDC's AVX-512 VBMI2 expand-load needs these flags
-target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
+# DDC's AVX-512 VBMI2 expand-load needs these flags; the vendored
+# QFilter/BSR kernels (src/core/bsr) additionally need SSE4.2/AVX2.
+target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2 -mavx2 -mpopcnt)
 
 target_link_libraries(benchmark_app PRIVATE ddc bitset_core Threads::Threads atomic Boost::program_options)
 
@@ -200,6 +211,20 @@ target_compile_options(bench_bypass PRIVATE -O3)
 target_link_libraries(bench_bypass PRIVATE ddc Threads::Threads atomic)
 
 # ==========================================
+# bench_density_grid: density x density OR/AND/XOR grid over seeded 100M-bit
+# uniform bitvectors (reviewer-response heatmap, 2026-08-01).  Emits
+# realgrid_or_100m.csv in the working directory.
+# ==========================================
+add_executable(bench_density_grid
+    src/benchmark/bench_density_grid.cpp
+)
+target_include_directories(bench_density_grid PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
+)
+target_compile_options(bench_density_grid PRIVATE -O3)
+target_link_libraries(bench_density_grid PRIVATE ddc Threads::Threads atomic)
+
+# ==========================================
 # bench_L_run_bar: one-shot COMP throughput at a single cardinality
 # on run-length clustered bitmaps (TPC-H Q6-aligned).  Produces the bar
 # chart .dat for tools/hierarchy_depth_runlength_bar.gnuplot.
@@ -329,3 +354,61 @@ target_include_directories(compress_any PRIVATE
 )
 target_compile_options(compress_any PRIVATE -mavx512f -mavx512bw -mavx512vbmi2)
 target_link_libraries(compress_any PRIVATE ddc Threads::Threads atomic Boost::program_options)
+# ==========================================
+# convert_bsr — convert bm_*_roaring/ dirs into bit-identical bm_*_bsr/
+# dirs for the vendored QFilter/BSR (SIGMOD'18) baseline.
+# ==========================================
+add_executable(convert_bsr
+    util/convert_bsr.cpp
+    src/benchmark/backends/bsr/bsr_backend.cpp
+    src/core/bsr/intersection_algos.cpp
+    src/core/bsr/util.cpp
+    src/core/croaring/roaring.c
+)
+target_include_directories(convert_bsr PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/bsr
+)
+target_compile_options(convert_bsr PRIVATE -mavx2 -mpopcnt)
+target_link_libraries(convert_bsr PRIVATE Threads::Threads)
+
+# convert_hbi — convert bm_*_bsr/ dirs into bit-identical HBI-Pointer files
+# (hbi branch, R1.W1/R3-W2 rebuttal experiments).  Output root: bitmap_hbi/.
+# ==========================================
+add_executable(convert_hbi
+    util/convert_hbi.cpp
+    src/core/hbi/hbi.cpp
+)
+target_include_directories(convert_hbi PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core/hbi
+)
+target_compile_options(convert_hbi PRIVATE -mpopcnt)
+
+# bench_build_paths — isolate union-build vs AND-kernel costs (BSR audit)
+add_executable(bench_build_paths
+    src/benchmark/bench_build_paths.cpp
+    src/core/bsr/intersection_algos.cpp
+    src/core/bsr/util.cpp
+    src/core/croaring/roaring.c
+)
+target_include_directories(bench_build_paths PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
+    ${CMAKE_SOURCE_DIR}/src/core/bsr
+)
+target_compile_options(bench_build_paths PRIVATE -O3 -mavx512f -mavx512bw -mavx512vbmi2 -mavx2 -mpopcnt)
+target_link_libraries(bench_build_paths PRIVATE ddc Threads::Threads atomic)
+
+# convert_ddc_from_roaring — rebuild ddc dirs bit-identical to roaring dirs
+add_executable(convert_ddc_from_roaring
+    util/convert_ddc_from_roaring.cpp
+    src/core/croaring/roaring.c
+)
+target_include_directories(convert_ddc_from_roaring PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
+)
+target_compile_options(convert_ddc_from_roaring PRIVATE -O3 -mavx512f -mavx512bw -mavx512vbmi2)
+target_link_libraries(convert_ddc_from_roaring PRIVATE ddc Threads::Threads atomic)

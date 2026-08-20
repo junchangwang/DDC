@@ -29,6 +29,8 @@
 
 namespace fs = std::filesystem;
 
+static bool g_adaptive_polarity = false;   // -P: per-segment L1 fill value (paper 4.1)
+
 std::vector<std::vector<uint32_t>> read_dataset_buckets(
     const std::string& dataset_path, uint64_t rows, int cardinality)
 {
@@ -342,6 +344,7 @@ bool gen_ewah(const std::vector<std::vector<uint32_t>>& buckets,
         for (uint32_t idx : buckets[v]) {
             btv.set(idx);
         }
+        btv.padWithZeroes(rows);
 
         uint64_t current_bits = rows;
 
@@ -402,10 +405,10 @@ bool gen_ddc(const std::vector<std::vector<uint32_t>>& buckets,
         for (size_t i = 0; i < raw.size() && raw[i] < rows; i++)
             bits[raw[i]] = true;
 
-        DDC cb = DDC::compress(bits,  false, segment_bits);
+        DDC cb = DDC::compress(bits,  false, segment_bits, g_adaptive_polarity);
         std::string out_path = output_dir + "/" + std::to_string(v) + ".bm";
         std::ofstream out(out_path, std::ios::binary);
-        cb.serialize(out);
+        cb.serialize_v5(out);
 
         if (v % 100 == 0 || v == cardinality) {
             std::cout << "[gen_ddc] Written " << v << "/" << cardinality << " bitmaps\n";
@@ -682,6 +685,7 @@ int main(int argc, char* argv[]) {
     int w = 8;
     int tile = 1;
     int L_depth = -1;
+    bool adaptive_polarity = false;
     long long seg_bits_arg = -1;
     bool run_length = false;
     std::string algorithm;
@@ -711,6 +715,8 @@ int main(int argc, char* argv[]) {
             tile = std::stoi(argv[++i]);
         } else if (arg == "-S" && i + 1 < argc) {
             seg_bits_arg = std::stoll(argv[++i]);
+        } else if (arg == "-P") {
+            adaptive_polarity = true;
         } else if (arg == "-R") {
             run_length = true;
         } else if (arg == "-d" && i + 1 < argc) {
@@ -723,6 +729,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    g_adaptive_polarity = adaptive_polarity;
     const bool transition_mode = (t > 0);
     const bool overlap_mode    = (o > 0);
     const bool asym_mode       = (asym_a > 0 && asym_b > 0);

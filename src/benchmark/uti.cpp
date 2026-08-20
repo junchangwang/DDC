@@ -33,6 +33,7 @@ double compute_median(std::vector<double>& v) {
 }
 
 long get_file_size(const std::string& filename) {
+    // Logical file length, not allocated disk blocks or in-memory object size.
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
     return in.tellg();
 }
@@ -128,6 +129,8 @@ std::string algo_to_backend_key(const std::string& algo) {
     if (algo.rfind("ddc", 0) == 0) return "ddc";
     if (algo == "bitset") return "bitset";
     if (algo == "bitset_avx512") return "bitset_avx512";
+    if (algo == "bsr") return "bsr";
+    if (algo.rfind("hbi", 0) == 0) return algo;
     return "";
 }
 

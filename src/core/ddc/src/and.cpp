@@ -1,8 +1,13 @@
 #include "ddc.h"
+#include "zero_run_bypass.h"
+#include <algorithm>
 
 // AND kernel
 DDCBtv
 DDCBtv::operator&(const DDCBtv& other) const {
+    if (has_l2v_ || other.has_l2v_)
+        return dense_binop(other, '&');
+
     assert(bit_count_ == other.bit_count_);
     assert(state_ == State::Compressed);
     assert(other.state_ == State::Compressed);
@@ -335,6 +340,7 @@ DDCBtv::operator&(const DDCBtv& other) const {
 #endif
 
     if (compress) result.compact_l2_l3(r_off);
+    result.mask_tail_byte();
     return result;
 }
 
@@ -342,12 +348,165 @@ DDCBtv::operator&(const DDCBtv& other) const {
 DDC
 DDC::operator&(const DDC& other) const {
     assert(bit_count_ == other.bit_count_);
-    assert(segments_.size() == other.segments_.size());
+
+    // absorb
+    if (gap_empty() || other.gap_empty()) {
+        DDC r;
+        r.bit_count_ = bit_count_;
+        r.segment_bits_ = segment_bits_;
+        r.sparse_form_ = true;
+        return r;
+    }
 
     DDC result;
     result.bit_count_ = bit_count_;
     result.segment_bits_ = segment_bits_;
 
+    const size_t n = total_segments();
+
+    // Dynamic zero-run bypass v2: AND absorbs on EITHER side's zero run —
+    // the whole combined run becomes an IMPLICIT GAP in the result (this is
+    // the teacher's "dynamic segment" taken to its limit: a 553-segment zero
+    // run costs zero records and zero construction).
+    if (ddc_zrb::enabled() && n > 0) {
+        assert(segment_bits_ == other.segment_bits_);
+        const id_vec_t* ia = sparse_form_ ? &seg_ids_ : nullptr;
+        const id_vec_t* ib = other.sparse_form_ ? &other.seg_ids_ : nullptr;
+        ensure_masks();                       // v3.1: cached per-bitmap masks
+        other.ensure_masks();
+        const uint64_t* za = zmask_.data();       const uint64_t* oa = omask_.data();
+        const uint64_t* zb = other.zmask_.data(); const uint64_t* ob = other.omask_.data();
+        // v3 absorption masks: g = either-zero (x&0=0), o = both-ones (1&1=1)
+        const size_t nw = zmask_.size();
+        uint64_t gsb[64], osb[64];          // 64 words = 4096 segments
+        std::vector<uint64_t> gh, oh;       // heap fallback for huge grids
+        uint64_t *g, *o;
+        if (nw <= 64) { g = gsb; o = osb; }
+        else { gh.resize(nw); oh.resize(nw); g = gh.data(); o = oh.data(); }
+        size_t gap_bits = 0, ones_bits = 0;
+        for (size_t w = 0; w < nw; w++) {
+            g[w] = za[w] | zb[w];
+            o[w] = oa[w] & ob[w];
+            gap_bits  += (size_t)__builtin_popcountll(g[w]);
+            ones_bits += (size_t)__builtin_popcountll(o[w]);
+        }
+        ddc_zrb::SegView<seg_vec_t, id_vec_t> va{&segments_, ia};
+        ddc_zrb::SegView<seg_vec_t, id_vec_t> vb{&other.segments_, ib};
+        ddc_zrb::JumpLog jl;
+        id_vec_t rid;
+        run_vec_t rones;
+        const size_t present = n - gap_bits - ones_bits;   // exact stored count
+        result.segments_.reserve(present);
+        rid.reserve(present);
+        rones.reserve(8);
+
+        const bool collapse_uniform = (gap_bits + ones_bits) * 2 >= n;
+        ddc_zrb::set_run_hint(collapse_uniform);
+        auto emit_mixed = [&](DDCBtv&& r_seg, size_t idx) {
+            if (collapse_uniform) {
+                const int u = r_seg.uniform_class();
+                if (u == 0) return;
+                if (u == 1) {
+                    if (!rones.empty() && rones.back().first + rones.back().second == idx)
+                        rones.back().second++;
+                    else rones.emplace_back((uint32_t)idx, 1u);
+                    return;
+                }
+            }
+            result.segments_.push_back(std::move(r_seg));
+            rid.push_back((uint32_t)idx);
+        };
+
+        size_t i = 0;
+        while (i < n) {
+            if (ddc_zrb::test_bit(g, i)) {        // either side zero → gap
+                const size_t L = ddc_zrb::run_len_set(g, i, n);
+                jl.jump(L);
+                i += L;
+                continue;
+            }
+            if (ddc_zrb::test_bit(o, i)) {        // both ones → virtual ones run
+                const size_t L = ddc_zrb::run_len_set(o, i, n);
+                if (!rones.empty() && rones.back().first + rones.back().second == i)
+                    rones.back().second += (uint32_t)L;
+                else
+                    rones.emplace_back((uint32_t)i, (uint32_t)L);
+                jl.jump(L);
+                i += L;
+                continue;
+            }
+            if (ddc_zrb::test_bit(oa, i)) {       // a ones → result = b range (b mixed)
+                const size_t L = std::min({ddc_zrb::run_len_set(oa, i, n),
+                                           ddc_zrb::run_len_clear(zb, i, n),
+                                           ddc_zrb::run_len_clear(ob, i, n)});
+                vb.emit_range(i, i + L, result.segments_, rid);
+                jl.jump(L);
+                i += L;
+                continue;
+            }
+            if (ddc_zrb::test_bit(ob, i)) {       // b ones → result = a range (a mixed)
+                const size_t L = std::min({ddc_zrb::run_len_set(ob, i, n),
+                                           ddc_zrb::run_len_clear(za, i, n),
+                                           ddc_zrb::run_len_clear(oa, i, n)});
+                va.emit_range(i, i + L, result.segments_, rid);
+                jl.jump(L);
+                i += L;
+                continue;
+            }
+            const DDCBtv& sa = *va.at(i);         // both present & mixed here
+            const DDCBtv& sb = *vb.at(i);
+            if (&sa == &sb) {
+                // idempotent
+                DDCBtv tmp = sa;
+                if (collapse_uniform) emit_mixed(std::move(tmp), i);
+                else { result.segments_.push_back(std::move(tmp)); rid.push_back((uint32_t)i); }
+                jl.jump(1); i++; continue;
+            }
+            if (sa.has_l2v() && sb.has_l2v()) {
+                const int u = ddc_dual_probe('&', sa, sb);
+                if (u == 0) { jl.jump(1); i++; continue; }
+                if (u == 1) { if (!rones.empty() && rones.back().first + rones.back().second == i)
+                    rones.back().second++;
+                else rones.emplace_back((uint32_t)i, 1u);
+                jl.jump(1); i++; continue; }
+            }
+            if (sa.state() != DDCBtv::State::Compressed) {
+                DDCBtv tmp = sa;
+                tmp &= sb;
+                if (collapse_uniform) emit_mixed(std::move(tmp), i);
+                else { result.segments_.push_back(std::move(tmp)); rid.push_back((uint32_t)i); }
+                i++;
+                continue;
+            }
+            if (sb.state() != DDCBtv::State::Compressed) {
+                DDCBtv tmp = sb;
+                tmp &= sa;
+                if (collapse_uniform) emit_mixed(std::move(tmp), i);
+                else { result.segments_.push_back(std::move(tmp)); rid.push_back((uint32_t)i); }
+                i++;
+                continue;
+            }
+            if (collapse_uniform) emit_mixed(sa & sb, i);
+            else { result.segments_.push_back(sa & sb); rid.push_back((uint32_t)i); }
+            i++;
+        }
+
+        ddc_zrb::set_run_hint(false);
+        if (rid.size() == n) {
+            result.sparse_form_ = false;
+        } else {
+            result.sparse_form_ = true;
+            result.seg_ids_ = std::move(rid);
+            result.ones_runs_ = std::move(rones);
+        }
+        if (ddc_zrb::debug_on())
+            ddc_zrb::report("AND", segment_bits_, n, zmask_, omask_, other.zmask_, other.omask_, jl);
+        return result;
+    }
+
+    ensure_flat();
+    other.ensure_flat();
+    // legacy path (DDC_ZERO_RUN_BYPASS=0) — byte-for-byte the original loop
     for (size_t i = 0; i < segments_.size(); i++) {
         const auto& sa = segments_[i];
         const auto& sb = other.segments_[i];
@@ -383,6 +542,11 @@ DDC::operator&(const DDC& other) const {
 // in-place AND
 DDCBtv&
 DDCBtv::operator&=(const DDCBtv& other) {
+    if (has_l2v_ || other.has_l2v_) {
+        *this = dense_binop(other, '&');
+        return *this;
+    }
+
     assert(bit_count_ == other.bit_count_);
     assert(state_ == State::Decompressed);
     assert(other.state_ != State::Uncompressed);
@@ -406,6 +570,7 @@ DDCBtv::operator&=(const DDCBtv& other) {
         }
         for (size_t pos = avx_regions * words_per_reg; pos < total_words; pos++)
             r_l1[pos] &= b_l1[pos];
+        mask_tail_byte();
         return *this;
     }
 
@@ -495,6 +660,7 @@ DDCBtv::operator&=(const DDCBtv& other) {
         }
     }
 #endif
+    mask_tail_byte();
     return *this;
 }
 
@@ -622,6 +788,8 @@ DDCBtv::popcount_and(const DDCBtv& other) const {
 
 size_t
 DDC::popcount_and(const DDC& other) const {
+    ensure_flat();
+    other.ensure_flat();
     assert(bit_count_ == other.bit_count_);
     assert(segments_.size() == other.segments_.size());
 
@@ -638,6 +806,9 @@ DDC::popcount_and(const DDC& other) const {
 
 DDC&
 DDC::operator&=(const DDC& other) {
+    invalidate_masks();
+    ensure_flat();
+    other.ensure_flat();
     assert(bit_count_ == other.bit_count_);
     assert(segments_.size() == other.segments_.size());
 
@@ -655,11 +826,18 @@ DDC::operator&=(const DDC& other) {
             segments_[i] = seg;
             continue;
         }
-        if (segments_[i].state() != DDCBtv::State::Decompressed) {
-            segments_[i] = segments_[i] & seg;
+        // both operands must be compressed for the kernel
+        if (segments_[i].state() != DDCBtv::State::Compressed) {
+            segments_[i] &= seg;
             continue;
         }
-        segments_[i] &= seg;
+        if (seg.state() != DDCBtv::State::Compressed) {
+            DDCBtv tmp = seg;
+            tmp &= segments_[i];
+            segments_[i] = std::move(tmp);
+            continue;
+        }
+        segments_[i] = segments_[i] & seg;
     }
 
     return *this;
@@ -668,6 +846,9 @@ DDC::operator&=(const DDC& other) {
 // AND, ablation: no bypass
 DDCBtv
 DDCBtv::and_no_bypass(const DDCBtv& other) const {
+    if (has_l2v_ || other.has_l2v_)
+        return dense_binop(other, '&');
+
     assert(bit_count_ == other.bit_count_);
     assert(state_ == State::Compressed);
     assert(other.state_ == State::Compressed);
@@ -1085,11 +1266,14 @@ DDCBtv::and_no_bypass(const DDCBtv& other) const {
 #endif
 
     if (compress) result.compact_l2_l3(r_off);
+    result.mask_tail_byte();
     return result;
 }
 
 DDC
 DDC::and_no_bypass(const DDC& other) const {
+    ensure_flat();
+    other.ensure_flat();
     assert(bit_count_ == other.bit_count_);
     assert(segments_.size() == other.segments_.size());
 

@@ -1,6 +1,7 @@
 #include "ddc.h"
 
 #include <cassert>
+#include <algorithm>
 #ifdef __AVX512F__
 #include <immintrin.h>
 #endif
@@ -8,6 +9,7 @@
 // in-place NOT
 DDCBtv&
 DDCBtv::negate_inplace() {
+    if (has_l2v_) { *this = ~*this; return *this; }
     if (bit_count_ == 0) return *this;
     assert(state_ != State::Uncompressed);
 
@@ -65,6 +67,29 @@ DDCBtv::negate_inplace() {
 // NOT (copy)
 DDCBtv
 DDCBtv::operator~() const {
+    if (has_l2v_) {
+        if (bit_count_ % 8 == 0) {
+            DDCBtv d = *this;
+            for (auto& b : d.l1_lits_) b = (uint8_t)~b;
+            for (auto& b : d.l2v_bits_) b = (uint8_t)~b;
+            if (l1_lit_count_ != 0) {
+                // literal slots stay 0
+                std::vector<uint32_t> w(l1_lit_count_);
+                std::vector<uint8_t>  v(l1_lit_count_);
+                const size_t nl = collect_literals(w.data(), v.data(), l1_lit_count_);
+                for (size_t k = 0; k < nl; k++)
+                    d.l2v_bits_[w[k] / 8] &= (uint8_t)~(uint8_t(1) << (w[k] % 8));
+            }
+            if (l2_count_ % 8)
+                d.l2v_bits_.back() &= uint8_t((1u << (l2_count_ % 8)) - 1);
+            return d;
+        }
+        DDCBtv d = to_decompressed();
+        for (auto& b : d.l1_lits_) b = (uint8_t)~b;
+        d.mask_tail_byte();
+        return d;
+    }
+
     if (bit_count_ == 0) return DDCBtv();
     assert(state_ != State::Uncompressed);
 
@@ -135,28 +160,92 @@ DDCBtv::operator~() const {
     return result;
 }
 
-// per-segment NOT
+// in-place
 DDC&
 DDC::negate_inplace() {
-    for (auto& seg : segments_) {
-        if (seg.l1_lit_count_ == 0) {
-
-            seg.l1_fill_ones_ = !seg.l1_fill_ones_;
-            continue;
-        }
-        seg.negate_inplace();
-    }
+    ensure_flat();
+    for (auto& s : segments_) s.negate_inplace();
+    invalidate_masks();
     return *this;
 }
 
+// run-directory NOT: zero segments become virtual ones runs, ones segments
+// vanish, only mixed segments materialise
 DDC
 DDC::operator~() const {
     DDC result;
     result.bit_count_    = bit_count_;
     result.segment_bits_ = segment_bits_;
-    result.segments_.reserve(segments_.size());
-    for (const auto& seg : segments_) {
-        result.segments_.push_back(~seg);
+    result.sparse_form_  = true;
+    const size_t n = total_segments();
+
+    auto push_run = [&](uint32_t id, uint32_t len) {
+        if (!result.ones_runs_.empty() &&
+            result.ones_runs_.back().first + result.ones_runs_.back().second == id)
+            result.ones_runs_.back().second += len;
+        else
+            result.ones_runs_.emplace_back(id, len);
+    };
+
+    if (sparse_form_) {
+        result.segments_.reserve(segments_.size());
+        result.seg_ids_.reserve(segments_.size());
+        size_t k = 0, m = 0, c = 0;
+        while (c < n) {
+            const size_t next_id  = (k < seg_ids_.size())   ? seg_ids_[k]           : n;
+            const size_t next_run = (m < ones_runs_.size()) ? ones_runs_[m].first   : n;
+            const size_t nxt = std::min(next_id, next_run);
+            if (c < nxt) push_run((uint32_t)c, (uint32_t)(std::min(nxt, n) - c));
+            if (nxt >= n) break;
+            if (next_id <= next_run) {
+                const DDCBtv& s = segments_[k++];
+                if (s.is_all_zero())      push_run((uint32_t)nxt, 1);
+                else if (!s.is_all_ones()) {
+                    result.segments_.push_back(~s);
+                    result.seg_ids_.push_back((uint32_t)nxt);
+                }
+                c = nxt + 1;
+            } else {
+                c = next_run + ones_runs_[m].second;
+                m++;
+            }
+        }
+        return result;
+    }
+
+    ensure_masks();
+    {   // reserve
+        size_t mixed_total = 0;
+        for (size_t wi = 0; wi * 64 < n; wi++) {
+            const size_t left = n - wi * 64;
+            const uint64_t valid = (left >= 64) ? ~0ull : ((1ull << left) - 1);
+            mixed_total += (size_t)__builtin_popcountll(
+                valid & ~(zmask_[wi] | omask_[wi]));
+        }
+        result.segments_.reserve(mixed_total);
+        result.seg_ids_.reserve(mixed_total);
+    }
+    for (size_t wi = 0; wi * 64 < n; wi++) {
+        const size_t base = wi * 64;
+        const size_t left = n - base;
+        const uint64_t valid = (left >= 64) ? ~0ull : ((1ull << left) - 1);
+        const uint64_t zw = zmask_[wi] & valid;
+        uint64_t mixed = valid & ~(zmask_[wi] | omask_[wi]);
+        uint64_t b = zw;
+        while (b) {
+            const int s = __builtin_ctzll(b);
+            const uint64_t rest = b >> s;
+            const int len = (~rest) ? __builtin_ctzll(~rest) : (64 - s);
+            push_run((uint32_t)(base + s), (uint32_t)len);
+            if (s + len >= 64) break;
+            b &= ~(((len < 64 ? (1ull << len) - 1 : ~0ull)) << s);
+        }
+        while (mixed) {
+            const int i = __builtin_ctzll(mixed);
+            mixed &= mixed - 1;
+            result.segments_.push_back(~segments_[base + i]);
+            result.seg_ids_.push_back((uint32_t)(base + i));
+        }
     }
     return result;
 }
