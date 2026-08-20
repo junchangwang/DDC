@@ -30,3 +30,12 @@ debug/
 *.gnuplot
 *.log
 *.tgz
+
+# Native-CR sensitivity deliverables retained on the experiment branch.
+!experiments/cr_native_no_btv_20260820/results/
+!experiments/cr_native_no_btv_20260820/results/*.csv
+!experiments/cr_native_no_btv_20260820/figures/
+!experiments/cr_native_no_btv_20260820/figures/*.pdf
+!experiments/cr_native_no_btv_20260820/figures/*.png
+!experiments/cr_native_no_btv_20260820/figures/*.data
+!experiments/cr_native_no_btv_20260820/figures/*.gnuplot
