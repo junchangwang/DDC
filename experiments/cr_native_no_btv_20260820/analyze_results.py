@@ -189,7 +189,12 @@ def write_csv_atomic(
     fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=fieldnames, extrasaction="raise")
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=fieldnames,
+                extrasaction="raise",
+                lineterminator="\n",
+            )
             writer.writeheader()
             writer.writerows(rows)
         os.replace(temporary_name, path)

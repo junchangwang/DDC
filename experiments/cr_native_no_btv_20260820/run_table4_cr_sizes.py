@@ -152,7 +152,9 @@ def main() -> None:
     )
     output_rows = result_rows + [totals]
     with result_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(output_rows[0]))
+        writer = csv.DictWriter(
+            handle, fieldnames=list(output_rows[0]), lineterminator="\n"
+        )
         writer.writeheader()
         writer.writerows(output_rows)
     print(f"wrote {result_path}")
