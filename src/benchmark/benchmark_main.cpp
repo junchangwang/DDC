@@ -769,6 +769,28 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                             { roaring::Roaring t1 = ha->bitmap | hb->bitmap;
                               roaring::Roaring t2 = hb->bitmap | hc->bitmap;
                               roaring::Roaring t3 = t1 & t2; t3.flip(0, lsz3); (void)t3; }
+
+                            // Native-only COMP is timed in a separate loop so
+                            // dense-delivery allocation and cache state cannot
+                            // contaminate the native measurement.
+                            std::vector<double> comp_native_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                roaring::Roaring t1 = ha->bitmap | hb->bitmap;
+                                roaring::Roaring t2 = hb->bitmap | hc->bitmap;
+                                roaring::Roaring t3 = t1 & t2;
+                                t3.flip(0, lsz3);
+                                double t = timer.elapsed_ms();
+                                asm volatile("" : : "r"(&t3) : "memory");
+                                comp_native_t.push_back(t);
+                            }
+                            double comp_native = median(comp_native_t);
+                            roaring::Roaring native_t1 = ha->bitmap | hb->bitmap;
+                            roaring::Roaring native_t2 = hb->bitmap | hc->bitmap;
+                            roaring::Roaring native_result = native_t1 & native_t2;
+                            native_result.flip(0, lsz3);
+                            uint64_t comp_native_cardinality = native_result.cardinality();
+
                             std::vector<double> comp_t;
                             for (int i = 0; i < N_ITER; i++) {
                                 timer.reset();
@@ -781,7 +803,12 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                                 comp_t.push_back(t);
                             }
                             double comp_pure = median(comp_t);
+                            std::cout << "  COMP native (~((A|B)&(B|C))): "
+                                      << comp_native << " ms\n";
                             std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality,
+                                    "COMP_op_native", comp_native, 0, 0,
+                                    comp_native_cardinality, 1);
                             csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
 
                         }
