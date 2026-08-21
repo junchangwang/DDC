@@ -710,7 +710,7 @@ def build_table4_rows(
         ddc_bytes = int(source["ddc_payload_bits"]) / 8.0
         cr_bytes = int(measured["cr_run_payload_bytes"])
         increase = cr_bytes / ddc_bytes - 1.0
-        winner = "CRoaring" if cr_bytes < ddc_bytes else "DDC"
+        pairwise_winner = "CRoaring" if cr_bytes < ddc_bytes else "DDC"
         output.append(
             {
                 "field": source["source"],
@@ -725,7 +725,7 @@ def build_table4_rows(
                 "croaring_run_display": format_size(cr_bytes),
                 "croaring_inc_fraction": increase,
                 "croaring_inc_display": format_increase(increase),
-                "winner": winner,
+                "ddc_vs_croaring_winner": pairwise_winner,
             }
         )
         total_ddc += ddc_bytes
@@ -745,7 +745,7 @@ def build_table4_rows(
             "croaring_run_display": format_size(total_cr),
             "croaring_inc_fraction": total_increase,
             "croaring_inc_display": format_increase(total_increase),
-            "winner": "CRoaring" if total_cr < total_ddc else "DDC",
+            "ddc_vs_croaring_winner": "CRoaring" if total_cr < total_ddc else "DDC",
         }
     )
     return output, [baseline_path, table4_run_path]
@@ -1044,10 +1044,14 @@ def main() -> None:
             "croaring_increase_over_ddc_fraction": table4_rows[-1][
                 "croaring_inc_fraction"
             ],
-            "croaring_run_wins": sum(
-                row["winner"] == "CRoaring" for row in table4_rows[:-1]
+            "croaring_smaller_than_ddc_fields": sum(
+                row["ddc_vs_croaring_winner"] == "CRoaring"
+                for row in table4_rows[:-1]
             ),
-            "ddc_wins": sum(row["winner"] == "DDC" for row in table4_rows[:-1]),
+            "ddc_no_larger_than_croaring_fields": sum(
+                row["ddc_vs_croaring_winner"] == "DDC"
+                for row in table4_rows[:-1]
+            ),
         },
         "sources": [
             {

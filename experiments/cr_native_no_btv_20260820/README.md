@@ -66,3 +66,14 @@ Compact results are in `results/`; the 12 PDF and 12 PNG visualizations are in
 `figures/`. Formal raw CSVs and logs are retained on this branch. The aborted
 outer-iteration mismatch is kept locally outside Git tracking and is never read
 by the analyzer.
+
+The readable analysis workbook is:
+
+```text
+results/native_cr_no_btv_analysis_20260820.xlsx
+```
+
+Regenerate it with `python3 build_analysis_workbook.py`. The workbook uses
+12-point body text, 13-point headers, 18-point titles, high-contrast light
+fills, frozen headers, filters, density matrices, delivery-impact analysis,
+four embedded figures, and a complete SHA-256 source sheet.

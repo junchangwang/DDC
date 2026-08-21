@@ -1293,8 +1293,8 @@
   "table4": {
     "croaring_increase_over_ddc_fraction": 0.25026369769494305,
     "croaring_run_total_mib": 218.62847709655762,
-    "croaring_run_wins": 3,
-    "ddc_total_mib": 174.86589229106903,
-    "ddc_wins": 7
+    "croaring_smaller_than_ddc_fields": 3,
+    "ddc_no_larger_than_croaring_fields": 7,
+    "ddc_total_mib": 174.86589229106903
   }
 }
