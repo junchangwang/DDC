@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-job-wah-ewah-btv-20260821/experiments/job_wah_ewah_btv_20260821/raw/r4_mc_ctype_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_roaring
+Rows: 2609129 | Cardinality: 2
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_roaring
+Rows: 2609129 | Cardinality: 2 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 0.027111 ms
+  1.bm → cardinality: 1334883
+  2.bm → cardinality: 1274246
+
+[Storage] Total compressed: 596 bytes (0.582031 KB) | Ratio: 0.000913715x
+[CRoaring Storage] array=0 (0 MB) | run=41 (0.000234604 MB) | bitset=0 (0 MB) | total_bytes=246
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.15131 ms (card: 2609129)
+  bitAnd: 0.008069 ms (card: 0)
+  bitXor: 0.017852 ms (card: 2609129)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 0.00686 ms (card: 0)
+  OR:  0.0157 ms (card: 2609129)
+  OR (CR internal only, no to-btv): 0.000854 ms
+  XOR: 0.015713 ms (card: 2609129)
+  NOT: 0.013731 ms (card: 1274246)
+  AND (in-place): 0.008173 ms
+  [AND result containers] array=0 (0 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=0
+  [OR  result containers] array=0 (0 MB) bitset=0 (0 MB) run=40 (0.000228882 MB) total_bytes=240
+  [XOR result containers] array=0 (0 MB) bitset=0 (0 MB) run=40 (0.000228882 MB) total_bytes=240
+  [NOT result containers] array=0 (0 MB) bitset=0 (0 MB) run=20 (0.000114441 MB) total_bytes=120
+  [Input A containers] array=0 (0 MB) bitset=0 (0 MB) run=21 (0.000120163 MB) total_bytes=126
+  [Input B containers] array=0 (0 MB) bitset=0 (0 MB) run=20 (0.000114441 MB) total_bytes=120
+  COMP native (~((A|B)&(B|C))): 0.00536 ms
+  COMP (~((A|B)&(B|C))): 0.01316 ms
+---------------------------------------

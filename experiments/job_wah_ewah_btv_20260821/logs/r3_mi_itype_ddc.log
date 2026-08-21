@@ -1,0 +1,37 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-job-wah-ewah-btv-20260821/experiments/job_wah_ewah_btv_20260821/raw/r3_mi_itype_ddc.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_ddc_w8
+Rows: 14835720 | Cardinality: 71
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [DDC (New)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_ddc_w8
+Rows: 14835720 | Cardinality: 71 | Loaded: 71
+=======================================
+[Load] Loaded 71 compressed bitmaps: 2.54584 ms
+  1.bm → cardinality: 3036719
+  2.bm → cardinality: 1533909
+  3.bm → cardinality: 1401902
+  4.bm → cardinality: 1325361
+  5.bm → cardinality: 1298989
+  ... (66 more)
+
+[Storage] Total compressed: 613126 bytes (598.756 KB) | Ratio: 0.00465664x
+[DDC Storage] l4_bytes: 0.00448608 MB | l3_bytes: 0.0109844 MB | l2_bytes: 0.157097 MB | l1_bytes: 0.407184 MB | total_bytes: 0.579751 MB
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.024152 ms (card: 4570628)
+  bitAnd: 0.002747 ms (card: 0)
+  bitXor: 0.009211 ms (card: 4570628)
+
+[Compute] Multi-way OR of 71 bitmaps: 0.788949 ms (card: 14835720)
+  [MIRROR-IN-PROC] OR raw: 0.000325 0.000325 0.000326 0.000327 0.000329 0.000329 0.000329 0.00033 0.00033 0.00033 0.00033 0.000331 0.000331 0.000331 0.000331 0.000331 0.000331 0.000331 0.000332 0.000332 0.000332 0.000332 0.000332 0.000332 0.000332 0.000332 0.000332 0.000332 0.000333 0.000333 0.000333 0.000333 0.000333 0.000333 0.000333 0.000333 0.000334 0.000334 0.000334 0.000334 0.000334 0.000334 0.000336 0.000336 0.000339 0.000339 0.00034 0.00034 0.00034 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000341 0.000342 0.000342 0.000342 0.000342 0.000342 0.000342 0.000342 0.000342 0.000343 0.000343 0.000343 0.000343 0.000343 0.000344 0.000344 0.000355 0.000356 0.000357 0.000359 0.000359 0.00036 0.00036 0.000367 0.000367 0.000368 0.000368 0.000368 0.000368 0.000368 0.000368 0.000371 0.000371 0.000374 0.000392 0.000673  median=0.000341
+
+[Pure Ops] DDC operation-only timing:
+  AND: 6.8e-05 ms (card: 0)
+  OR:  0.000358 ms (card: 4570628)
+  XOR: 0.000344 ms (card: 4570628)
+  NOT: 0.000308 ms (card: 11799001)
+  COMP (~((A|B)&(B|C))): 0.021315 ms (card: 13301811 OK)
+---------------------------------------

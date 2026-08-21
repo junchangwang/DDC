@@ -1,0 +1,36 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-job-wah-ewah-btv-20260821/experiments/job_wah_ewah_btv_20260821/raw/r3_year_wah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_wah
+Rows: 2528312 | Cardinality: 132
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [WAH (FastBit)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_wah
+Rows: 2528312 | Cardinality: 132 | Loaded: 132
+=======================================
+[Load] Loaded 132 compressed bitmaps: 12.1034 ms
+  1.bm → cardinality: 164307
+  2.bm → cardinality: 160017
+  3.bm → cardinality: 141703
+  4.bm → cardinality: 128696
+  5.bm → cardinality: 122861
+  ... (127 more)
+
+[Storage] Total compressed: 10450892 bytes (10205.9 KB) | Ratio: 0.250518x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.584468 ms (card: 324324)
+  bitAnd: 0.558585 ms (card: 0)
+  bitXor: 0.295799 ms (card: 324324)
+
+[Compute] Multi-way OR of 132 bitmaps: 7.10155 ms (card: 2456218)
+
+[Pure Ops] WAH (FastBit) operation-only:
+  AND: 0.30946 ms
+  OR:  0.33064 ms
+  XOR: 0.15398 ms
+  NOT: 0.018464 ms
+  COMP (~((A|B)&(B|C))): 0.744327 ms
+  COMP (+ dense BTV): 1.00457 ms
+---------------------------------------

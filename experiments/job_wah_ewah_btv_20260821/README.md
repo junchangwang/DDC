@@ -42,4 +42,35 @@ python3 experiments/job_wah_ewah_btv_20260821/analyze_job.py
 python3 experiments/job_wah_ewah_btv_20260821/plot_job.py
 ```
 
-Formal results and audit notes are added only after a complete clean run.
+## Results
+
+The formal run completed 200 fresh timing processes after 30 correctness
+checks (DDC native, baseline native, and exact dense-word delivery for each of
+the ten fields). The CPU preflight reported 99.48% system idle and
+99.34%/100% idle on CPU 14 and its SMT sibling.
+
+| Backend | Geometric-mean latency / DDC | Wins |
+|---|---:|---:|
+| DDC | 1.000x | 10 |
+| CRoaring | 4.093x | 0 |
+| WAH + BTV adapter | 6.189x | 0 |
+| EWAH + BTV adapter | 5.002x | 0 |
+
+For comparison within the same fresh processes, the adapter increases latency
+by a geometric mean of 3.017x for CRoaring, 10.962x for WAH, and 16.222x for
+EWAH. The larger WAH/EWAH relative factors arise because their native times on
+strongly clustered fields are sub-microsecond while dense delivery must write
+an `N`-bit result.
+
+The figure is `figures/job_comp_wah_ewah_btv_literal_relative.pdf`. Compact
+selected data and native/delivered decomposition are in `results/`; all 200 raw
+CSVs and logs are retained.
+
+The decomposition reports the difference between the delivered and native
+five-process medians. It is an adapter-cost estimate, not the median of a
+separately timed adapter sample.
+
+Two isolated process-level high values remain visible in min/max provenance:
+WAH `role` has `421.772 us` versus four values near `294--297 us`, and EWAH
+`kind` has `342.598 us` versus four values near `235--239 us`. The five-process
+median used by the figure is unaffected; neither value was removed or rerun.

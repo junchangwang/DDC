@@ -117,8 +117,10 @@ def main() -> None:
                 "case": case.label, "num_rows": case.rows,
                 "backend": DISPLAY[backend], "native_ms": native,
                 "selected_delivered_ms": delivered,
-                "adapter_delta_ms": delivered - native,
-                "adapter_fraction": 0.0 if delivered == native else (delivered - native) / delivered,
+                "delivered_minus_native_medians_ms": delivered - native,
+                "median_difference_fraction": (
+                    0.0 if delivered == native else (delivered - native) / delivered
+                ),
                 "native_operation": NATIVE_OPERATION[backend],
                 "selected_operation": SOURCE_OPERATION[backend],
             })

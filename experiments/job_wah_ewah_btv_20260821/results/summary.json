@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "cells": 10,
+  "literal_plan": "t1=A|B; t2=B|C; t3=t1&t2; result=~t3",
+  "delivery_boundary": "DDC native COMP_op; CR current bitset adapter COMP_op; WAH/EWAH dense bitset_t adapter COMP_op_conv",
+  "wins": {
+    "DDC": 10
+  },
+  "geometric_mean_latency_over_ddc": {
+    "DDC": 1.0,
+    "CRoaring": 4.092686932980007,
+    "WAH": 6.1887110697021885,
+    "EWAH": 5.002154125222428
+  }
+}

@@ -1,0 +1,16 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+CRoaring,36244344,3,load,0.080492,12547,0.000923142,0,1
+CRoaring,36244344,3,OR,0.796384,0,0,3313,1
+CRoaring,36244344,3,AND,1.18722,0,0,0,1
+CRoaring,36244344,3,XOR,0.196433,0,0,3313,1
+CRoaring,36244344,3,multi-OR,0.062579,0,0,4844,1
+CRoaring,36244344,3,OR_op,0.0122,0,0,3313,1
+CRoaring,36244344,3,AND_op,0.000988,0,0,0,1
+CRoaring,36244344,3,XOR_op,0.013256,0,0,3313,1
+CRoaring,36244344,3,NOT_op,0.08114,0,0,36242603,1
+CRoaring,36244344,3,OR_op_conv,0.179772,0,0,3313,1
+CRoaring,36244344,3,AND_op_conv,0.16469,0,0,0,1
+CRoaring,36244344,3,XOR_op_conv,0.179999,0,0,3313,1
+CRoaring,36244344,3,NOT_op_conv,0.464557,0,0,36242603,1
+CRoaring,36244344,3,COMP_op_native,0.143508,0,0,36242772,1
+CRoaring,36244344,3,COMP_op,0.534469,0,0,36242772,1

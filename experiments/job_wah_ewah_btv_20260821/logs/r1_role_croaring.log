@@ -1,0 +1,45 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-job-wah-ewah-btv-20260821/experiments/job_wah_ewah_btv_20260821/raw/r1_role_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_roaring
+Rows: 36244344 | Cardinality: 11
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_roaring
+Rows: 36244344 | Cardinality: 11 | Loaded: 11
+=======================================
+[Load] Loaded 11 compressed bitmaps: 0.090747 ms
+  1.bm → cardinality: 12670688
+  2.bm → cardinality: 7451973
+  3.bm → cardinality: 4323018
+  4.bm → cardinality: 4008037
+  5.bm → cardinality: 2728943
+  ... (6 more)
+
+[Storage] Total compressed: 8068 bytes (7.87891 KB) | Ratio: 0.000161891x
+[CRoaring Storage] array=0 (0 MB) | run=564 (0.00323486 MB) | bitset=0 (0 MB) | total_bytes=3392
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  1.14893 ms (card: 20122661)
+  bitAnd: 0.770908 ms (card: 0)
+  bitXor: 0.279581 ms (card: 20122661)
+
+[Compute] Multi-way OR of 11 bitmaps: 0.299545 ms (card: 36244344)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 0.164129 ms (card: 0)
+  OR:  0.269105 ms (card: 20122661)
+  OR (CR internal only, no to-btv): 0.015668 ms
+  XOR: 0.269283 ms (card: 20122661)
+  NOT: 0.319451 ms (card: 23573656)
+  AND (in-place): 0.190571 ms
+  [AND result containers] array=0 (0 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=0
+  [OR  result containers] array=0 (0 MB) bitset=0 (0 MB) run=308 (0.00176239 MB) total_bytes=1848
+  [XOR result containers] array=0 (0 MB) bitset=0 (0 MB) run=308 (0.00176239 MB) total_bytes=1848
+  [NOT result containers] array=0 (0 MB) bitset=0 (0 MB) run=361 (0.00206566 MB) total_bytes=2166
+  [Input A containers] array=0 (0 MB) bitset=0 (0 MB) run=194 (0.00111008 MB) total_bytes=1164
+  [Input B containers] array=0 (0 MB) bitset=0 (0 MB) run=115 (0.000658035 MB) total_bytes=690
+  COMP native (~((A|B)&(B|C))): 0.067908 ms
+  COMP (~((A|B)&(B|C))): 0.384603 ms
+---------------------------------------
