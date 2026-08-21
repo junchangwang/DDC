@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include "uti.h"
+#include "dense_btv_delivery.h"
 #include "backends/ddc/ddc_backend.h"
 #include "backends/wah/wah_backend.h"
 #include "backends/croaring/croaring_backend.h"
@@ -809,7 +810,9 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                             csv_row(backend_name, num_rows, cardinality,
                                     "COMP_op_native", comp_native, 0, 0,
                                     comp_native_cardinality, 1);
-                            csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+                            csv_row(backend_name, num_rows, cardinality,
+                                    "COMP_op", comp_pure, 0, 0,
+                                    comp_native_cardinality, 1);
 
                         }
                     }
@@ -1047,11 +1050,40 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                                 ibis::bitvector t2; t2.copy(hb->btv); t2 |= hc->btv;
                                 ibis::bitvector t3; t3.copy(t1);      t3 &= t2;
                                 ibis::bitvector r;  r.copy(t3);       r.flip();
-                                comp_t.push_back(timer.elapsed_ms());
+                                const double t = timer.elapsed_ms();
+                                asm volatile("" : : "r"(&r) : "memory");
+                                comp_t.push_back(t);
                             }
                             double comp_pure = median(comp_t);
                             std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
                             csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+
+                            std::vector<double> comp_conv_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ibis::bitvector t1; t1.copy(ha->btv); t1 |= hb->btv;
+                                ibis::bitvector t2; t2.copy(hb->btv); t2 |= hc->btv;
+                                ibis::bitvector t3; t3.copy(t1);      t3 &= t2;
+                                ibis::bitvector r;  r.copy(t3);       r.flip();
+                                double t = timer.elapsed_ms();
+                                t += dense_btv_delivery::wah_time(
+                                    r, static_cast<uint32_t>(num_rows));
+                                comp_conv_t.push_back(t);
+                            }
+                            double comp_conv = median(comp_conv_t);
+                            ibis::bitvector verify_t1; verify_t1.copy(ha->btv); verify_t1 |= hb->btv;
+                            ibis::bitvector verify_t2; verify_t2.copy(hb->btv); verify_t2 |= hc->btv;
+                            ibis::bitvector verify_t3; verify_t3.copy(verify_t1); verify_t3 &= verify_t2;
+                            ibis::bitvector verify_r; verify_r.copy(verify_t3); verify_r.flip();
+                            auto* verify_dense = dense_btv_delivery::from_wah(
+                                verify_r, static_cast<uint32_t>(num_rows));
+                            const uint64_t verify_cardinality =
+                                roaring::api::bitset_count(verify_dense);
+                            roaring::api::bitset_free(verify_dense);
+                            std::cout << "  COMP (+ dense BTV): " << comp_conv << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality,
+                                    "COMP_op_conv", comp_conv, 0, 0,
+                                    verify_cardinality, 1);
 
                         }
                     }
@@ -1126,11 +1158,44 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                                 ewah::EWAHBoolArray<uint64_t> t2; hb->btv.logicalor(hc->btv, t2);
                                 ewah::EWAHBoolArray<uint64_t> t3; t1.logicaland(t2, t3);
                                 ewah::EWAHBoolArray<uint64_t> r;  t3.logicalnot(r);
-                                comp_t.push_back(timer.elapsed_ms());
+                                const double t = timer.elapsed_ms();
+                                asm volatile("" : : "r"(&r) : "memory");
+                                comp_t.push_back(t);
                             }
                             double comp_pure = median(comp_t);
                             std::cout << "  COMP (~((A|B)&(B|C))): " << comp_pure << " ms\n";
                             csv_row(backend_name, num_rows, cardinality, "COMP_op", comp_pure, 0, 0, 0, 1);
+
+                            std::vector<double> comp_conv_t;
+                            for (int i = 0; i < N_ITER; i++) {
+                                timer.reset();
+                                ewah::EWAHBoolArray<uint64_t> t1; ha->btv.logicalor(hb->btv, t1);
+                                ewah::EWAHBoolArray<uint64_t> t2; hb->btv.logicalor(hc->btv, t2);
+                                ewah::EWAHBoolArray<uint64_t> t3; t1.logicaland(t2, t3);
+                                ewah::EWAHBoolArray<uint64_t> r;  t3.logicalnot(r);
+                                double t = timer.elapsed_ms();
+                                t += dense_btv_delivery::ewah_time(
+                                    r, static_cast<uint32_t>(num_rows));
+                                comp_conv_t.push_back(t);
+                            }
+                            double comp_conv = median(comp_conv_t);
+                            ewah::EWAHBoolArray<uint64_t> verify_t1;
+                            ewah::EWAHBoolArray<uint64_t> verify_t2;
+                            ewah::EWAHBoolArray<uint64_t> verify_t3;
+                            ewah::EWAHBoolArray<uint64_t> verify_r;
+                            ha->btv.logicalor(hb->btv, verify_t1);
+                            hb->btv.logicalor(hc->btv, verify_t2);
+                            verify_t1.logicaland(verify_t2, verify_t3);
+                            verify_t3.logicalnot(verify_r);
+                            auto* verify_dense = dense_btv_delivery::from_ewah(
+                                verify_r, static_cast<uint32_t>(num_rows));
+                            const uint64_t verify_cardinality =
+                                roaring::api::bitset_count(verify_dense);
+                            roaring::api::bitset_free(verify_dense);
+                            std::cout << "  COMP (+ dense BTV): " << comp_conv << " ms\n";
+                            csv_row(backend_name, num_rows, cardinality,
+                                    "COMP_op_conv", comp_conv, 0, 0,
+                                    verify_cardinality, 1);
 
                         }
                     }

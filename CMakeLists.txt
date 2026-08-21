@@ -98,6 +98,26 @@ target_link_libraries(verify_density_pair PRIVATE
     ddc bitset_core Threads::Threads atomic Boost::program_options
 )
 
+add_executable(verify_job_btv_delivery
+    experiments/job_wah_ewah_btv_20260821/verify_job_btv_delivery.cpp
+    src/benchmark/uti.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/croaring/croaring_backend.cpp
+    src/benchmark/backends/ewah/ewah_backend.cpp
+    src/core/croaring/roaring.c
+    ${FASTBIT_SOURCES}
+)
+target_include_directories(verify_job_btv_delivery PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+)
+target_compile_options(verify_job_btv_delivery PRIVATE
+    -O3 -mavx512f -mavx512bw -mavx512vbmi2 -mavx2 -mpopcnt
+)
+target_link_libraries(verify_job_btv_delivery PRIVATE
+    Threads::Threads atomic Boost::program_options
+)
+
 # ----------------------------------------------------------------
 # transition_bench — CR container conversion vs DDC headline benchmark
 # ----------------------------------------------------------------
