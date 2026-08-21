@@ -18,6 +18,7 @@ import numpy as np
 from matplotlib import font_manager
 from matplotlib.colors import LinearSegmentedColormap, LogNorm, to_rgba
 from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 from matplotlib.path import Path as MarkerPath
 from matplotlib.transforms import Bbox
 
@@ -100,7 +101,7 @@ DENSITY_COLUMNS = ["backend", "density_A", "density_B", "or_time_ms"]
 BAR_STYLES = {
     "CRoaring": ("#00817F", "#005755", "xxxx"),
     "WAH": ("#8B0303", "#5d0202", "/"),
-    "EWAH": ("#4E0980", "#330558", r"\\\\"),
+    "EWAH": ("#4E0980", "#330558", "///"),
 }
 
 TRIANGLE_SCALE = 1.5
@@ -368,13 +369,12 @@ def plot_relative_bars(
 
     fig, axis = plt.subplots(figsize=(12, 3.25))
     width = 0.20
-    bar_handles = []
     bar_backends = BACKENDS[1:]
     for offset, backend in zip((-0.25, 0.0, 0.25), bar_backends):
         face, edge, hatch = BAR_STYLES[backend]
         values = [float(rows[(case, operation, backend)]["ratio"]) for case, operation in entries]
         heights = [value - lower for value in values]
-        container = axis.bar(
+        axis.bar(
             x + offset,
             heights,
             width=width,
@@ -386,7 +386,6 @@ def plot_relative_bars(
             label=backend,
             zorder=3,
         )
-        bar_handles.append(container)
 
     ddc_handle = Line2D(
         [0], [0], color="#147014", linewidth=1.6,
@@ -439,17 +438,25 @@ def plot_relative_bars(
     for spine in axis.spines.values():
         spine.set_color("#1f2937")
         spine.set_linewidth(1.0)
+    legacy_legend_handles = [
+        Patch(
+            facecolor="white",
+            edgecolor=BAR_STYLES[backend][1],
+            hatch=BAR_STYLES[backend][2],
+            linewidth=0.9,
+            label=backend,
+        )
+        for backend in bar_backends
+    ]
+    legacy_legend_handles.append(ddc_handle)
     fig.legend(
-        handles=[*bar_handles, ddc_handle],
+        handles=legacy_legend_handles,
         labels=[*bar_backends, "DDC (1.0)"],
         loc="upper center",
-        bbox_to_anchor=(0.69, 0.99),
+        bbox_to_anchor=(0.76, 0.99),
         ncol=4,
-        frameon=True,
-        facecolor="white",
-        edgecolor="#b7c3d0",
-        framealpha=1.0,
-        fontsize=13,
+        frameon=False,
+        fontsize=12,
         handlelength=1.4,
         columnspacing=1.2,
         handletextpad=0.45,
