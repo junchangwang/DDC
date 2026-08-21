@@ -542,17 +542,23 @@ def load_cluster_baseline(
     path = (
         workspace / "R2W1_clustering_ops_v2_20260813/results/operation_sweep_crrun.csv"
     )
+    feature_path = (
+        workspace
+        / "R2W1_clustering_micro_100m_20260813/results/size_summary.csv"
+    )
     rows = read_csv(path)
+    feature_rows = read_csv(feature_path)
+    feature_map = {row["factor"]: row for row in feature_rows}
+    if set(feature_map) != set(CLUSTER_CASES):
+        raise RuntimeError("cluster authoritative feature key set mismatch")
     cells: dict[tuple[str, str, str], dict[str, object]] = {}
     historical_cr: dict[tuple[str, str], float] = {}
     extra: dict[str, dict[str, object]] = {}
     for case in CLUSTER_CASES:
-        cf1_values = {float(row["f"]) for row in rows if row["factor"] == case}
-        if len(cf1_values) != 1:
-            raise RuntimeError(
-                f"cluster {case}: invalid CF1 values {sorted(cf1_values)}"
-            )
-        extra[case] = {"cf1": cf1_values.pop()}
+        feature = feature_map[case]
+        if int(feature["n"]) != 100_000_000 or int(feature["cardinality"]) != 100:
+            raise RuntimeError(f"cluster {case}: authoritative dimensions mismatch")
+        extra[case] = {"cf1": positive_float(feature["actual_f"], f"cluster {case} CF1")}
         for operation in OPERATIONS:
             for backend in ("DDC", "WAH", "EWAH"):
                 row = single_row(
@@ -589,7 +595,7 @@ def load_cluster_baseline(
             historical_cr[(case, operation)] = positive_float(
                 row["median_ms"], f"cluster historical CR {case}/{operation}"
             )
-    return cells, historical_cr, extra, [path]
+    return cells, historical_cr, extra, [path, feature_path]
 
 
 def load_density_baseline(

@@ -102,6 +102,10 @@
       "sha256": "0fa9c73b62ad35342a84263fe167a05ca6cd800552e52372b105c5412abcd7e0"
     },
     {
+      "path": "R2W1_clustering_micro_100m_20260813/results/size_summary.csv",
+      "sha256": "8ee72f3089f5f4056a684bd02c0a4479472676c2f6c0d8ed82b319427025cbf7"
+    },
+    {
       "path": "R2W1_clustering_ops_v2_20260813/results/operation_sweep_crrun.csv",
       "sha256": "4680397d091d2cf9625f9e5f9e27225276d3136a359678443d03c411d3ef038d"
     },
