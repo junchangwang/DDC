@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 from matplotlib import font_manager
-from matplotlib.colors import LinearSegmentedColormap, LogNorm, to_rgba
+from matplotlib.colors import LinearSegmentedColormap, LogNorm, to_rgb
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from matplotlib.path import Path as MarkerPath
@@ -374,12 +374,13 @@ def plot_relative_bars(
         face, edge, hatch = BAR_STYLES[backend]
         values = [float(rows[(case, operation, backend)]["ratio"]) for case, operation in entries]
         heights = [value - lower for value in values]
+        opaque_pastel = tuple(0.88 + 0.12 * channel for channel in to_rgb(face))
         axis.bar(
             x + offset,
             heights,
             width=width,
             bottom=lower,
-            facecolor=to_rgba(face, 0.12),
+            facecolor=opaque_pastel,
             edgecolor=edge,
             linewidth=0.9,
             hatch=hatch,
@@ -391,7 +392,7 @@ def plot_relative_bars(
         [0], [0], color="#147014", linewidth=1.6,
         linestyle=(0, (3, 4)), label="DDC (1.0)"
     )
-    axis.axhline(1.0, color="#147014", linewidth=1.6, linestyle=(0, (3, 4)), zorder=2)
+    axis.axhline(1.0, color="#147014", linewidth=1.6, linestyle=(0, (3, 4)), zorder=4)
     axis.set_yscale("log", base=2)
     axis.set_ylim(lower, upper)
     if len(operations) == 1 and len(ticks) > 6:
