@@ -73,6 +73,31 @@ target_compile_options(benchmark_app PRIVATE -mavx512f -mavx512bw -mavx512vbmi2 
 
 target_link_libraries(benchmark_app PRIVATE ddc bitset_core Threads::Threads atomic Boost::program_options)
 
+# Exact cross-backend verification for density-grid bitmap pairs.
+add_executable(verify_density_pair
+    experiments/cr_run_btv_literal_20260821/verify_density_pair.cpp
+    src/benchmark/backends/wah/wah_backend.cpp
+    src/benchmark/backends/croaring/croaring_backend.cpp
+    src/benchmark/backends/ddc/ddc_backend.cpp
+    src/benchmark/backends/ewah/ewah_backend.cpp
+    src/benchmark/backends/Concise/concise_backend.cpp
+    src/benchmark/backends/bitset_avx512/bitset_avx512_backend.cpp
+    src/core/croaring/roaring.c
+    ${FASTBIT_SOURCES}
+)
+target_include_directories(verify_density_pair PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/ddc/include
+    ${CMAKE_SOURCE_DIR}/src/core/bitset/include
+)
+target_compile_options(verify_density_pair PRIVATE
+    -O3 -mavx512f -mavx512bw -mavx512vbmi2 -mavx2 -mpopcnt
+)
+target_link_libraries(verify_density_pair PRIVATE
+    ddc bitset_core Threads::Threads atomic Boost::program_options
+)
+
 # ----------------------------------------------------------------
 # transition_bench — CR container conversion vs DDC headline benchmark
 # ----------------------------------------------------------------

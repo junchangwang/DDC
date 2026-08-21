@@ -1,0 +1,82 @@
+\documentclass[10pt]{article}
+
+\usepackage[
+  paperwidth=14.4in,
+  paperheight=5.9in,
+  left=0.22in,
+  right=0.22in,
+  top=0.12in,
+  bottom=0.12in
+]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{libertine}
+\usepackage[libertine]{newtxmath}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{multirow}
+
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  textfont=bf,
+  justification=justified,
+  singlelinecheck=false,
+  skip=7pt
+}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setcounter{table}{3}
+
+\begin{document}
+\begin{table}[!ht]
+  \centering
+  \caption{Characteristics of bitmap-indexed attributes on IMDb and
+  legacy-comparable backend-native compressed-payload sizes (MiB; entries below
+  0.001\,MiB are shown in bytes). These sizes are not complete serialized-file
+  or in-memory-object footprints. DDC uses the fixed-zero $S=4{,}096$
+  core-payload protocol; the baseline columns use their native payload counters.
+  CRoaring reports its run-optimized native payload after \texttt{runOptimize()}.
+  $N$ is the source relation's row count. Clustering ($CF_1$) is the pooled
+  average length of maximal consecutive 1-runs. Density is the average bitmap
+  density $M/(NC)$. Frequency Gini $G$ is computed from all observed category
+  counts using the same definition as in R2.W1. Inc. is the relative size change
+  from DDC. Negative values indicate a smaller baseline.}
+  \label{tab:job-size-cr-run}
+
+  \small
+  \setlength{\tabcolsep}{3.15pt}
+  \renewcommand{\arraystretch}{1.08}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{lrrrrr|c|rr|rr|rr}
+    \toprule
+    \multirow{2}{*}{Bitmap} &
+    \multirow{2}{*}{$N$} &
+    \multirow{2}{*}{Card.} &
+    \multirow{2}{*}{Density} &
+    \multirow{2}{*}{$CF_1$\hspace{0.5em}} &
+    \multirow{2}{*}{Gini} &
+    DDC &
+    \multicolumn{2}{c|}{WAH} &
+    \multicolumn{2}{c|}{EWAH} &
+    \multicolumn{2}{c}{CRoaring (run)} \\
+    \cmidrule(lr){7-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}\cmidrule(l){12-13}
+    & & & & & & Size & Size & Inc. & Size & Inc. & Size & Inc. \\
+    \midrule
+    \textit{movie\_companies.company\_type\_id} & 2.6M  & 2    & 0.5                 & 1.3M & 0.012 & 0.3   & $40\,\mathrm{B}$  & $\approx -100\%$ & $56\,\mathrm{B}$  & $\approx -100\%$ & $590\,\mathrm{B}$ & $\approx -100\%$ \\
+    \textit{title.kind\_id}                     & 2.5M  & 6    & 0.2                 & 4    & 0.619 & 0.6   & 0.8                & $+33\%$           & 0.8                & $+33\%$           & 0.8                 & $+25\%$ \\
+    \textit{cast\_info.role\_id}               & 36.2M & 11   & 0.09                & 2.8M & 0.547 & 4.3   & $308\,\mathrm{B}$ & $\approx -100\%$ & $432\,\mathrm{B}$ & $\approx -100\%$ & 0.008               & $\approx -100\%$ \\
+    \textit{person\_info.info\_type\_id}      & 3.0M  & 22   & 0.05                & 2    & 0.543 & 2.3   & 4.7                & $+1.0\times$      & 5.6                & $+1.4\times$      & 3.5                 & $+56\%$ \\
+    \textit{movie\_info.info\_type\_id}       & 14.8M & 71   & 0.01                & 35   & 0.837 & 2.2   & 1.3                & $-41\%$           & 1.4                & $-36\%$           & 0.9                 & $-60\%$ \\
+    \textit{title.production\_year}             & 2.5M  & 132  & 0.007               & 1    & 0.696 & 3.7   & 10.0               & $+1.7\times$      & 14.0               & $+2.8\times$      & 4.7                 & $+26\%$ \\
+    \textit{company\_name.country\_code}       & 235.0K& 215  & 0.004               & 1    & 0.919 & 0.2   & 0.6                & $+2.0\times$      & 0.8                & $+3.0\times$      & 0.3                 & $+20\%$ \\
+    \textit{movie\_keyword.movie\_id}          & 4.5M  & 476K & $2\times10^{-6}$   & 9    & 0.688 & 2.4   & 9.5                & $+3.0\times$      & 11.4               & $+3.8\times$      & 6.3                 & $+1.6\times$ \\
+    \textit{cast\_info.movie\_id}              & 36.2M & 2.3M & $4\times10^{-7}$   & 1    & 0.529 & 134.7 & 296.9              & $+1.2\times$      & 557.5              & $+3.1\times$      & 149.3               & $+11\%$ \\
+    \textit{cast\_info.person\_id}             & 36.2M & 4.1M & $2\times10^{-7}$   & 7    & 0.805 & 24.2  & 88.7               & $+2.7\times$      & 113.6              & $+3.7\times$      & 52.9                & $+1.2\times$ \\
+    \midrule
+    Total & -- & -- & -- & -- & -- & 174.9 & 412.4 & $+1.4\times$ & 705.1 & $+3.0\times$ & 218.6 & $+25\%$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table}
+\end{document}

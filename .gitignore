@@ -61,3 +61,20 @@ debug/
 !experiments/job_comp_literal_native_20260821/logs/*.log
 !experiments/job_comp_literal_native_20260821/verification/
 !experiments/job_comp_literal_native_20260821/verification/*.log
+
+# Fresh runOptimize + delivered-BTV + literal-COMP rerun.
+!experiments/cr_run_btv_literal_20260821/results/
+!experiments/cr_run_btv_literal_20260821/results/*.csv
+!experiments/cr_run_btv_literal_20260821/results/*.json
+!experiments/cr_run_btv_literal_20260821/figures/
+!experiments/cr_run_btv_literal_20260821/figures/*.pdf
+!experiments/cr_run_btv_literal_20260821/figures/*.png
+!experiments/cr_run_btv_literal_20260821/raw/
+!experiments/cr_run_btv_literal_20260821/raw/*.csv
+!experiments/cr_run_btv_literal_20260821/logs/
+!experiments/cr_run_btv_literal_20260821/logs/*.log
+!experiments/cr_run_btv_literal_20260821/verification/
+!experiments/cr_run_btv_literal_20260821/verification/*.log
+!experiments/cr_run_btv_literal_20260821/table4/
+!experiments/cr_run_btv_literal_20260821/table4/*.tex
+!experiments/cr_run_btv_literal_20260821/table4/*.pdf
