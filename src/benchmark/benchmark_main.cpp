@@ -958,9 +958,13 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                             std::vector<double> comp_t;
                             for (int i = 0; i < N_ITER; i++) {
                                 timer.reset();
-                                DDC r = run_comp();
-                                comp_t.push_back(timer.elapsed_ms());
-                                (void)r;
+                                DDC t1 = ha->compressed | hb->compressed;
+                                DDC t2 = hb->compressed | hc->compressed;
+                                t1 &= t2;
+                                t1.negate_inplace();
+                                double t = timer.elapsed_ms();
+                                asm volatile("" : : "r"(&t1) : "memory");
+                                comp_t.push_back(t);
                             }
                             double comp_pure = median(comp_t);
                             DDC final_r = run_comp();
