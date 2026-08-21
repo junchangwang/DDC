@@ -47,3 +47,17 @@ debug/
 !experiments/cr_native_no_btv_20260820/logs/**/
 !experiments/cr_native_no_btv_20260820/logs/**/*.log
 /experiments/cr_native_no_btv_20260820/protocol_mismatch_outer100/
+
+# Same-literal JOB COMP rerun retained on the experiment branch.
+!experiments/job_comp_literal_native_20260821/results/
+!experiments/job_comp_literal_native_20260821/results/*.csv
+!experiments/job_comp_literal_native_20260821/results/*.json
+!experiments/job_comp_literal_native_20260821/figures/
+!experiments/job_comp_literal_native_20260821/figures/*.pdf
+!experiments/job_comp_literal_native_20260821/figures/*.png
+!experiments/job_comp_literal_native_20260821/raw/
+!experiments/job_comp_literal_native_20260821/raw/*.csv
+!experiments/job_comp_literal_native_20260821/logs/
+!experiments/job_comp_literal_native_20260821/logs/*.log
+!experiments/job_comp_literal_native_20260821/verification/
+!experiments/job_comp_literal_native_20260821/verification/*.log
