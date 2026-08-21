@@ -168,7 +168,11 @@ def host_idle_preflight(cpu: int, allow_busy: bool) -> dict[str, object]:
     idle: dict[str, float] = {}
     for line in sample.splitlines():
         columns = line.split()
-        if len(columns) >= 4 and columns[0] == "Average:":
+        if (
+            len(columns) >= 4
+            and columns[0] == "Average:"
+            and columns[1] != "CPU"
+        ):
             idle[columns[1]] = float(columns[-1])
     required = ["all", *(str(value) for value in siblings)]
     missing = [key for key in required if key not in idle]
