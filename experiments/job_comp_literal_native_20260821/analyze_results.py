@@ -23,6 +23,10 @@ BACKEND_DISPLAY = {
     "wah": "WAH",
     "ewah": "EWAH",
 }
+FROZEN_LOGICAL = (
+    HERE.parent / "cr_native_no_btv_20260820" / "results" /
+    "job_native_logical.csv"
+)
 
 
 def sha256(path: Path) -> str:
@@ -138,15 +142,65 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(wide_rows)
 
+    with FROZEN_LOGICAL.open(newline="", encoding="utf-8") as handle:
+        frozen_records = {
+            (row["case"], row["backend"]): row
+            for row in csv.DictReader(handle)
+            if row["group"] == "job" and row["operation"] == "COMP"
+        }
+    comparison_rows: list[dict[str, object]] = []
+    comparison_factors: dict[str, list[float]] = {
+        display: [] for display in BACKEND_DISPLAY.values()
+    }
+    for row in compact_rows:
+        key = (str(row["case"]), str(row["backend"]))
+        if key not in frozen_records:
+            raise RuntimeError(f"missing frozen comparison row {key}")
+        frozen = frozen_records[key]
+        frozen_time = float(frozen["time_ms"])
+        literal_time = float(row["time_ms"])
+        factor = literal_time / frozen_time
+        comparison_factors[key[1]].append(factor)
+        comparison_rows.append(
+            {
+                "case": key[0],
+                "backend": key[1],
+                "frozen_time_ms": frozen_time,
+                "literal_fresh_time_ms": literal_time,
+                "literal_over_frozen": factor,
+                "frozen_ratio_to_ddc": float(frozen["latency_over_ddc"]),
+                "literal_ratio_to_ddc": float(row["latency_over_ddc"]),
+                "frozen_source_operation": frozen["source_operation"],
+                "literal_source_operation": row["source_operation"],
+            }
+        )
+    comparison_path = RESULTS / "comparison_to_frozen.csv"
+    with comparison_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(comparison_rows[0]))
+        writer.writeheader()
+        writer.writerows(comparison_rows)
+
     summary = {
         "schema_version": 1,
         "literal_plan": run.LITERAL_PLAN,
         "result_boundary": metadata["result_boundary"],
+        "limitations": [
+            "Same-column equality operands make literal COMP reduce to NOT B "
+            "for C>=3; the C=2 case reduces to NOT (A OR B).",
+            "DDC uses the existing default decompressed mixed-result path; "
+            "CRoaring, WAH, and EWAH retain compressed native results.",
+            "DDC includes destruction of one local intermediate before the "
+            "timer stops; the other backends destroy intermediates afterward.",
+        ],
         "process_replicates": reps,
         "cases": len(run.cases()),
         "wins": dict(wins),
         "geometric_mean_latency_over_ddc": {
             backend: geomean(values) for backend, values in ratios.items()
+        },
+        "geometric_mean_literal_over_frozen": {
+            backend: geomean(values)
+            for backend, values in comparison_factors.items()
         },
         "binary_sha256": metadata["binary_sha256"],
         "metadata_sha256": sha256(metadata_path),

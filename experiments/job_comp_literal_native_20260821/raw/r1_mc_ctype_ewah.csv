@@ -1,0 +1,10 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+EWAH,2609129,2,load,0.013543,104,0.00015944,0,1
+EWAH,2609129,2,OR,0.002099,0,0,2609129,1
+EWAH,2609129,2,AND,0.002012,0,0,0,1
+EWAH,2609129,2,XOR,0.001775,0,0,2609129,1
+EWAH,2609129,2,OR_op,8e-05,0,0,0,1
+EWAH,2609129,2,AND_op,8.4e-05,0,0,0,1
+EWAH,2609129,2,XOR_op,8.8e-05,0,0,0,1
+EWAH,2609129,2,NOT_op,7.1e-05,0,0,0,1
+EWAH,2609129,2,COMP_op,0.000244,0,0,0,1

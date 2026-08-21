@@ -1,0 +1,11 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+DDC (New),2528312,6,load,0.429474,530308,0.279664,0,1
+DDC (New),2528312,6,OR,0.099651,0,0,2206089,1
+DDC (New),2528312,6,AND,0.0125,0,0,0,1
+DDC (New),2528312,6,XOR,0.100675,0,0,2206089,1
+DDC (New),2528312,6,multi-OR,0.237186,0,0,2528312,1
+DDC (New),2528312,6,OR_op,0.012504,0,0,2206089,1
+DDC (New),2528312,6,AND_op,0.003775,0,0,0,1
+DDC (New),2528312,6,XOR_op,0.01192,0,0,2206089,1
+DDC (New),2528312,6,NOT_op,0.007503,0,0,985048,1
+DDC (New),2528312,6,COMP_op,0.042665,0,0,1865487,1

@@ -1,0 +1,35 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/job_comp_literal_native_20260821/raw/r2_mi_itype_ewah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mi_itype/bitmap/bm_14835720_c71_ewah
+Rows: 14835720 | Cardinality: 71
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [EWAH] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mi_itype/bitmap/bm_14835720_c71_ewah
+Rows: 14835720 | Cardinality: 71 | Loaded: 71
+=======================================
+[Load] Loaded 71 compressed bitmaps: 0.972059 ms
+  1.bm → cardinality: 3036719
+  2.bm → cardinality: 1533909
+  3.bm → cardinality: 1401902
+  4.bm → cardinality: 1325361
+  5.bm → cardinality: 1298989
+  ... (66 more)
+
+[Storage] Total compressed: 1455192 bytes (1421.09 KB) | Ratio: 0.0110521x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.002231 ms (card: 4570628)
+  bitAnd: 0.001054 ms (card: 0)
+  bitXor: 0.001407 ms (card: 4570628)
+
+[Compute] Multi-way OR of 71 bitmaps: 1.67613 ms (card: 14835720)
+
+[Pure Ops] EWAH operation-only:
+  AND: 9.9e-05 ms
+  OR:  0.000114 ms
+  XOR: 0.00011 ms
+  NOT: 9.6e-05 ms
+  COMP (~((A|B)&(B|C))): 0.00035 ms
+---------------------------------------

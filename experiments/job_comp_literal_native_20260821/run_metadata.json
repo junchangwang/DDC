@@ -1,0 +1,1134 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-21T17:26:22+0800",
+  "hostname": "Emerald115",
+  "platform": "Linux-6.8.0-90-generic-x86_64-with-glibc2.39",
+  "binary": "/home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/build-native/benchmark_app",
+  "binary_sha256": "af743f536dcd553f889d06704dd33297c3be04e7987b8d3410e1742eaeb4ad66",
+  "verifiers": {
+    "ddc": {
+      "path": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/build/verify_job_ddc",
+      "sha256": "e2e22a1486037d94eddd278f6f958b4012395ab317ff3e680f4247ba49e7eb47"
+    },
+    "baselines": {
+      "path": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/verify_earth_baselines",
+      "sha256": "14eeff729c5ce80cccd1cd4bd71c55dace53b7133bf7221e7e95960d198e46a7"
+    }
+  },
+  "git_commit": "7644accee41bfb5a5257c2c329a19f28ccffa384",
+  "cpu": 14,
+  "host_preflight": {
+    "load_average": [
+      7.47,
+      8.5,
+      9.37
+    ],
+    "logical_cpu": 14,
+    "thread_siblings": [
+      14,
+      15
+    ],
+    "idle_percent": {
+      "all": 94.22,
+      "14": 95.99,
+      "15": 98.0
+    },
+    "acceptable": true
+  },
+  "process_replicates": 5,
+  "inner_measurements": 100,
+  "outer_iterations": 1,
+  "literal_plan": "t1=A|B; t2=B|C; t3=t1&t2; result=~t3",
+  "result_boundary": "backend-native: DDC/WAH/EWAH COMP_op; CRoaring COMP_op_native; no dense delivery",
+  "ddc_compress_results": false,
+  "allocator_env": {
+    "MALLOC_TRIM_THRESHOLD_": "1073741824",
+    "MALLOC_MMAP_THRESHOLD_": "1073741824"
+  },
+  "cases": [
+    {
+      "label": "mc_ctype",
+      "rows": 2609129,
+      "cardinality": 2,
+      "full_cardinality": 2,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/dataset_2609129_2",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mc_ctype/bitmap/bm_2609129_c2_ewah"
+      }
+    },
+    {
+      "label": "kind",
+      "rows": 2528312,
+      "cardinality": 6,
+      "full_cardinality": 6,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/dataset_2528312_6",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/kind/bitmap/bm_2528312_c6_ewah"
+      }
+    },
+    {
+      "label": "role",
+      "rows": 36244344,
+      "cardinality": 11,
+      "full_cardinality": 11,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/dataset_36244344_11",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/role/bitmap/bm_36244344_c11_ewah"
+      }
+    },
+    {
+      "label": "pi_itype",
+      "rows": 2963664,
+      "cardinality": 22,
+      "full_cardinality": 22,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/dataset_2963664_22",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/pi_itype/bitmap/bm_2963664_c22_ewah"
+      }
+    },
+    {
+      "label": "mi_itype",
+      "rows": 14835720,
+      "cardinality": 71,
+      "full_cardinality": 71,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/dataset_14835720_71",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mi_itype/bitmap/bm_14835720_c71_ewah"
+      }
+    },
+    {
+      "label": "year",
+      "rows": 2528312,
+      "cardinality": 132,
+      "full_cardinality": 132,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/dataset_2528312_132",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/year/bitmap/bm_2528312_c132_ewah"
+      }
+    },
+    {
+      "label": "country",
+      "rows": 234997,
+      "cardinality": 215,
+      "full_cardinality": 215,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/dataset_234997_215",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/country/bitmap/bm_234997_c215_ewah"
+      }
+    },
+    {
+      "label": "movie_keyword_movie_id",
+      "rows": 4523930,
+      "cardinality": 3,
+      "full_cardinality": 476794,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/dataset_4523930_476794_top3",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_ewah"
+      }
+    },
+    {
+      "label": "cast_info_movie_id",
+      "rows": 36244344,
+      "cardinality": 3,
+      "full_cardinality": 2331601,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/dataset_36244344_2331601_top3",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_ewah"
+      }
+    },
+    {
+      "label": "cast_info_person_id",
+      "rows": 36244344,
+      "cardinality": 3,
+      "full_cardinality": 4051810,
+      "dataset": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/dataset_36244344_4051810_top3",
+      "directories": {
+        "ddc": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_ddc_w8",
+        "croaring": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_roaring",
+        "wah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_wah",
+        "ewah": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_ewah"
+      }
+    }
+  ],
+  "expected_result_cardinality": {
+    "mc_ctype": 0,
+    "kind": 1865487,
+    "role": 28792371,
+    "pi_itype": 2544010,
+    "mi_itype": 13301811,
+    "year": 2368295,
+    "country": 218952,
+    "movie_keyword_movie_id": 4523427,
+    "cast_info_movie_id": 36242772,
+    "cast_info_person_id": 36236102
+  },
+  "operand_manifest": [
+    {
+      "case": "mc_ctype",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_ddc_w8",
+      "bitmap_count": 2,
+      "total_bm_bytes": 247,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 151,
+          "sha256": "faa9901d55eef057329f45e8b97696b4769ee57085460adec8509aa7bc029676"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 96,
+          "sha256": "609c7063b33175a53a031d1ac7a2c2f9eec3a4012b6860285cb52ce9c4d62f1a"
+        }
+      ]
+    },
+    {
+      "case": "mc_ctype",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_roaring",
+      "bitmap_count": 2,
+      "total_bm_bytes": 596,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 305,
+          "sha256": "9a492c1bdbdf1166d53e343b7ac253ac446b2362b75a249280e8f2b22ba3a2ec"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 291,
+          "sha256": "50db9b723a4e19d835f840f96d9624f82d1db135963fca24571aa82fe13b03a0"
+        }
+      ]
+    },
+    {
+      "case": "mc_ctype",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mc_ctype/bitmap/bm_2609129_c2_wah",
+      "bitmap_count": 2,
+      "total_bm_bytes": 40,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 20,
+          "sha256": "173e9a76885e1228c9f445dffe23ca1d746a15dffe9897ac1fa8e5be30db92b0"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 20,
+          "sha256": "42dc0c1d89680825e884783bc2f2bc7d7bd862aafe94d4829bafc7e1137efa16"
+        }
+      ]
+    },
+    {
+      "case": "mc_ctype",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mc_ctype/bitmap/bm_2609129_c2_ewah",
+      "bitmap_count": 2,
+      "total_bm_bytes": 104,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 56,
+          "sha256": "c97eab3d783e5a5d3e766be78d9a9c758e6e915389711f8b9c0654564bdfe59b"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 48,
+          "sha256": "aa2a94297df4a2dcb7b24f092ac829bd0efce54bcee05a81b5ca8cebf07b8a05"
+        }
+      ]
+    },
+    {
+      "case": "kind",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_ddc_w8",
+      "bitmap_count": 6,
+      "total_bm_bytes": 530308,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 112331,
+          "sha256": "c1546ffd15f1884f4dee562e3a289268b04870fc954585c454b5cf1bd918302c"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 116277,
+          "sha256": "ed53e8c4ee46b050b21891417f65612cfb66f68638f0ab68e4dd14124e99b4f2"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 91413,
+          "sha256": "1c6e43d4b761835036a8d452e168933ccf4ef303d2070f380460a5fa23049d7b"
+        }
+      ]
+    },
+    {
+      "case": "kind",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_roaring",
+      "bitmap_count": 6,
+      "total_bm_bytes": 788278,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 215086,
+          "sha256": "b3c4d0005a7e8ca23a240698759d3a27d5a86c61dd7479dc55b91270466412a4"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 123316,
+          "sha256": "c42f0544a2050de0e86225a27634c4ce5f22aaa40a0eed55f6c2cbc096a5f7db"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 121718,
+          "sha256": "43b9ac73d6379f736da4541cc48713fb12cadcc9600c40eeedad7483a32ca409"
+        }
+      ]
+    },
+    {
+      "case": "kind",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/kind/bitmap/bm_2528312_c6_wah",
+      "bitmap_count": 6,
+      "total_bm_bytes": 849768,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 212948,
+          "sha256": "461ce73672b06d279d6b450fef00b930d132f2e170d33c373e4ee3ece2208ce2"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 120908,
+          "sha256": "1a22d63b83092737b5cc64ae9f5100b9d7e84bebc0a28dc921dbcc969688d3d0"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 119624,
+          "sha256": "44a96d9d1c948646ae3ba32680099b4bc7ba186c6f1e21f471f677f91831e5d1"
+        }
+      ]
+    },
+    {
+      "case": "kind",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/kind/bitmap/bm_2528312_c6_ewah",
+      "bitmap_count": 6,
+      "total_bm_bytes": 868592,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 212680,
+          "sha256": "53a3c3aa827e9b3b027e7cd7ad73a3d929d448cafffe3d36a91e17a43645a494"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 118232,
+          "sha256": "f73463ebb1614a402eba128697eba13bbea58194743f6de6d4ab30ffc40ac60a"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 116216,
+          "sha256": "27095ce6e6b1818e0255afb62bc8c07638a81caf36a639bdd85c85cb11a25438"
+        }
+      ]
+    },
+    {
+      "case": "role",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_ddc_w8",
+      "bitmap_count": 11,
+      "total_bm_bytes": 1514,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 66,
+          "sha256": "13bedc901735aae6afd3ee97eac283664e1c4fd7dde9de0f45c6a4d04365c30b"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 135,
+          "sha256": "c4b0e5fa25156ca45dbca0ab6e0c17545f136c903c650f6e7718824cd0042599"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 138,
+          "sha256": "51c899de5e803f5bbde03a493ec22157497bcfaadac5a3dbea28d4d43d3a64f9"
+        }
+      ]
+    },
+    {
+      "case": "role",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_roaring",
+      "bitmap_count": 11,
+      "total_bm_bytes": 8068,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 2749,
+          "sha256": "529440f4523779ec9a1cfd4b3e035ee52c9853c2eeecdfe67f3fd539ba8919bb"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 1633,
+          "sha256": "a107691ce13ad1dd0f99c55790242d2717edc07a42b86a0194eee956dd3cc0d7"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 959,
+          "sha256": "06e2cdbebb257179063643962a44b7564545c5885d4493ff94efacd5f2b7a471"
+        }
+      ]
+    },
+    {
+      "case": "role",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/role/bitmap/bm_36244344_c11_wah",
+      "bitmap_count": 11,
+      "total_bm_bytes": 308,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 20,
+          "sha256": "68dc6892bf9dd170de764f6b5108df11bf90510ad1631ca0de3c600325440e8c"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 28,
+          "sha256": "579202daf1d5005bbe8bc5f798fa39d71e3253dc866d1313d1302537bdd37b65"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 36,
+          "sha256": "4283ee0efa71b4355866e6e367c1d6cd178b9f6e2982f113afc4ed59c2f1989d"
+        }
+      ]
+    },
+    {
+      "case": "role",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/role/bitmap/bm_36244344_c11_ewah",
+      "bitmap_count": 11,
+      "total_bm_bytes": 696,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 48,
+          "sha256": "cdf78aad111c5082f3e979667b78795db8bc9ccf45326b130983e8fa4fda13e4"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 64,
+          "sha256": "a524b2fcdcc540c80afa7a8cf0b8e75b14c26d3fc6a4e6241b93244a3a1f8cb6"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 72,
+          "sha256": "05a2ad9c75cf7f15b86b4a5498e2cb27924469dc6d4b9afc792bffe8515a4362"
+        }
+      ]
+    },
+    {
+      "case": "pi_itype",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_ddc_w8",
+      "bitmap_count": 22,
+      "total_bm_bytes": 2410663,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 259599,
+          "sha256": "2214c44cea7ee2c5c852c0d257226720c845e52f01072f04ae093bf97b7809db"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 174010,
+          "sha256": "a50d71542c8b08882ca500058960f7024c186898f34d34b65f802dc91d32f42f"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 277693,
+          "sha256": "da271d150e57416f232f475ba704efca7f73c51ea887321b86bdf88e6831fd19"
+        }
+      ]
+    },
+    {
+      "case": "pi_itype",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_roaring",
+      "bitmap_count": 22,
+      "total_bm_bytes": 3699028,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 372936,
+          "sha256": "b05e919d67d366c2904143e5e5fdb39833978e9072ec63e0d5258af2a1addab2"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 368736,
+          "sha256": "e9db4616f5e46d80ef94bd231fe266f7bccd7c1165580cac72813738c1f00690"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 373890,
+          "sha256": "bce3ce81e43d0c46a0331b7be0ee124d46802d67326cc280987ae51a68b4b00d"
+        }
+      ]
+    },
+    {
+      "case": "pi_itype",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_wah",
+      "bitmap_count": 22,
+      "total_bm_bytes": 4904476,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 371980,
+          "sha256": "d22b6f8487c79b44d0b93e9dccbbee4834a86915a120d09c1b05738f8a191949"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 340624,
+          "sha256": "52dd736bb6c988ee925228d36c3955f09f0948d85f6dc90883901a99728ecece"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 364816,
+          "sha256": "f99940c0e77e032b5a5bbd509f9ac07432a1fbf6d19dffabbf9dc1029fa717ce"
+        }
+      ]
+    },
+    {
+      "case": "pi_itype",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/pi_itype/bitmap/bm_2963664_c22_ewah",
+      "bitmap_count": 22,
+      "total_bm_bytes": 5854216,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 367736,
+          "sha256": "c8804d5f125c0067e968c28b2d0f74a6087e9d4d590c4436fade1f8252b88376"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 361976,
+          "sha256": "fbc71f3402018c9323dea9b9d72b809c3b88fb4bd846982f602ccb2ab30d7d0d"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 364536,
+          "sha256": "c3b9ef6c50b5f8cf5a7b15a656e3a02b19de096afde85b57a180f53b5065b891"
+        }
+      ]
+    },
+    {
+      "case": "mi_itype",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_ddc_w8",
+      "bitmap_count": 71,
+      "total_bm_bytes": 613126,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 168,
+          "sha256": "e794b4f8f3d03e401dc0597d34e0909648440141fd52582e0f813995a7c8a1b1"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 168,
+          "sha256": "48ba4b12aa03afc586660b65ad5ae51b633f90918c97b194367761ab84a22b83"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 132,
+          "sha256": "b98571e10c6941cffe689ece6886602a88a75ebba1b152faab1492b12702d264"
+        }
+      ]
+    },
+    {
+      "case": "mi_itype",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_roaring",
+      "bitmap_count": 71,
+      "total_bm_bytes": 931950,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 672,
+          "sha256": "bb77d1801f031d54501be3314e6109f67229364610465f7897c32aa0957bbb24"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 347,
+          "sha256": "0b05a18ad7d59790177614889c47d96b0100b9d948adc86a0a3cc98e0c2734fc"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 333,
+          "sha256": "6be2395ca71bef204f569b45dc898d3b2a6acd9ca475984efc97e00ad6bc39f7"
+        }
+      ]
+    },
+    {
+      "case": "mi_itype",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/mi_itype/bitmap/bm_14835720_c71_wah",
+      "bitmap_count": 71,
+      "total_bm_bytes": 1377992,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 28,
+          "sha256": "3a16385b8c36b3993b3a560578690a5f08d6db838ca01a3c248b6453310d2a8d"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 28,
+          "sha256": "eb120d463eab1a5bfe740775514054c0e65d14b8c8559d8e34c5735a5e346cbc"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 28,
+          "sha256": "5f020b542ce5db69b82bb30f1ece69835199a46c3132f5a145bd21c5bb285157"
+        }
+      ]
+    },
+    {
+      "case": "mi_itype",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/mi_itype/bitmap/bm_14835720_c71_ewah",
+      "bitmap_count": 71,
+      "total_bm_bytes": 1455192,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 64,
+          "sha256": "4db14a5cd4a1d535421f66f5a80e48ce90e85c62c1563a02a7fa20a54130da2b"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 64,
+          "sha256": "d422b75708b95098313938dc9202d777263a3f88398054a2691d1ccf12f6750f"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 56,
+          "sha256": "0c8d25e4e1c53ed74321a64ffdd4904da025271d770085c5179d2d05a12058a3"
+        }
+      ]
+    },
+    {
+      "case": "year",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_ddc_w8",
+      "bitmap_count": 132,
+      "total_bm_bytes": 4010490,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 172245,
+          "sha256": "33675228cf53b38009a7368db2bbd6d77814999a4a0f8d89d1b55046871550b8"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 169700,
+          "sha256": "1a1a2cd6d56c2d69cce65d7652fb60c3ff2f9cdbfb643c95fe8f5ff052edda87"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 157857,
+          "sha256": "47dc8a7745502234523213422cabe3719084317473f4cd5c3db4bed37bfdad7d"
+        }
+      ]
+    },
+    {
+      "case": "year",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_roaring",
+      "bitmap_count": 132,
+      "total_bm_bytes": 4890838,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 301352,
+          "sha256": "fed1c810a75ef2c2e0be63829e947b4d6c3e92e5b226aabb0933bd2c6b2f3463"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 300224,
+          "sha256": "7488ed3978f9a8d6c9a9abfdfa6b09b0c6bb92e23297a0975b2f8311e265231a"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 280286,
+          "sha256": "4aa5199b12f433c1ccb45cda9186d61d1891e310d9adb19ec699d9c6a990e8a1"
+        }
+      ]
+    },
+    {
+      "case": "year",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/year/bitmap/bm_2528312_c132_wah",
+      "bitmap_count": 132,
+      "total_bm_bytes": 10450892,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 319844,
+          "sha256": "8b7e654aab05c2133ddde6b1b0aaa28b0f26ef02e3b5c68354ce90ff2c7d70ff"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 319664,
+          "sha256": "beed6ad37ba9aac585f4ee04e30765702c58c6cc879ec0c41928b11a161ed651"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 316196,
+          "sha256": "fe8fa75f2076fc406b50feccb79b276bcaa72148f20453752754960799f337f0"
+        }
+      ]
+    },
+    {
+      "case": "year",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/year/bitmap/bm_2528312_c132_ewah",
+      "bitmap_count": 132,
+      "total_bm_bytes": 14726160,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 315896,
+          "sha256": "28b7c57df0a7162f7cf92cd69b7fd2c437233c4202b5a9ee25e47627b7dfd001"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 315880,
+          "sha256": "165c56363102452e194094c563c05aca713a6e096851d3c6e05a39238eafe18b"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 315784,
+          "sha256": "1f57969a0103b4184ac0df99d7e01fc04aba8fd8f2ad77ed8858fbe02cafdbda"
+        }
+      ]
+    },
+    {
+      "case": "country",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_ddc_w8",
+      "bitmap_count": 215,
+      "total_bm_bytes": 275748,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 29856,
+          "sha256": "3cf39aa73cd285dbed1f8a500ce53f790dda107f7ada3de3ba61458b7c3f8707"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 16629,
+          "sha256": "507f484297e2f9be363e893e367bfe6fe0d51eb255f3dac83cc273b8ee97f013"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 12639,
+          "sha256": "84b91743377b3da51d5c41e9cd9bd048035f5716ae1384518c3b7185d31b411a"
+        }
+      ]
+    },
+    {
+      "case": "country",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_roaring",
+      "bitmap_count": 215,
+      "total_bm_bytes": 291236,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 32812,
+          "sha256": "6b07bcfe5d8464a53b3ac9f2082e2c0c093b771d4f3374b395b731531c620006"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 29738,
+          "sha256": "32a7ce225b59dfe5fa0284f8112fa406a2c05d7d81808ac2fe4c5fda24793cf7"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 20832,
+          "sha256": "fae28984177220df81e67f2af3f9d10963b8b1cbe641424b99e2ddbfb5762b8c"
+        }
+      ]
+    },
+    {
+      "case": "country",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/combit/realdata/country/bitmap/bm_234997_c215_wah",
+      "bitmap_count": 215,
+      "total_bm_bytes": 592268,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 30328,
+          "sha256": "92672062a33f75e806fed694ad2fe18a11b1759e0d9ab4097557d2c385938ad0"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 29988,
+          "sha256": "f7f556ca2f4e8f28a78691c6ae765460cb6a6a59b71d7744e7e341b42fe73727"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 27864,
+          "sha256": "37b7d5884ca07e1b57e5b879a5f5223279e5162d11ab7a7656c198c7139cdf47"
+        }
+      ]
+    },
+    {
+      "case": "country",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/ewah_corrected/job/data/country/bitmap/bm_234997_c215_ewah",
+      "bitmap_count": 215,
+      "total_bm_bytes": 848160,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 29408,
+          "sha256": "404024abeab13336db0bd71b023b0f88b09d945d15599d0daf779ad145eae661"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 29400,
+          "sha256": "9ca933712917ca5e9f92b1cca24be8ff6a6062e9b709c07611ec5942289ad1e2"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 29088,
+          "sha256": "c540701e4b120f70947c0a36e7630166acebddb044745c7df7a1c1e8bb79da0f"
+        }
+      ]
+    },
+    {
+      "case": "movie_keyword_movie_id",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_ddc_w8",
+      "bitmap_count": 3,
+      "total_bm_bytes": 294,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 99,
+          "sha256": "05e6d8e9bbec4367a7b407b83422396edd21a0aff0b286e796e417745064f338"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 99,
+          "sha256": "b6e3fb766e2e93a532c716ba3024b321c6bb165cfa0ba4286accf9f0ed7d3ba8"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 96,
+          "sha256": "4711368f1bf922d18cb56cb098cbc813ea1477ba193f258adf433412d7e4111e"
+        }
+      ]
+    },
+    {
+      "case": "movie_keyword_movie_id",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_roaring",
+      "bitmap_count": 3,
+      "total_bm_bytes": 57,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 19,
+          "sha256": "435b830a100199c94c940ca29501e347ed48eeff8e73817c01f18678ec47f981"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 19,
+          "sha256": "0faedcf70079e1c48d656a569acaa900c3b3ef97982469af92a48a086029f637"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 19,
+          "sha256": "e52113937b69e0b3ec67e4e9857588a612935e4cc6e30cfad146d693732ba772"
+        }
+      ]
+    },
+    {
+      "case": "movie_keyword_movie_id",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_wah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 84,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 28,
+          "sha256": "2cccbb33c4a50934a1c09ed37a195242466cec467e67539df2d48a60a125b305"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 28,
+          "sha256": "e3d96bfa2657138cd0b35584c174ea8d921d3c8e31daca870408e2b2b134fe20"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 28,
+          "sha256": "75ab25f27002d6e2d8b6dfc22921718def5fe7713367a5b2e15a4a447e523f76"
+        }
+      ]
+    },
+    {
+      "case": "movie_keyword_movie_id",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/movie_keyword_movie_id/bitmap/bm_4523930_c3_ewah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 192,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 64,
+          "sha256": "5b3dee0b17b6948415e09510948683a46cd8da7e3e4119aa2ec9a4b5fa168aa2"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 64,
+          "sha256": "ff3e66986b7cdfc52072797393b38f75ae71cd1c6376f6c42ed5df1a500cba44"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 64,
+          "sha256": "3e8e8b617987617231f5e1a467f49e0164bb689f1ce6178a426c3eec37ff33ca"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_movie_id",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_ddc_w8",
+      "bitmap_count": 3,
+      "total_bm_bytes": 39829,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 8368,
+          "sha256": "3456469feb94fde0e9ae78e7820ba1dc51bddf77d53aeb1ecf02a3e5fc720be1"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 9000,
+          "sha256": "eb44b96bc9aed16b8355f56dc2c01fd53d125ed8bda250fae2089570b1607486"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 22461,
+          "sha256": "3e29ef09863d9422c7e64cedd3528d1b9a3492d1b86b1fd86d47e4be67020ea8"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_movie_id",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_roaring",
+      "bitmap_count": 3,
+      "total_bm_bytes": 12547,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 4086,
+          "sha256": "f06dd24688bbd58c72c5f078fc09000ac92462d0852d56ef74345638e05dc10e"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 2403,
+          "sha256": "ac0e718b594cd1162a5cbf192df2440ebffb624d9e5ff66dafacd7e5d09f4546"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 6058,
+          "sha256": "cbfc004b9654141c79644b6f45431069571fc47eef3b14eba0316840a4413406"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_movie_id",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_wah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 26716,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 12956,
+          "sha256": "ca93e57d6125ca0db9af519e12d6adb36b254a8384402c878fe7610f2aa5057e"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 1900,
+          "sha256": "2d946f3d31cbc1b4b0f7c87c87b0638b6f9153eee06420636d0ae91d8babef51"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 11860,
+          "sha256": "9e12201cb7ddac3b2b1c2737e12629dbb199caea77f9e1f36996332cde54e948"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_movie_id",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_ewah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 52592,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 25384,
+          "sha256": "dd1fabcc163acbbced0d4a41b4f3729965d095ccd3035c691eb9b596b72da02b"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 3624,
+          "sha256": "03ef983504b4305512a184fe3d88d499104719eaf28494beca40cef66a438c5d"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 23584,
+          "sha256": "a18ef412cbfc1ebfc8d5273859a8a15a3a29dad4ae72e426008ed5f87be676c5"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_person_id",
+      "backend": "ddc",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_ddc_w8",
+      "bitmap_count": 3,
+      "total_bm_bytes": 953,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 222,
+          "sha256": "a03ff10a9d12466719e915722eaa9557a4a4e16e7687ca8bc8f55c06766db00a"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 361,
+          "sha256": "3102337118b181d1532a85a7b986f50011c50c2818babca278fed8a3a74864d1"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 370,
+          "sha256": "4b8254798088b962646e389559f9be9ca68484cea6e53c402fb434ea104d9ec3"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_person_id",
+      "backend": "croaring",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_roaring",
+      "bitmap_count": 3,
+      "total_bm_bytes": 203,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 39,
+          "sha256": "61744359c2045466bdc19aa8417a7d3d218aa7fae8e8a17e8062d5be89d85f38"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 81,
+          "sha256": "c1fd276037d34e417deee5d35dcb231b8c70077e66fddb8ff3424dfc3911f64c"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 83,
+          "sha256": "f90b40902626d41fa6c073c20f103a56aae4f69cb9cbf25104c0cc001b7e2d28"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_person_id",
+      "backend": "wah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_wah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 228,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 44,
+          "sha256": "898d71466d06b145eadbfd64d4a7685696fd442fbdb603fb95501cd4f6a717c3"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 92,
+          "sha256": "0ef674584ab9c009b23b247a8fc52af168c6230881b6a2f7e6b40954db3497da"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 92,
+          "sha256": "c482615939090e54c7abdc2e45abaab803758f923642e028d0db2e9f42582711"
+        }
+      ]
+    },
+    {
+      "case": "cast_info_person_id",
+      "backend": "ewah",
+      "directory": "/home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_person_id/bitmap/bm_36244344_c3_ewah",
+      "bitmap_count": 3,
+      "total_bm_bytes": 480,
+      "operands": [
+        {
+          "name": "1.bm",
+          "bytes": 96,
+          "sha256": "3ead5c2853bddf171cffb69b0fa423528cb9e1465e173c62d9223303c4d3ea0c"
+        },
+        {
+          "name": "2.bm",
+          "bytes": 192,
+          "sha256": "63981d85127c0e08ce3b9d8cf473d8dd1848955f2fc010af33c5394e7fa8a0d6"
+        },
+        {
+          "name": "3.bm",
+          "bytes": 192,
+          "sha256": "d78a70c26c56dd79c3a41be39462661bd88a682aadaddc0374eb731adf80bd1a"
+        }
+      ]
+    }
+  ]
+}

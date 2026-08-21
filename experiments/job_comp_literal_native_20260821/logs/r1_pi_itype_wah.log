@@ -1,0 +1,35 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/job_comp_literal_native_20260821/raw/r1_pi_itype_wah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_wah
+Rows: 2963664 | Cardinality: 22
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [WAH (FastBit)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/realdata/pi_itype/bitmap/bm_2963664_c22_wah
+Rows: 2963664 | Cardinality: 22 | Loaded: 22
+=======================================
+[Load] Loaded 22 compressed bitmaps: 4.94587 ms
+  1.bm → cardinality: 620526
+  2.bm → cardinality: 419654
+  3.bm → cardinality: 353282
+  4.bm → cardinality: 329504
+  5.bm → cardinality: 142345
+  ... (17 more)
+
+[Storage] Total compressed: 4904476 bytes (4789.53 KB) | Ratio: 0.601771x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.738361 ms (card: 1040180)
+  bitAnd: 0.59932 ms (card: 0)
+  bitXor: 0.45365 ms (card: 1040180)
+
+[Compute] Multi-way OR of 22 bitmaps: 2.62055 ms (card: 2963664)
+
+[Pure Ops] WAH (FastBit) operation-only:
+  AND: 0.41364 ms
+  OR:  0.460402 ms
+  XOR: 0.241146 ms
+  NOT: 0.020936 ms
+  COMP (~((A|B)&(B|C))): 1.0693 ms
+---------------------------------------

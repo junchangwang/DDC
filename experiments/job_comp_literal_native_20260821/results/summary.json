@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "literal_plan": "t1=A|B; t2=B|C; t3=t1&t2; result=~t3",
+  "result_boundary": "backend-native: DDC/WAH/EWAH COMP_op; CRoaring COMP_op_native; no dense delivery",
+  "limitations": [
+    "Same-column equality operands make literal COMP reduce to NOT B for C>=3; the C=2 case reduces to NOT (A OR B).",
+    "DDC uses the existing default decompressed mixed-result path; CRoaring, WAH, and EWAH retain compressed native results.",
+    "DDC includes destruction of one local intermediate before the timer stops; the other backends destroy intermediates afterward."
+  ],
+  "process_replicates": 5,
+  "cases": 10,
+  "wins": {
+    "EWAH": 5,
+    "CRoaring": 1,
+    "DDC": 3,
+    "WAH": 1
+  },
+  "geometric_mean_latency_over_ddc": {
+    "DDC": 1.0,
+    "CRoaring": 1.2946060899969511,
+    "WAH": 0.5594504755185088,
+    "EWAH": 0.29241046486173433
+  },
+  "geometric_mean_literal_over_frozen": {
+    "DDC": 5.755494688208591,
+    "CRoaring": 0.9987760907766127,
+    "WAH": 0.9420519889268445,
+    "EWAH": 0.9801862491525328
+  },
+  "binary_sha256": "af743f536dcd553f889d06704dd33297c3be04e7987b8d3410e1742eaeb4ad66",
+  "metadata_sha256": "f7fadcc623f50f2f9f343fba58bd205454922d580898e08a368a06ee89e772f9"
+}
