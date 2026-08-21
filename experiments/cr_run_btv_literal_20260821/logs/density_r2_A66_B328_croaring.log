@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r2_A66_B328_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B328_roaring
+Rows: 100000000 | Cardinality: 66
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B328_roaring
+Rows: 100000000 | Cardinality: 66 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 1.19818 ms
+  1.bm → cardinality: 100706
+  2.bm → cardinality: 500481
+
+[Storage] Total compressed: 1226814 bytes (1198.06 KB) | Ratio: 0.0490726x
+[CRoaring Storage] array=3052 (1.14667 MB) | run=0 (0 MB) | bitset=0 (0 MB) | total_bytes=1202374
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  8.73659 ms (card: 600699)
+  bitAnd: 0.858741 ms (card: 488)
+  bitXor: 2.52698 ms (card: 600211)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 0.782889 ms (card: 488)
+  OR:  1.96427 ms (card: 600699)
+  OR (CR internal only, no to-btv): 0.877427 ms
+  XOR: 2.03452 ms (card: 600211)
+  NOT: 2.30561 ms (card: 99899294)
+  AND (in-place): 1.11319 ms
+  [AND result containers] array=423 (0.000930786 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=976
+  [OR  result containers] array=1526 (1.14574 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1201398
+  [XOR result containers] array=1526 (1.14481 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1200422
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (0.192081 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=201412
+  [Input B containers] array=1526 (0.954592 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1000962
+  COMP native (~((A|B)&(B|C))): 3.18497 ms
+  COMP (~((A|B)&(B|C))): 4.83356 ms
+---------------------------------------

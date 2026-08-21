@@ -1,0 +1,10 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+Concise,100000000,66,load,6.32253,13223796,0.528952,0,1
+Concise,100000000,66,OR,19.2285,0,0,10091048,1
+Concise,100000000,66,AND,22.1678,0,0,10258,1
+Concise,100000000,66,XOR,20.2937,0,0,10080790,1
+Concise,100000000,66,OR_op,20.9262,0,0,0,1
+Concise,100000000,66,AND_op,17.9107,0,0,0,1
+Concise,100000000,66,XOR_op,21.183,0,0,0,1
+Concise,100000000,66,NOT_op,1.34064,0,0,0,1
+Concise,100000000,66,COMP_op,86.4402,0,0,0,1

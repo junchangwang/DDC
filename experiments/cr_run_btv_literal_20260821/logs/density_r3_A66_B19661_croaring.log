@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r3_A66_B19661_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B19661_roaring
+Rows: 100000000 | Cardinality: 66
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B19661_roaring
+Rows: 100000000 | Cardinality: 66 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 11.1039 ms
+  1.bm → cardinality: 100706
+  2.bm → cardinality: 30000288
+
+[Storage] Total compressed: 12726844 bytes (12428.6 KB) | Ratio: 0.509074x
+[CRoaring Storage] array=1526 (0.192081 MB) | run=0 (0 MB) | bitset=1526 (11.9219 MB) | total_bytes=12702404
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  5.59308 ms (card: 30070755)
+  bitAnd: 1.11722 ms (card: 30239)
+  bitXor: 7.2059 ms (card: 30040516)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 0.968604 ms (card: 30239)
+  OR:  2.46194 ms (card: 30070755)
+  OR (CR internal only, no to-btv): 1.10997 ms
+  XOR: 2.56326 ms (card: 30040516)
+  NOT: 2.24836 ms (card: 99899294)
+  AND (in-place): 8.61369 ms
+  [AND result containers] array=1526 (0.0576763 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=60478
+  [OR  result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [XOR result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (0.192081 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=201412
+  [Input B containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  COMP native (~((A|B)&(B|C))): 4.2442 ms
+  COMP (~((A|B)&(B|C))): 5.60258 ms
+---------------------------------------

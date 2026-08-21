@@ -1,0 +1,10 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+Bitset (AVX512),100000000,66,load,12.1134,25000000,1,0,1
+Bitset (AVX512),100000000,66,OR,4.48118,0,0,30070755,1
+Bitset (AVX512),100000000,66,AND,4.45222,0,0,30239,1
+Bitset (AVX512),100000000,66,XOR,4.57214,0,0,30040516,1
+Bitset (AVX512),100000000,66,OR_op,1.80345,0,0,0,1
+Bitset (AVX512),100000000,66,AND_op,1.79962,0,0,0,1
+Bitset (AVX512),100000000,66,XOR_op,1.80576,0,0,0,1
+Bitset (AVX512),100000000,66,NOT_op,1.30116,0,0,0,1
+Bitset (AVX512),100000000,66,COMP_op,5.59892,0,0,0,1

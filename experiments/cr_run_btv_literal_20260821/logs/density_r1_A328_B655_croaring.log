@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r1_A328_B655_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B655_roaring
+Rows: 100000000 | Cardinality: 328
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B655_roaring
+Rows: 100000000 | Cardinality: 328 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 2.56367 ms
+  1.bm → cardinality: 500493
+  2.bm → cardinality: 999453
+
+[Storage] Total compressed: 3024332 bytes (2953.45 KB) | Ratio: 0.120973x
+[CRoaring Storage] array=3052 (2.86092 MB) | run=0 (0 MB) | bitset=0 (0 MB) | total_bytes=2999892
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  10.217 ms (card: 1494888)
+  bitAnd: 1.64998 ms (card: 5058)
+  bitXor: 4.50261 ms (card: 1489830)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 1.26954 ms (card: 5058)
+  OR:  3.00898 ms (card: 1494888)
+  OR (CR internal only, no to-btv): 1.65921 ms
+  XOR: 3.15174 ms (card: 1489830)
+  NOT: 2.64433 ms (card: 99499507)
+  AND (in-place): 4.93906 ms
+  [AND result containers] array=1482 (0.00964737 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=10116
+  [OR  result containers] array=1526 (2.85127 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=2989776
+  [XOR result containers] array=1526 (2.84163 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=2979660
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (0.954615 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1000986
+  [Input B containers] array=1526 (1.90631 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1998906
+  COMP native (~((A|B)&(B|C))): 5.58482 ms
+  COMP (~((A|B)&(B|C))): 7.13923 ms
+---------------------------------------

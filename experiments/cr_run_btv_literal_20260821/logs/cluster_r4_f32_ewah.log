@@ -1,0 +1,35 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/cluster_r4_f32_ewah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f32/bitmap/bm_100m_c100_ewah
+Rows: 100000000 | Cardinality: 100
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [EWAH] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f32/bitmap/bm_100m_c100_ewah
+Rows: 100000000 | Cardinality: 100 | Loaded: 100
+=======================================
+[Load] Loaded 100 compressed bitmaps: 33.2241 ms
+  1.bm → cardinality: 1000000
+  2.bm → cardinality: 1000000
+  3.bm → cardinality: 1000000
+  4.bm → cardinality: 1000000
+  5.bm → cardinality: 1000000
+  ... (95 more)
+
+[Storage] Total compressed: 60921160 bytes (59493.3 KB) | Ratio: 0.0487369x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  1.86274 ms (card: 2000000)
+  bitAnd: 0.932426 ms (card: 0)
+  bitXor: 1.88945 ms (card: 2000000)
+
+[Compute] Multi-way OR of 100 bitmaps: 813.934 ms (card: 100000000)
+
+[Pure Ops] EWAH operation-only:
+  AND: 0.84238 ms
+  OR:  1.40486 ms
+  XOR: 1.44915 ms
+  NOT: 0.430294 ms
+  COMP (~((A|B)&(B|C))): 5.28419 ms
+---------------------------------------

@@ -12,6 +12,11 @@ The CRoaring column is copied from the authoritative display file:
 SHA-256: 0d3ace35cfad208030e8c0837024f5c81d83af976f66687b35beaf8e163df8a3
 ```
 
+An identical self-contained copy is retained here as
+`table4_run_display.csv`.
+The exact-byte measurement output and its binary/source/membership hashes are
+also retained as `table4_cr_run_sizes.csv` and `table4_run_metadata.json`.
+
 That file reports `getSizeInBytes(false)` after `runOptimize()`. The DDC, WAH,
 EWAH, attribute-statistics, and display-rounding columns are retained from the
 existing Table 4. `Inc.` is `(baseline / DDC - 1)`; values above 100% are shown

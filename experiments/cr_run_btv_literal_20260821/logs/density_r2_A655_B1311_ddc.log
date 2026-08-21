@@ -1,0 +1,32 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r2_A655_B1311_ddc.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B1311_ddc_w8
+Rows: 100000000 | Cardinality: 655
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [DDC (New)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B1311_ddc_w8
+Rows: 100000000 | Cardinality: 655 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 4.16404 ms
+  1.bm → cardinality: 999453
+  2.bm → cardinality: 2000427
+
+[Storage] Total compressed: 5337569 bytes (5212.47 KB) | Ratio: 0.213503x
+[DDC Storage] l4_bytes: 0.0465662 MB | l3_bytes: 0.357038 MB | l2_bytes: 1.78873 MB | l1_bytes: 2.7 MB | total_bytes: 4.89233 MB
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  6.38603 ms (card: 2979808)
+  bitAnd: 6.86041 ms (card: 20072)
+  bitXor: 6.65644 ms (card: 2959736)
+  [MIRROR-IN-PROC] OR raw: 1.43579 1.43633 1.43679 1.43679 1.43694 1.43807 1.4383 1.43843 1.43877 1.43904 1.43908 1.43943 1.44 1.44032 1.44072 1.44076 1.4408 1.44087 1.4413 1.44174 1.44194 1.44317 1.44343 1.44348 1.44354 1.44374 1.44377 1.44388 1.44393 1.44406 1.44462 1.44521 1.44533 1.44535 1.44572 1.44589 1.44591 1.44601 1.44632 1.44661 1.44675 1.44677 1.44692 1.447 1.44769 1.4479 1.44847 1.44858 1.44868 1.44879 1.4491 1.44938 1.44947 1.44953 1.44964 1.44977 1.44987 1.44992 1.45031 1.45033 1.45053 1.45084 1.45102 1.45108 1.45156 1.45169 1.45172 1.45172 1.45207 1.45219 1.45245 1.45252 1.45274 1.45364 1.45386 1.45419 1.4543 1.45457 1.45473 1.45495 1.45511 1.45521 1.45534 1.45538 1.45542 1.45649 1.45663 1.45674 1.45726 1.45757 1.45849 1.45869 1.45996 1.46115 1.4624 1.4653 1.46775 1.49826 1.50078 1.50376  median=1.4491
+
+[Pure Ops] DDC operation-only timing:
+  AND: 1.57487 ms (card: 20072)
+  OR:  1.45012 ms (card: 2979808)
+  XOR: 1.46905 ms (card: 2959736)
+  NOT: 0.267037 ms (card: 99000547)
+  COMP (~((A|B)&(B|C))): 4.3706 ms (card: 97020192 OK)
+---------------------------------------
+  [Breakdown] DDC   L1=5.40 MiB  L2=3.58 MiB  L3=0.71 MiB  L4=0.09 MiB  total=9.78 MiB

@@ -1,0 +1,30 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r3_A66_B3277_bitset_avx512.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B3277_bitset
+Rows: 100000000 | Cardinality: 66
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [Bitset (AVX512)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B3277_bitset
+Rows: 100000000 | Cardinality: 66 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 12.1771 ms
+  1.bm → cardinality: 100706
+  2.bm → cardinality: 5000323
+
+[Storage] Total compressed: 25000000 bytes (24414.1 KB) | Ratio: 1x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  4.18274 ms (card: 5096027)
+  bitAnd: 4.121 ms (card: 5002)
+  bitXor: 4.53694 ms (card: 5091025)
+
+[Pure Ops] Bitset (AVX512) operation+alloc:
+  AND (with alloc): 1.75919 ms
+  OR  (with alloc): 1.75077 ms
+  XOR (with alloc): 1.61716 ms
+  NOT (with alloc): 1.3585 ms
+  AND (in-place):   1.13329 ms
+  COMP (~((A|B)&(B|C))): 5.41418 ms
+---------------------------------------

@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r3_A655_B26214_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B26214_roaring
+Rows: 100000000 | Cardinality: 655
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A655_B26214_roaring
+Rows: 100000000 | Cardinality: 655 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 12.1974 ms
+  1.bm → cardinality: 999453
+  2.bm → cardinality: 39999373
+
+[Storage] Total compressed: 14524338 bytes (14183.9 KB) | Ratio: 0.580974x
+[CRoaring Storage] array=1526 (1.90631 MB) | run=0 (0 MB) | bitset=1526 (11.9219 MB) | total_bytes=14499898
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  6.26686 ms (card: 40598950)
+  bitAnd: 2.98878 ms (card: 399876)
+  bitXor: 8.70547 ms (card: 40199074)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 1.97113 ms (card: 399876)
+  OR:  3.05048 ms (card: 40598950)
+  OR (CR internal only, no to-btv): 1.67329 ms
+  XOR: 3.80165 ms (card: 40199074)
+  NOT: 3.00974 ms (card: 99000547)
+  AND (in-place): 9.32083 ms
+  [AND result containers] array=1526 (0.762703 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=799752
+  [OR  result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [XOR result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (1.90631 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1998906
+  [Input B containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  COMP native (~((A|B)&(B|C))): 5.44422 ms
+  COMP (~((A|B)&(B|C))): 6.77288 ms
+---------------------------------------

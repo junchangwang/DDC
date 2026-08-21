@@ -1,0 +1,32 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/job_r5_cast_info_movie_id_wah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_wah
+Rows: 36244344 | Cardinality: 3
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [WAH (FastBit)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R3W1_realworld_excel_20260809/job_unified10/logical_top3_datasets/cast_info_movie_id/bitmap/bm_36244344_c3_wah
+Rows: 36244344 | Cardinality: 3 | Loaded: 3
+=======================================
+[Load] Loaded 3 compressed bitmaps: 0.073294 ms
+  1.bm → cardinality: 1741
+  2.bm → cardinality: 1572
+  3.bm → cardinality: 1531
+
+[Storage] Total compressed: 26716 bytes (26.0898 KB) | Ratio: 0.00196562x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  0.050624 ms (card: 3313)
+  bitAnd: 0.008695 ms (card: 0)
+  bitXor: 0.011175 ms (card: 3313)
+
+[Compute] Multi-way OR of 3 bitmaps: 0.065137 ms (card: 4844)
+
+[Pure Ops] WAH (FastBit) operation-only:
+  AND: 0.003806 ms
+  OR:  0.015925 ms
+  XOR: 0.008053 ms
+  NOT: 0.0005 ms
+  COMP (~((A|B)&(B|C))): 0.045672 ms
+---------------------------------------

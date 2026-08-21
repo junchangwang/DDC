@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r2_A3277_B32768_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B32768_roaring
+Rows: 100000000 | Cardinality: 3277
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A3277_B32768_roaring
+Rows: 100000000 | Cardinality: 3277 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 17.071 ms
+  1.bm → cardinality: 5000333
+  2.bm → cardinality: 50000004
+
+[Storage] Total compressed: 22526098 bytes (21998.1 KB) | Ratio: 0.901044x
+[CRoaring Storage] array=1526 (9.53738 MB) | run=0 (0 MB) | bitset=1526 (11.9219 MB) | total_bytes=22501658
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  9.04601 ms (card: 52500566)
+  bitAnd: 8.64733 ms (card: 2499771)
+  bitXor: 13.9443 ms (card: 50000795)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 5.72588 ms (card: 2499771)
+  OR:  5.58528 ms (card: 52500566)
+  OR (CR internal only, no to-btv): 4.17122 ms
+  XOR: 10.1245 ms (card: 50000795)
+  NOT: 5.90292 ms (card: 94999667)
+  AND (in-place): 13.2107 ms
+  [AND result containers] array=1526 (4.76793 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=4999542
+  [OR  result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [XOR result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (9.53738 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=10000666
+  [Input B containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  COMP native (~((A|B)&(B|C))): 10.4912 ms
+  COMP (~((A|B)&(B|C))): 11.8892 ms
+---------------------------------------

@@ -7,6 +7,7 @@ import csv
 import hashlib
 import json
 import math
+import re
 import statistics
 from collections import Counter
 from pathlib import Path
@@ -58,6 +59,7 @@ def main() -> None:
         "earth": [], "job": [], "cluster": []
     }
     density_upper: list[dict[str, object]] = []
+    container_rows: list[dict[str, object]] = []
     summary_groups: dict[str, object] = {}
 
     for group in ("earth", "job", "cluster", "density"):
@@ -141,13 +143,42 @@ def main() -> None:
             },
         }
 
+    container_pattern = re.compile(
+        r"\[CRoaring Storage\] array=(\d+).*?run=(\d+).*?bitset=(\d+).*?"
+        r"total_bytes=(\d+)"
+    )
+    for case in cases:
+        observed = set()
+        for rep in range(1, case.repetitions + 1):
+            log_path = HERE / "logs" / f"{case.group}_r{rep}_{case.label}_croaring.log"
+            match = container_pattern.search(log_path.read_text(encoding="utf-8"))
+            if not match:
+                raise RuntimeError(f"missing CRoaring storage stats in {log_path}")
+            observed.add(tuple(int(value) for value in match.groups()))
+        if len(observed) != 1:
+            raise RuntimeError(
+                f"inconsistent CRoaring storage stats for {case.group}/{case.label}: "
+                f"{sorted(observed)}"
+            )
+        arrays, runs, bitsets, total_bytes = observed.pop()
+        container_rows.append({
+            "group": case.group,
+            "case": case.label,
+            "array_containers": arrays,
+            "run_containers": runs,
+            "bitset_containers": bitsets,
+            "container_payload_bytes": total_bytes,
+            "has_run_container": int(runs > 0),
+            "replicates_checked": case.repetitions,
+        })
+
     RESULTS.mkdir(exist_ok=True)
     for group, rows in grouped.items():
         if not rows:
             continue
         path = RESULTS / f"{group}_selected_delivery.csv"
         with path.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
             writer.writeheader()
             writer.writerows(rows)
 
@@ -178,15 +209,21 @@ def main() -> None:
     with (RESULTS / "density_selected_delivery.csv").open(
         "w", newline="", encoding="utf-8"
     ) as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(density_rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(density_rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(density_rows)
     with (RESULTS / "density_upper_triangle.csv").open(
         "w", newline="", encoding="utf-8"
     ) as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(density_upper[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(density_upper[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(density_upper)
+    with (RESULTS / "croaring_container_summary.csv").open(
+        "w", newline="", encoding="utf-8"
+    ) as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(container_rows[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(container_rows)
 
     summary = {
         "schema_version": 1,
@@ -194,6 +231,13 @@ def main() -> None:
         "croaring_optimization": metadata["croaring_optimization"],
         "delivery_boundary": metadata["delivery_boundary"],
         "groups": summary_groups,
+        "croaring_cases_with_run_containers": {
+            group: sum(
+                int(row["has_run_container"])
+                for row in container_rows if row["group"] == group
+            )
+            for group in ("earth", "job", "cluster", "density")
+        },
         "binary_sha256": metadata["binary_sha256"],
         "metadata_sha256": sha256(metadata_path),
     }

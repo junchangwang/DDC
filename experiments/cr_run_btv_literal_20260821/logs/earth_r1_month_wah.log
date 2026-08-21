@@ -1,0 +1,35 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/earth_r1_month_wah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/earthdata/month/bitmap/bm_21844315_c12_wah
+Rows: 21844315 | Cardinality: 12
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [WAH (FastBit)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/earthdata/month/bitmap/bm_21844315_c12_wah
+Rows: 21844315 | Cardinality: 12 | Loaded: 12
+=======================================
+[Load] Loaded 12 compressed bitmaps: 24.0406 ms
+  1.bm → cardinality: 1833156
+  2.bm → cardinality: 1832857
+  3.bm → cardinality: 1831489
+  4.bm → cardinality: 1829137
+  5.bm → cardinality: 1819424
+  ... (7 more)
+
+[Storage] Total compressed: 33787624 bytes (32995.7 KB) | Ratio: 1.03116x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  5.36638 ms (card: 3666013)
+  bitAnd: 4.25417 ms (card: 0)
+  bitXor: 2.45987 ms (card: 3666013)
+
+[Compute] Multi-way OR of 12 bitmaps: 8.87461 ms (card: 21844315)
+
+[Pure Ops] WAH (FastBit) operation-only:
+  AND: 3.0841 ms
+  OR:  3.36937 ms
+  XOR: 1.26394 ms
+  NOT: 0.305617 ms
+  COMP (~((A|B)&(B|C))): 7.37003 ms
+---------------------------------------

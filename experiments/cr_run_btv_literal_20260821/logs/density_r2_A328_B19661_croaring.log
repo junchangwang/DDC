@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r2_A328_B19661_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B19661_roaring
+Rows: 100000000 | Cardinality: 328
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B19661_roaring
+Rows: 100000000 | Cardinality: 328 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 12.4345 ms
+  1.bm → cardinality: 500493
+  2.bm → cardinality: 30000288
+
+[Storage] Total compressed: 13526418 bytes (13209.4 KB) | Ratio: 0.541057x
+[CRoaring Storage] array=1526 (0.954615 MB) | run=0 (0 MB) | bitset=1526 (11.9219 MB) | total_bytes=13501978
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  6.19096 ms (card: 30350933)
+  bitAnd: 2.24739 ms (card: 149848)
+  bitXor: 8.21646 ms (card: 30201085)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 1.66225 ms (card: 149848)
+  OR:  2.85949 ms (card: 30350933)
+  OR (CR internal only, no to-btv): 1.43558 ms
+  XOR: 3.2173 ms (card: 30201085)
+  NOT: 2.64478 ms (card: 99499507)
+  AND (in-place): 9.09695 ms
+  [AND result containers] array=1526 (0.285812 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=299696
+  [OR  result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [XOR result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (0.954615 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1000986
+  [Input B containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  COMP native (~((A|B)&(B|C))): 5.02386 ms
+  COMP (~((A|B)&(B|C))): 6.45325 ms
+---------------------------------------

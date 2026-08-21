@@ -1,0 +1,35 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/cluster_r3_f64_wah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f64/bitmap/bm_100m_c100_wah
+Rows: 100000000 | Cardinality: 100
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [WAH (FastBit)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f64/bitmap/bm_100m_c100_wah
+Rows: 100000000 | Cardinality: 100 | Loaded: 100
+=======================================
+[Load] Loaded 100 compressed bitmaps: 25.3355 ms
+  1.bm → cardinality: 1000000
+  2.bm → cardinality: 1000000
+  3.bm → cardinality: 1000000
+  4.bm → cardinality: 1000000
+  5.bm → cardinality: 1000000
+  ... (95 more)
+
+[Storage] Total compressed: 20211708 bytes (19738 KB) | Ratio: 0.0161694x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  1.28431 ms (card: 2000000)
+  bitAnd: 0.539996 ms (card: 0)
+  bitXor: 0.813659 ms (card: 2000000)
+
+[Compute] Multi-way OR of 100 bitmaps: 625.117 ms (card: 100000000)
+
+[Pure Ops] WAH (FastBit) operation-only:
+  AND: 0.491918 ms
+  OR:  0.874656 ms
+  XOR: 0.638196 ms
+  NOT: 0.012011 ms
+  COMP (~((A|B)&(B|C))): 3.06016 ms
+---------------------------------------

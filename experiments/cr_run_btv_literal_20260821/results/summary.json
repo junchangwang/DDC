@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "literal_comp_plan": "t1=A|B; t2=B|C; t3=t1&t2; result=~t3",
+  "croaring_optimization": "inputs were generated with an explicit runOptimize() call; container selection remains automatic",
+  "delivery_boundary": "CRoaring OR/AND/NOT use *_op_conv and COMP uses delivered COMP_op; other backends use their existing *_op/COMP_op paths",
+  "groups": {
+    "earth": {
+      "cells": 10,
+      "wins": {
+        "DDC": 10
+      },
+      "geometric_mean_latency_over_ddc": {
+        "DDC": 1.0,
+        "CRoaring": 2.1758154091664115,
+        "WAH": 6.829468650973642,
+        "EWAH": 5.108897988676894
+      }
+    },
+    "job": {
+      "cells": 10,
+      "wins": {
+        "EWAH": 5,
+        "DDC": 4,
+        "WAH": 1
+      },
+      "geometric_mean_latency_over_ddc": {
+        "DDC": 1.0,
+        "CRoaring": 4.090514948823084,
+        "WAH": 0.5646740869198231,
+        "EWAH": 0.3067986287993915
+      }
+    },
+    "cluster": {
+      "cells": 44,
+      "wins": {
+        "DDC": 16,
+        "CRoaring": 5,
+        "WAH": 13,
+        "EWAH": 10
+      },
+      "geometric_mean_latency_over_ddc": {
+        "DDC": 1.0,
+        "CRoaring": 3.6221184680327623,
+        "WAH": 0.6571452504082674,
+        "EWAH": 1.0771023343271726
+      }
+    },
+    "density": {
+      "cells": 55,
+      "wins": {
+        "DDC": 53,
+        "WAH": 2
+      },
+      "geometric_mean_latency_over_ddc": {
+        "DDC": 1.0,
+        "CRoaring": 2.3011352205289786,
+        "WAH": 4.687117098347614,
+        "EWAH": 5.279575839801472,
+        "Bitset-AVX512": 1.1811515813062272,
+        "Concise": 19.73486050277075
+      }
+    }
+  },
+  "croaring_cases_with_run_containers": {
+    "earth": 3,
+    "job": 8,
+    "cluster": 10,
+    "density": 0
+  },
+  "binary_sha256": "e3ee73a08b810f1ba12fff9ce3c4a9fee75f87ba0944efa78202b4b52207dd5c",
+  "metadata_sha256": "6250b105008955f478d9dd98793b51e834532c1fa2d9c52c711ec77a95a40bf7"
+}

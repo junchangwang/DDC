@@ -1,0 +1,29 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r1_A6554_B13107_concise.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B13107_concise
+Rows: 100000000 | Cardinality: 6554
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [Concise] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A6554_B13107_concise
+Rows: 100000000 | Cardinality: 6554 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 12.2664 ms
+  1.bm → cardinality: 10000633
+  2.bm → cardinality: 19999673
+
+[Storage] Total compressed: 25722944 bytes (25120.1 KB) | Ratio: 1.02892x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  24.1972 ms (card: 27999151)
+  bitAnd: 62.7263 ms (card: 2001155)
+  bitXor: 25.598 ms (card: 25997996)
+
+[Pure Ops] Concise operation-only:
+  AND: 52.8619 ms
+  OR:  26.479 ms
+  XOR: 26.6412 ms
+  NOT: 17.4921 ms (XOR with all-ones)
+  COMP (~((A|B)&(B|C))): 101.256 ms
+---------------------------------------

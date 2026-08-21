@@ -1,0 +1,10 @@
+backend,num_rows,cardinality,operation,time_ms,compressed_bytes,compression_ratio,result_cardinality,iteration
+WAH (FastBit),100000000,655,load,18.5715,15197572,0.607903,0,1
+WAH (FastBit),100000000,655,OR,28.872,0,0,2979808,1
+WAH (FastBit),100000000,655,AND,30.1427,0,0,20072,1
+WAH (FastBit),100000000,655,XOR,24.2087,0,0,2959736,1
+WAH (FastBit),100000000,655,OR_op,23.4024,0,0,0,1
+WAH (FastBit),100000000,655,AND_op,25.0318,0,0,0,1
+WAH (FastBit),100000000,655,XOR_op,19.4445,0,0,0,1
+WAH (FastBit),100000000,655,NOT_op,0.706359,0,0,0,1
+WAH (FastBit),100000000,655,COMP_op,51.1343,0,0,0,1

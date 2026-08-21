@@ -1,0 +1,45 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/cluster_r4_f64_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f64/bitmap/bm_100m_c100_roaring
+Rows: 100000000 | Cardinality: 100
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f64/bitmap/bm_100m_c100_roaring
+Rows: 100000000 | Cardinality: 100 | Loaded: 100
+=======================================
+[Load] Loaded 100 compressed bitmaps: 12.8105 ms
+  1.bm → cardinality: 1000000
+  2.bm → cardinality: 1000000
+  3.bm → cardinality: 1000000
+  4.bm → cardinality: 1000000
+  5.bm → cardinality: 1000000
+  ... (95 more)
+
+[Storage] Total compressed: 7803014 bytes (7620.13 KB) | Ratio: 0.00624241x
+[CRoaring Storage] array=3 (1.14441e-05 MB) | run=152591 (6.25834 MB) | bitset=0 (0 MB) | total_bytes=6562362
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  8.55653 ms (card: 2000000)
+  bitAnd: 0.993877 ms (card: 0)
+  bitXor: 1.21851 ms (card: 2000000)
+
+[Compute] Multi-way OR of 100 bitmaps: 102.749 ms (card: 100000000)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 0.709227 ms (card: 0)
+  OR:  1.08462 ms (card: 2000000)
+  OR (CR internal only, no to-btv): 0.312981 ms
+  XOR: 1.15354 ms (card: 2000000)
+  NOT: 1.49343 ms (card: 99000000)
+  AND (in-place): 0.765628 ms
+  [AND result containers] array=0 (0 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=0
+  [OR  result containers] array=0 (0 MB) bitset=0 (0 MB) run=1526 (0.120998 MB) total_bytes=126876
+  [XOR result containers] array=0 (0 MB) bitset=0 (0 MB) run=1526 (0.120998 MB) total_bytes=126876
+  [NOT result containers] array=0 (0 MB) bitset=0 (0 MB) run=1526 (0.0683289 MB) total_bytes=71648
+  [Input A containers] array=0 (0 MB) bitset=0 (0 MB) run=1526 (0.0626297 MB) total_bytes=65672
+  [Input B containers] array=0 (0 MB) bitset=0 (0 MB) run=1526 (0.0624924 MB) total_bytes=65528
+  COMP native (~((A|B)&(B|C))): 1.3312 ms
+  COMP (~((A|B)&(B|C))): 2.48461 ms
+---------------------------------------

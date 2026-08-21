@@ -1,0 +1,39 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r2_A328_B3277_croaring.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B3277_roaring
+Rows: 100000000 | Cardinality: 328
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [CRoaring] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A328_B3277_roaring
+Rows: 100000000 | Cardinality: 328 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 10.4992 ms
+  1.bm → cardinality: 500493
+  2.bm → cardinality: 5000323
+
+[Storage] Total compressed: 11026072 bytes (10767.6 KB) | Ratio: 0.441043x
+[CRoaring Storage] array=3052 (10.492 MB) | run=0 (0 MB) | bitset=0 (0 MB) | total_bytes=11001632
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  15.6478 ms (card: 5475813)
+  bitAnd: 2.7945 ms (card: 25003)
+  bitXor: 12.5872 ms (card: 5450810)
+
+[Pure Ops] CRoaring operation-only (+ to-btv conversion):
+  AND: 2.15396 ms (card: 25003)
+  OR:  7.70564 ms (card: 5475813)
+  OR (CR internal only, no to-btv): 4.55761 ms
+  XOR: 8.15051 ms (card: 5450810)
+  NOT: 2.66201 ms (card: 99499507)
+  AND (in-place): 9.68512 ms
+  [AND result containers] array=1526 (0.0476894 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=50006
+  [OR  result containers] array=1526 (10.4443 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=10951626
+  [XOR result containers] array=1526 (10.3966 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=10901620
+  [NOT result containers] array=0 (0 MB) bitset=1526 (11.9219 MB) run=0 (0 MB) total_bytes=12500992
+  [Input A containers] array=1526 (0.954615 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=1000986
+  [Input B containers] array=1526 (9.53736 MB) bitset=0 (0 MB) run=0 (0 MB) total_bytes=10000646
+  COMP native (~((A|B)&(B|C))): 14.7817 ms
+  COMP (~((A|B)&(B|C))): 16.4299 ms
+---------------------------------------

@@ -1,0 +1,29 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/density_r1_A66_B66_ewah.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B66_ewah
+Rows: 100000000 | Cardinality: 66
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [EWAH] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/combit/gridindep/bitmap/bm_100m_A66_B66_ewah
+Rows: 100000000 | Cardinality: 66 | Loaded: 2
+=======================================
+[Load] Loaded 2 compressed bitmaps: 1.53432 ms
+  1.bm → cardinality: 100706
+  2.bm → cardinality: 100711
+
+[Storage] Total compressed: 3027384 bytes (2956.43 KB) | Ratio: 0.121095x
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  4.18025 ms (card: 201329)
+  bitAnd: 2.6914 ms (card: 88)
+  bitXor: 4.29553 ms (card: 201241)
+
+[Pure Ops] EWAH operation-only:
+  AND: 2.56489 ms
+  OR:  3.27269 ms
+  XOR: 3.35617 ms
+  NOT: 0.859575 ms
+  COMP (~((A|B)&(B|C))): 10.9073 ms
+---------------------------------------

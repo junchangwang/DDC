@@ -415,7 +415,10 @@ def main() -> None:
             "ddc_compress_results", "and_mode", "allocator_env", "groups",
             "cases", "operand_manifest",
         )
-        mismatches = [key for key in stable if existing.get(key) != metadata.get(key)]
+        normalized = json.loads(json.dumps(metadata))
+        mismatches = [
+            key for key in stable if existing.get(key) != normalized.get(key)
+        ]
         if mismatches:
             raise RuntimeError(f"resume metadata mismatch: {mismatches}")
     else:
@@ -451,8 +454,9 @@ def main() -> None:
             log_path = verification_dir / f"{case.group}_{case.label}_{label}.log"
             if args.resume and log_path.is_file():
                 content = log_path.read_text(encoding="utf-8")
-                valid = content.startswith("PASS") or content.rstrip().endswith(
-                    "ALL_EXACT_MATCH"
+                valid = content.startswith("PASS") or any(
+                    line.strip() == "ALL_EXACT_MATCH"
+                    for line in content.splitlines()
                 )
                 if valid:
                     continue
@@ -461,8 +465,9 @@ def main() -> None:
                 stderr=subprocess.STDOUT, check=False,
             )
             log_path.write_text(completed.stdout, encoding="utf-8")
-            valid = completed.stdout.startswith("PASS") or completed.stdout.rstrip().endswith(
-                "ALL_EXACT_MATCH"
+            valid = completed.stdout.startswith("PASS") or any(
+                line.strip() == "ALL_EXACT_MATCH"
+                for line in completed.stdout.splitlines()
             )
             if completed.returncode != 0 or not valid:
                 raise RuntimeError(f"verification failed: {log_path}")

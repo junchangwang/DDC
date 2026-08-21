@@ -1,0 +1,37 @@
+CSV output: /home/lichenhang/lee/thesis/check/lee/combit-cr-native-20260820/experiments/cr_run_btv_literal_20260821/raw/cluster_r3_f2_ddc.csv
+=== Compressed .bm Benchmark Mode ===
+Directory: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f2/bitmap/bm_100m_c100_ddc_w8
+Rows: 100000000 | Cardinality: 100
+AND caliber: PAIR (A&B, real op)
+
+=======================================
+Benchmark [DDC (New)] — Compressed .bm Files
+Source: /home/lichenhang/lee/thesis/check/lee/R2W1_clustering_micro_100m_20260813/data/f2/bitmap/bm_100m_c100_ddc_w8
+Rows: 100000000 | Cardinality: 100 | Loaded: 100
+=======================================
+[Load] Loaded 100 compressed bitmaps: 137.081 ms
+  1.bm → cardinality: 1000000
+  2.bm → cardinality: 1000000
+  3.bm → cardinality: 1000000
+  4.bm → cardinality: 1000000
+  5.bm → cardinality: 1000000
+  ... (95 more)
+
+[Storage] Total compressed: 124834900 bytes (121909 KB) | Ratio: 0.0998679x
+[DDC Storage] l4_bytes: 2.32831 MB | l3_bytes: 17.2392 MB | l2_bytes: 41.78 MB | l1_bytes: 53.0168 MB | total_bytes: 114.364 MB
+
+[Compute] Pairwise ops on first 2 bitmaps:
+  bitOr:  6.40624 ms (card: 2000000)
+  bitAnd: 6.66329 ms (card: 0)
+  bitXor: 6.59937 ms (card: 2000000)
+
+[Compute] Multi-way OR of 100 bitmaps: 154.902 ms (card: 100000000)
+  [MIRROR-IN-PROC] OR raw: 1.39481 1.39567 1.39618 1.39624 1.39628 1.39647 1.39659 1.39661 1.39681 1.3972 1.39736 1.39764 1.3981 1.39817 1.39856 1.39872 1.39936 1.40046 1.40153 1.40167 1.40177 1.40198 1.402 1.40237 1.40243 1.40291 1.40332 1.40344 1.40353 1.40357 1.40366 1.40383 1.40395 1.40397 1.40423 1.4043 1.40431 1.40453 1.40463 1.40486 1.40492 1.40494 1.40507 1.40508 1.40539 1.4055 1.40558 1.40567 1.40584 1.40589 1.40595 1.40598 1.4061 1.40653 1.40655 1.40682 1.40686 1.407 1.40702 1.40706 1.40711 1.40719 1.4074 1.4074 1.40752 1.40755 1.40763 1.40773 1.40781 1.40796 1.40811 1.40811 1.40814 1.40845 1.4085 1.40908 1.40915 1.40918 1.4092 1.40942 1.40964 1.40973 1.40991 1.40996 1.41048 1.41076 1.41121 1.41165 1.41173 1.41234 1.41382 1.41421 1.41638 1.41682 1.41683 1.41752 1.41778 1.41797 1.4191 1.42531  median=1.40595
+
+[Pure Ops] DDC operation-only timing:
+  AND: 1.71292 ms (card: 0)
+  OR:  1.40521 ms (card: 2000000)
+  XOR: 1.50392 ms (card: 2000000)
+  NOT: 0.208927 ms (card: 99000000)
+  COMP (~((A|B)&(B|C))): 4.21909 ms (card: 99000000 OK)
+---------------------------------------
