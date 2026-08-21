@@ -16,9 +16,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 from matplotlib import font_manager
-from matplotlib.colors import LinearSegmentedColormap, LogNorm
+from matplotlib.colors import LinearSegmentedColormap, LogNorm, to_rgba
 from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
 from matplotlib.path import Path as MarkerPath
 from matplotlib.transforms import Bbox
 
@@ -101,7 +100,7 @@ DENSITY_COLUMNS = ["backend", "density_A", "density_B", "or_time_ms"]
 BAR_STYLES = {
     "CRoaring": ("#00817F", "#005755", "xxxx"),
     "WAH": ("#8B0303", "#5d0202", "/"),
-    "EWAH": ("#4E0980", "#330558", "///"),
+    "EWAH": ("#4E0980", "#330558", r"\\\\"),
 }
 
 TRIANGLE_SCALE = 1.5
@@ -337,11 +336,14 @@ def ratio_tick(value: float, _: int) -> str:
     return f"{value:g}"
 
 
-def save_fixed(fig: plt.Figure, stem: Path, png_dpi: int) -> list[Path]:
+def save_fixed(
+    fig: plt.Figure, stem: Path, png_dpi: int, tight: bool = False
+) -> list[Path]:
     pdf = stem.with_suffix(".pdf")
     png = stem.with_suffix(".png")
-    fig.savefig(pdf, format="pdf")
-    fig.savefig(png, format="png", dpi=png_dpi)
+    options = {"bbox_inches": "tight", "pad_inches": 0.05} if tight else {}
+    fig.savefig(pdf, format="pdf", **options)
+    fig.savefig(png, format="png", dpi=png_dpi, **options)
     plt.close(fig)
     return [pdf, png]
 
@@ -354,7 +356,7 @@ def plot_relative_bars(
     output_stem: Path,
     png_dpi: int,
 ) -> list[Path]:
-    configure_fonts(18)
+    configure_fonts(14)
     entries = [(case, operation) for case in cases for operation in operations]
     x = np.arange(1, len(entries) + 1, dtype=float)
     all_ratios = [
@@ -364,35 +366,44 @@ def plot_relative_bars(
     ]
     lower, upper, ticks = power_of_two_ticks(max(all_ratios), min(all_ratios))
 
-    fig, axis = plt.subplots(figsize=(12, 3))
-    width = 0.22
-    for offset, backend in zip((-0.26, 0.0, 0.26), BACKENDS[1:]):
+    fig, axis = plt.subplots(figsize=(12, 3.25))
+    width = 0.20
+    bar_handles = []
+    bar_backends = BACKENDS[1:]
+    for offset, backend in zip((-0.25, 0.0, 0.25), bar_backends):
         face, edge, hatch = BAR_STYLES[backend]
         values = [float(rows[(case, operation, backend)]["ratio"]) for case, operation in entries]
-        axis.bar(
+        heights = [value - lower for value in values]
+        container = axis.bar(
             x + offset,
-            values,
+            heights,
             width=width,
-            facecolor="white",
+            bottom=lower,
+            facecolor=to_rgba(face, 0.12),
             edgecolor=edge,
-            linewidth=0.7,
+            linewidth=0.9,
             hatch=hatch,
             label=backend,
             zorder=3,
         )
-        for rectangle in axis.patches[-len(values):]:
-            rectangle.set_facecolor(face + "18")
+        bar_handles.append(container)
 
-    axis.axhline(1.0, color="#147014", linewidth=1.6, linestyle=(0, (3, 4)), zorder=4)
+    ddc_handle = Line2D(
+        [0], [0], color="#147014", linewidth=1.6,
+        linestyle=(0, (3, 4)), label="DDC (1.0)"
+    )
+    axis.axhline(1.0, color="#147014", linewidth=1.6, linestyle=(0, (3, 4)), zorder=2)
     axis.set_yscale("log", base=2)
     axis.set_ylim(lower, upper)
+    if len(operations) == 1 and len(ticks) > 6:
+        ticks = ticks[::2]
     axis.set_yticks(ticks)
     axis.yaxis.set_major_formatter(mticker.FuncFormatter(ratio_tick))
     axis.yaxis.set_minor_locator(mticker.NullLocator())
-    axis.set_ylabel("Latency relative to DDC", fontsize=20, labelpad=8)
-    axis.yaxis.set_label_coords(-0.075, 0.30 if len(operations) > 1 else 0.35)
-    axis.tick_params(axis="y", labelsize=20, direction="out")
-    axis.tick_params(axis="x", labelsize=20, length=0, pad=4)
+    axis.set_ylabel("Latency relative to DDC", fontsize=16, labelpad=8)
+    axis.yaxis.set_label_coords(-0.075, 0.5)
+    axis.tick_params(axis="y", labelsize=13, direction="out")
+    axis.tick_params(axis="x", labelsize=14, length=0, pad=4)
     axis.set_xlim(0.45, len(entries) + 0.55)
     axis.set_xticks(x)
 
@@ -407,7 +418,7 @@ def plot_relative_bars(
                 transform=axis.get_xaxis_transform(),
                 ha="center",
                 va="top",
-                fontsize=20,
+                fontsize=14,
                 color="#0f172a",
             )
             if case_index:
@@ -419,38 +430,32 @@ def plot_relative_bars(
                     linestyle=(0, (1, 3)),
                     zorder=1,
                 )
-        bottom = 0.31
+        bottom = 0.29
     else:
         axis.set_xticklabels([case_labels[case] for case, _ in entries])
-        axis.tick_params(axis="x", labelsize=14)
-        bottom = 0.25
+        axis.tick_params(axis="x", labelsize=12)
+        bottom = 0.23
 
     for spine in axis.spines.values():
         spine.set_color("#1f2937")
         spine.set_linewidth(1.0)
-    legend_handles = [
-        Patch(facecolor="white", edgecolor=BAR_STYLES[name][1], hatch=BAR_STYLES[name][2], label=name)
-        for name in BACKENDS[1:]
-    ]
-    legend_handles.append(
-        Line2D([0], [0], color="#147014", linewidth=1.6, linestyle=(0, (3, 4)), label="DDC (1.0)")
-    )
-    axis.legend(
-        handles=legend_handles,
+    fig.legend(
+        handles=[*bar_handles, ddc_handle],
+        labels=[*bar_backends, "DDC (1.0)"],
         loc="upper center",
-        bbox_to_anchor=(0.69, 1.02),
+        bbox_to_anchor=(0.69, 0.99),
         ncol=4,
         frameon=True,
         facecolor="white",
-        edgecolor="white",
-        framealpha=0.96,
-        fontsize=18,
+        edgecolor="#b7c3d0",
+        framealpha=1.0,
+        fontsize=13,
         handlelength=1.4,
         columnspacing=1.2,
         handletextpad=0.45,
     )
-    fig.subplots_adjust(left=0.105, right=0.995, top=0.94, bottom=bottom)
-    return save_fixed(fig, output_stem, png_dpi)
+    fig.subplots_adjust(left=0.085, right=0.995, top=0.83, bottom=bottom)
+    return save_fixed(fig, output_stem, png_dpi, tight=True)
 
 
 def plot_cluster(
