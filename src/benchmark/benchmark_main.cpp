@@ -842,14 +842,13 @@ void run_compressed_benchmark(IBitmapBackend* backend, const std::string& backen
                         auto* hc = dynamic_cast<DDCHandle*>(bm2.get());
                         if (hc) {
 
-                            // COMP: recompress intermediates
+                            // COMP
                             auto run_comp = [&]() {
-                                ddc_compress_results = true;
-                                DDC t1 = ha->compressed.and_no_bypass(hc->compressed);
-                                DDC t2 = hb->compressed | t1;
-                                t2.negate_inplace();
-                                ddc_compress_results = false;
-                                return t2;
+                                DDC t1 = ha->compressed | hb->compressed;
+                                DDC t2 = hb->compressed | hc->compressed;
+                                t1 &= t2;
+                                t1.negate_inplace();
+                                return t1;
                             };
                             { DDC r = run_comp(); (void)r; }
                             std::vector<double> comp_t;

@@ -2,6 +2,7 @@
 #define DDC_H
 
 #include <vector>
+#include <boost/container/small_vector.hpp>
 #include <cstdint>
 #include <cassert>
 #include <cstring>
@@ -17,7 +18,6 @@
 
 extern bool ddc_compress_results;
 
-// per-segment 4-level bitvector
 class DDCBtv {
 public:
     static constexpr unsigned word_size = 8;
@@ -38,7 +38,6 @@ public:
 
     explicit DDCBtv(bool l1_fill_ones = false, bool l2_fill_ones = false, State state = State::Compressed);
 
-    // compress
     static DDCBtv compress(const std::vector<bool>& bits, bool l1_fill_ones = false);
     static DDCBtv compress_sparse_segment(const std::vector<uint16_t>& sorted_positions, size_t seg_bits, bool l1_fill_ones = false);
     std::vector<bool> decompress() const;
@@ -46,7 +45,6 @@ public:
     static DDCBtv from_string(const std::string& bitstring, bool l1_fill_ones = false);
     std::string to_string() const;
 
-    // boolean kernels
     DDCBtv operator&(const DDCBtv& other) const;
     DDCBtv operator|(const DDCBtv& other) const;
     DDCBtv operator^(const DDCBtv& other) const;
@@ -55,7 +53,6 @@ public:
     DDCBtv& operator&=(const DDCBtv& other);
     DDCBtv& operator^=(const DDCBtv& other);
 
-    // bypass ablation
     DDCBtv and_no_bypass(const DDCBtv& other) const;
 
     DDCBtv& negate_inplace();
@@ -86,8 +83,17 @@ public:
     size_t l2_lit_count() const { return l2_lit_count_; }
     size_t l3_lit_count() const { return l3_lit_count_; }
 
-    bool is_all_zero() const { return l1_lit_count_ == 0 && !l1_fill_ones_; }
-    bool is_all_ones() const { return l1_lit_count_ == 0 &&  l1_fill_ones_; }
+    bool is_all_zero() const { return !has_l2v_ && l1_lit_count_ == 0 && !l1_fill_ones_; }
+    bool is_all_ones() const { return !has_l2v_ && l1_lit_count_ == 0 &&  l1_fill_ones_; }
+
+    bool has_l2v() const { return has_l2v_; }
+    const uint8_t* l2v_data() const { return l2v_bits_.data(); }
+    static DDCBtv compress_dual(const std::vector<bool>& bits);
+    size_t collect_literals(uint32_t* words, uint8_t* vals, size_t cap) const;
+    DDCBtv to_decompressed() const;
+    DDCBtv dense_binop(const DDCBtv& other, char op) const;
+
+    int uniform_class() const;
 
     static DDCBtv make_all_fill(size_t bit_count, size_t l2_count, bool l1_fill_ones);
     static DDCBtv make_decompressed_zero(size_t bit_count, size_t l2_count);
@@ -102,7 +108,6 @@ public:
 
 #ifdef __AVX512VBMI2__
 
-    // SIMD merge cursor
     struct SideCtx {
         const uint8_t* l4_bits;
         const uint8_t* l3_lits;
@@ -137,7 +142,6 @@ public:
         return c;
     }
 
-    // advance literal offsets
     static inline void advance_side(SideCtx& s, uint8_t l3) {
         __m512i l2v = _mm512_mask_expandloadu_epi8(s.l2_fill_vec, static_cast<__mmask64>(l3), s.l2_lits + s.l2_lit_off);
         s.l2_lit_off += __builtin_popcount(l3);
@@ -155,12 +159,16 @@ public:
     void serialize_v4(std::ostream& os, bool is_last_seg) const;
     static DDCBtv deserialize_v4(std::istream& is, size_t segment_bits);
 
+    void serialize_v5(std::ostream& os, bool is_last_seg) const;
+    static DDCBtv deserialize_v5(std::istream& is, size_t segment_bits);
+
     void print(std::ostream& os = std::cout) const;
 
 private:
-    // layout: keep field order
-    // L1..L4 hierarchy
+    // Stable layout
     State                   state_;
+    bool                    has_l2v_ = false;
+    std::vector<uint8_t>    l2v_bits_;
     bool                    l1_fill_ones_;
     bool                    l2_fill_ones_;
     size_t                  bit_count_;
@@ -178,17 +186,27 @@ private:
     std::vector<uint8_t>    l1_lits_;
     size_t                  l1_lit_count_;
 
-    // expand L3
     std::vector<uint8_t> expand_l3() const;
     std::vector<uint8_t> expand_l2() const;
     void compact_l2_l3(size_t actual_l1_count);
     void compress_l3_to_l4();
     bool is_last_word_literal() const;
 
+    // Tail masking
+    void mask_tail_byte() {
+        if (bit_count_ % 8 == 0 || l1_lit_count_ == 0 || l1_lits_.empty()) return;
+        const uint8_t m = static_cast<uint8_t>(0xFF << (8 - bit_count_ % 8));
+        if (state_ == State::Decompressed) { l1_lits_[l1_lit_count_ - 1] &= m; return; }
+        if (state_ == State::Compressed && is_last_word_literal())
+            l1_lits_[l1_lit_count_ - 1] &= m;
+    }
+
     friend class DDC;
 };
 
-// segmented bitmap container
+bool ddc_dual_enabled();
+int ddc_dual_probe(char op, const DDCBtv& a, const DDCBtv& b);
+
 class DDC {
 public:
     static constexpr size_t default_segment_bits = size_t(1) << 16;
@@ -204,7 +222,8 @@ public:
 
     DDC() = default;
 
-    static DDC compress(const std::vector<bool>& bits, bool l1_fill_ones = false, size_t segment_bits = default_segment_bits);
+    static DDC compress(const std::vector<bool>& bits, bool l1_fill_ones = false, size_t segment_bits = default_segment_bits,
+                          bool adaptive_l1_polarity = false);
     static DDC from_sparse_positions(const std::vector<uint32_t>& positions, size_t num_rows, size_t segment_bits = default_segment_bits);
     std::vector<bool> decompress() const;
 
@@ -223,28 +242,38 @@ public:
 
     DDC& negate_inplace();
 
-    // fast union
     static DDC OR_many(size_t number, const DDC** Btvs);
 
     size_t popcount() const;
     std::vector<size_t> set_bit_positions() const;
     size_t popcount_and(const DDC& other) const;
 
-    // iterate set literals
     template<typename Fn>
     void for_each_literal(Fn&& fn) const {
+        ensure_flat();
         size_t word_off = 0;
         for (const auto& seg : segments_) {
             const uint8_t* l1 = seg.l1_lit_data();
             const size_t l2_total = seg.l2_count();
 
-            // skip empty
             if (seg.is_all_zero()) {
                 word_off += l2_total;
                 continue;
             }
 
-            // dense fast path
+            // Ones fastpath
+            if (seg.is_all_ones()) {
+                const size_t nb = seg.bit_count();
+                for (size_t i = 0; i < l2_total; i++) {
+                    uint8_t v = 0xFF;
+                    if (i + 1 == l2_total && (nb % 8))
+                        v = static_cast<uint8_t>(0xFF << (8 - nb % 8));
+                    fn(static_cast<uint32_t>(word_off + i), v);
+                }
+                word_off += l2_total;
+                continue;
+            }
+
             if (seg.state() == DDCBtv::State::Decompressed) {
                 size_t i = 0;
 #ifdef __AVX512BW__
@@ -281,7 +310,6 @@ public:
 
 #ifdef __AVX512VBMI2__
 
-            // SIMD descent through L4/L3/L2
             if (can_skip) {
                 for (size_t l3_base = 0; l3_base < l3_bytes; l3_base += 64) {
                     size_t chunk = l3_bytes - l3_base;
@@ -350,7 +378,6 @@ public:
             }
 #endif
 
-            // scalar tail
             size_t cur_l3_byte_idx = static_cast<size_t>(-1);
             uint8_t cur_l3_byte = 0;
             for (size_t l3_idx = 0; l3_idx < l3_total; l3_idx++) {
@@ -383,16 +410,41 @@ public:
     double compression_ratio() const;
 
     size_t bit_count()     const { return bit_count_; }
-    size_t num_segments()  const { return segments_.size(); }
+    size_t num_segments()  const {
+        return sparse_form_ ? total_segments() : segments_.size();
+    }
     size_t segment_bits()  const { return segment_bits_; }
 
-    const std::vector<DDCBtv>& segments() const { return segments_; }
-    std::vector<DDCBtv>& segments() { return segments_; }
-    const DDCBtv& segment(size_t i) const { return segments_[i]; }
+    void ensure_flat() const;
+    bool sparse_form() const { return sparse_form_; }
+    bool gap_empty() const { return sparse_form_ && seg_ids_.empty() && ones_runs_.empty(); }
+    size_t total_segments() const {
+        return segment_bits_ ? (bit_count_ + segment_bits_ - 1) / segment_bits_
+                             : segments_.size();
+    }
 
-    // scatter set bits into segments
+    using seg_vec_t  = boost::container::small_vector<DDCBtv, 1>;
+    using id_vec_t   = boost::container::small_vector<uint32_t, 8>;
+    using run_vec_t  = boost::container::small_vector<std::pair<uint32_t,uint32_t>, 8>;
+    using mask_vec_t = boost::container::small_vector<uint64_t, 16>;
+
+    const seg_vec_t& segments() const { ensure_flat(); return segments_; }
+    seg_vec_t& segments() { ensure_flat(); invalidate_masks(); return segments_; }
+    const DDCBtv& segment(size_t i) const { ensure_flat(); return segments_[i]; }
+
     void scatter_or_decompressed(const uint32_t* positions, size_t n) {
+        ensure_flat();
+        invalidate_masks();
         const uint32_t seg_bits = static_cast<uint32_t>(segment_bits_);
+        if ((seg_bits & (seg_bits - 1)) == 0) {
+            const uint32_t shift = static_cast<uint32_t>(__builtin_ctz(seg_bits));
+            const uint32_t mask  = seg_bits - 1;
+            for (size_t i = 0; i < n; i++) {
+                uint32_t p = positions[i];
+                segments_[p >> shift].set_bit_decompressed(p & mask);
+            }
+            return;
+        }
         for (size_t i = 0; i < n; i++) {
             uint32_t p = positions[i];
             uint32_t seg = p / seg_bits;
@@ -410,15 +462,29 @@ public:
     void serialize_v4(std::ostream& os) const;
     static DDC deserialize_v4(std::istream& is);
 
+    void serialize_v5(std::ostream& os) const;
+    static DDC deserialize_v5(std::istream& is);
+
+    static DDC load_any(std::istream& is);
+
     void print(std::ostream& os = std::cout) const;
 
 private:
-    std::vector<DDCBtv> segments_;
+    // Lazy canonicalization
+    mutable seg_vec_t segments_;
     size_t bit_count_    = 0;
     size_t segment_bits_ = default_segment_bits;
+    mutable bool sparse_form_ = false;
+    mutable id_vec_t seg_ids_;
+    mutable run_vec_t ones_runs_;
+
+    // Cached masks
+    mutable bool masks_valid_ = false;
+    mutable mask_vec_t zmask_, omask_;
+    void ensure_masks() const;
+    void invalidate_masks() { masks_valid_ = false; }
 };
 
-// sparse staging for OR
 class SparseDDC {
 public:
     SparseDDC() = default;

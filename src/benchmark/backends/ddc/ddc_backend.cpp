@@ -6,7 +6,7 @@ struct DDCAppendHandle : public DDCHandle {
     std::vector<bool> raw_bits;
     bool needs_compress = true;
 
-    void ensure_compressed() {  // lazy compress
+    void ensure_compressed() {
         if (needs_compress) {
             compressed = DDC::compress(raw_bits);
             needs_compress = false;
@@ -33,7 +33,7 @@ std::unique_ptr<BitmapHandle> DDCBackend::Create() {
 
 void DDCBackend::Append(BitmapHandle& handle, bool bit) {
     auto& h = static_cast<DDCAppendHandle&>(handle);
-    h.raw_bits.push_back(bit);  // buffer raw
+    h.raw_bits.push_back(bit);
 }
 
 uint64_t DDCBackend::Cardinality(const BitmapHandle& handle) {
@@ -43,7 +43,6 @@ uint64_t DDCBackend::Cardinality(const BitmapHandle& handle) {
 
 std::vector<uint32_t> DDCBackend::Decode(const BitmapHandle& handle) {
     ensureCompressed(handle);
-    // expand positions
     auto positions = getHandle(handle).compressed.set_bit_positions();
     std::vector<uint32_t> result;
     result.reserve(positions.size());
@@ -56,7 +55,7 @@ std::unique_ptr<BitmapHandle> DDCBackend::bitOr(const BitmapHandle& a, const Bit
     ensureCompressed(a);
     ensureCompressed(b);
     auto res = std::make_unique<DDCHandle>();
-    res->compressed = getHandle(a).compressed | getHandle(b).compressed;  // OR kernel
+    res->compressed = getHandle(a).compressed | getHandle(b).compressed;
     return res;
 }
 
@@ -64,7 +63,7 @@ std::unique_ptr<BitmapHandle> DDCBackend::bitAnd(const BitmapHandle& a, const Bi
     ensureCompressed(a);
     ensureCompressed(b);
     auto res = std::make_unique<DDCHandle>();
-    res->compressed = getHandle(a).compressed & getHandle(b).compressed;  // AND kernel
+    res->compressed = getHandle(a).compressed & getHandle(b).compressed;
     return res;
 }
 
@@ -84,11 +83,11 @@ void DDCBackend::Serialize(const BitmapHandle& handle, const std::string& path) 
     h.compressed.serialize(out);
 }
 
-// deserialize from disk
+// Disk load
 std::unique_ptr<BitmapHandle> DDCBackend::Load(const std::string& path) {
     auto res = std::make_unique<DDCHandle>();
     std::ifstream in(path, std::ios::binary);
     if (!in) return res;
-    res->compressed = DDC::deserialize(in);
+    res->compressed = DDC::load_any(in);
     return res;
 }
